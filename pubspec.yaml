@@ -1,0 +1,54 @@
+name: jibin_s_application1
+description: A new Flutter project.
+version: 1.0.0+1
+environment: 
+  sdk: '>=2.12.0 <3.0.0'
+dependencies: 
+  flutter: 
+    sdk: flutter
+  cached_network_image: ^3.2.1
+  flutter_svg: ^1.1.6
+  flutter_svg_provider: ^1.0.3
+  intl: ^0.18.0
+  http: ^0.13.6
+  fluttertoast: ^8.2.2
+  toggle_switch: ^2.1.0
+  get: ^4.6.5
+  custom_switch_widget: ^0.0.1
+  shared_preferences: ^2.2.0
+  animated_bottom_navigation_bar: ^1.2.0
+  url_launcher: ^6.1.12
+  geolocator: ^9.0.2
+  
+  
+dev_dependencies: 
+  flutter_test: 
+    sdk: flutter
+flutter: 
+  uses-material-design: true
+  assets: 
+    - assets/
+    - assets/images/
+  fonts: 
+    - family: DM Sans
+      fonts: 
+        - asset: assets/fonts/DMSansMedium.ttf
+          weight: 500
+        - asset: assets/fonts/DMSansRegular.ttf
+          weight: 400
+        - asset: assets/fonts/DMSansBold.ttf
+          weight: 700
+        - asset: assets/fonts/DMSansBoldItalic.ttf
+          weight: 700
+    - family: Roboto
+      fonts: 
+        - asset: assets/fonts/RobotoMedium.ttf
+          weight: 500
+    - family: Montserrat
+      fonts: 
+        - asset: assets/fonts/MontserratRegular.ttf
+          weight: 400
+        - asset: assets/fonts/MontserratRomanMedium.ttf
+          weight: 500
+        - asset: assets/fonts/MontserratRomanBold.ttf
+          weight: 700
