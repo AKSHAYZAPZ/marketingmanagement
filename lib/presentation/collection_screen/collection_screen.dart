@@ -1,3 +1,8 @@
+import 'package:intl/intl.dart';
+import 'package:jibin_s_application1/services/service.dart';
+
+import '../../model/collection_model.dart';
+import '../bottom_navigation_page/bottom_navigation.dart';
 import '../collection_screen/widgets/collection_item_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:jibin_s_application1/core/app_export.dart';
@@ -5,163 +10,609 @@ import 'package:jibin_s_application1/widgets/app_bar/appbar_image.dart';
 import 'package:jibin_s_application1/widgets/app_bar/appbar_title.dart';
 import 'package:jibin_s_application1/widgets/app_bar/custom_app_bar.dart';
 
-class CollectionScreen extends StatelessWidget {
-  const CollectionScreen({Key? key}) : super(key: key);
+import '../home_dashboard_screen/home_dashboard_screen.dart';
+
+class CollectionScreen extends StatefulWidget {
+  CollectionScreen({Key? key, required this.id}) : super(key: key);
+  String id;
+
+  @override
+  State<CollectionScreen> createState() => _CollectionScreenState();
+}
+
+class _CollectionScreenState extends State<CollectionScreen> {
+  Collection? collection;
+  var FromSelection = 'From Date';
+  var ToSelection = 'To Date';
+
+  var fdate = '';
+  var tdate = '';
+
+  String? fromselectDate;
+  String? toselectDate;
+
+  @override
+  void initState() {
+    super.initState();
+    collectionReport();
+  }
+
+  collectionReport() async {
+    collection = await HttpService.getCollection(widget.id, fdate, tdate);
+    if (collection != null) {
+      setState(() {});
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: ColorConstant.whiteA700,
-      appBar: CustomAppBar(
-          height: getVerticalSize(129),
-          leadingWidth: 95,
-          leading: AppbarImage(
-              height: getVerticalSize(17),
-              width: getHorizontalSize(21),
-              svgPath: ImageConstant.imgArrowleft,
-              margin: getMargin(left: 74, top: 50, bottom: 62),
-              onTap: () {
-                onTapArrowleft5(context);
-              }),
-          centerTitle: true,
-          title: AppbarTitle(text: "Collection"),
-          styleType: Style.bgStyle_3),
-      body: Container(
-        width: double.maxFinite,
-        padding: getPadding(top: 5, bottom: 5),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            Container(
-              margin: getMargin(left: 69, right: 68),
-              padding: getPadding(left: 26, top: 5, right: 26, bottom: 5),
-              decoration: AppDecoration.gradientTeal300Lightblue700
-                  .copyWith(borderRadius: BorderRadiusStyle.roundedBorder19),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Padding(
-                      padding: getPadding(left: 5, top: 4),
-                      child: Text("Opening Balance : ",
-                          overflow: TextOverflow.ellipsis,
-                          textAlign: TextAlign.left,
-                          style: AppStyle.txtDMSansBoldItalic18)),
-                  Padding(
-                    padding: getPadding(left: 6, top: 2, bottom: 1),
-                    child: Text("₹25400",
-                        overflow: TextOverflow.ellipsis,
-                        textAlign: TextAlign.left,
-                        style: AppStyle.txtDMSansBold18WhiteA700),
-                  ),
-                ],
+      appBar:AppBar(
+        backgroundColor: ColorConstant.lightBlue700,
+        centerTitle: true,
+        title: Text('Collection'),
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back),
+          onPressed: () {
+            // Handle the back button press here
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                builder: (context) => BottomNavigationScreen(id: widget.id),
               ),
-            ),
-            Padding(
-              padding: const EdgeInsets.only(left: 15, right: 15, top: 15),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Container(
-                    width: 150,
-                    height: 40,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(10),
-                      color: ColorConstant.blueGray100,
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.only(left: 10),
-                          child: Text('From Date'),
-                        ),
-                        GestureDetector(
-                          onTap: () {},
-                          child: Container(
-                            child: Icon(
-                              Icons.calendar_month,
-                              color: Colors.white,
-                            ),
-                            width: 40,
-                            height: 40,
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(10),
-                              color: ColorConstant.lightBlue700,
-                            ),
-                          ),
-                        )
-                      ],
-                    ),
-                  ),
-                  Container(
-                    width: 150,
-                    height: 40,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(10),
-                      color: ColorConstant.blueGray100,
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.only(left: 10),
-                          child: Text('To Date'),
-                        ),
-                        GestureDetector(
-                          onTap: () {},
-                          child: Container(
-                            child: Icon(
-                              Icons.calendar_month,
-                              color: Colors.white,
-                            ),
-                            width: 40,
-                            height: 40,
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(10),
-                              color: ColorConstant.lightBlue700,
-                            ),
-                          ),
-                        )
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            SizedBox(
-              height: 15,
-            ),
-            Container(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    'Collection Amount',
-                    style: TextStyle(
-                      fontSize: 12,
-                    ),
-                  ),
-                  SizedBox(
-                    height: 5,
-                  ),
-                  Column(
-                    children: [
-                      Text('₹'),
-                    ],
-                  )
-                ],
-              ),
-              width: 200,
-              height: 60,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(15),
-                color: ColorConstant.blueGray100,
-              ),
-            )
-          ],
+            );
+          },
         ),
       ),
+      body: collection == null
+      ?Center(child: CircularProgressIndicator())
+          : Column(
+            children: [
+              Container(
+                width: double.maxFinite,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    SizedBox(
+                      height: 10,
+                    ),
+                    Container(
+                      margin: getMargin(left: 20, right: 20),
+                      padding:
+                          getPadding(left: 26, top: 5, right: 26, bottom: 5),
+                      decoration: AppDecoration.gradientTeal300Lightblue700
+                          .copyWith(
+                              borderRadius: BorderRadiusStyle.roundedBorder19),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Padding(
+                              padding: getPadding(left: 5, top: 4),
+                              child: Text("Opening Balance : ",
+                                  overflow: TextOverflow.ellipsis,
+                                  textAlign: TextAlign.left,
+                                  style: AppStyle.txtDMSansBoldItalic18)),
+                          Padding(
+                            padding: getPadding(left: 6, top: 2, bottom: 1),
+                            child: Row(
+                              children: [
+                              Text("₹ ",
+                                style: AppStyle.txtDMSansBold18WhiteA700),
+                                Text(collection!.data.totalAmount.toString(),
+                                    overflow: TextOverflow.ellipsis,
+                                    textAlign: TextAlign.left,
+                                    style: AppStyle.txtDMSansBold18WhiteA700),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Padding(
+                      padding:
+                          const EdgeInsets.only(left: 15, right: 15, top: 15),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Container(
+                            width: 150,
+                            height: 40,
+                            decoration: BoxDecoration(
+                              boxShadow: [
+                                BoxShadow(
+                                  color: ColorConstant.black9003f,
+                                  spreadRadius: getHorizontalSize(
+                                    1,
+                                  ),
+                                  blurRadius: getHorizontalSize(
+                                    1,
+                                  ),
+                                  offset: Offset(
+                                    0,
+                                    2,
+                                  ),
+                                ),
+                              ],
+                              borderRadius: BorderRadius.circular(10),
+                              color: ColorConstant.gray50,
+                            ),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Padding(
+                                  padding: const EdgeInsets.only(left: 10),
+                                  child: Text(
+                                    FromSelection,
+                                  ),
+                                ),
+                                GestureDetector(
+                                  onTap: () async {
+                                    final selctedDatetimetemp =
+                                        await showDatePicker(
+                                      context: context,
+                                      initialDate: DateTime.now(),
+                                      firstDate: DateTime(2000),
+                                      lastDate: DateTime(2100),
+                                    );
+                                    if (selctedDatetimetemp == null) {
+                                      return;
+                                    } else {
+                                      setState(() {
+                                        fromselectDate =
+                                            DateFormat('dd-MM-yyyy')
+                                                .format(selctedDatetimetemp);
+                                        FromSelection = fromselectDate!;
+
+                                        fdate = fromselectDate!;
+                                      });
+                                    }
+                                  },
+                                  child: Container(
+                                    child: Icon(
+                                      Icons.calendar_month,
+                                      color: Colors.white,
+                                    ),
+                                    width: 40,
+                                    height: 40,
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(10),
+                                      color: ColorConstant.lightBlue700,
+                                    ),
+                                  ),
+                                )
+                              ],
+                            ),
+                          ),
+                          Container(
+                            width: 150,
+                            height: 40,
+                            decoration: BoxDecoration(
+                              boxShadow: [
+                                BoxShadow(
+                                  color: ColorConstant.black9003f,
+                                  spreadRadius: getHorizontalSize(
+                                    1,
+                                  ),
+                                  blurRadius: getHorizontalSize(
+                                    1,
+                                  ),
+                                  offset: Offset(
+                                    0,
+                                    2,
+                                  ),
+                                ),
+                              ],
+                              borderRadius: BorderRadius.circular(10),
+                              color: ColorConstant.gray50,
+                            ),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Padding(
+                                  padding: const EdgeInsets.only(left: 10),
+                                  child: Text(
+                                    ToSelection,
+                                  ),
+                                ),
+                                GestureDetector(
+                                  onTap: () async {
+                                    final toDateselectTemp =
+                                        await showDatePicker(
+                                      context: context,
+                                      initialDate: DateTime.now(),
+                                      firstDate: DateTime(2000),
+                                      lastDate: DateTime(2100),
+                                    );
+                                    if (toDateselectTemp == null) {
+                                      return;
+                                    } else {
+                                      setState(() {
+                                        toselectDate = DateFormat('dd-MM-yyyy')
+                                            .format(toDateselectTemp);
+                                         ToSelection = toselectDate!;
+
+                                        tdate = toselectDate!;
+                                        // print('==============$fdate');
+                                        // print('++++++++++++++++ $tdate');
+                                        collectionReport();
+                                      });
+
+                                    }
+                                  },
+                                  child: Container(
+                                    child: Icon(
+                                      Icons.calendar_month,
+                                      color: Colors.white,
+                                    ),
+                                    width: 40,
+                                    height: 40,
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(10),
+                                      color: ColorConstant.lightBlue700,
+                                    ),
+                                  ),
+                                )
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    SizedBox(
+                      height: 15,
+                    ),
+                    Container(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            'Collection Amount',
+                            style: TextStyle(
+                              fontSize: 12,
+                            ),
+                          ),
+                          SizedBox(
+                            height: 5,
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                '₹',
+                                style: TextStyle(
+                                  fontSize: 24,
+                                ),
+                              ),
+                              Text(
+                                collection!.data.totalAmount.toString(),
+                                style: TextStyle(
+                                  fontSize: 24,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                      width: MediaQuery.of(context).size.width*0.65,
+                      height: 60,
+                      decoration: BoxDecoration(
+                        boxShadow: [
+                          BoxShadow(
+                            color: ColorConstant.black9003f,
+                            spreadRadius: getHorizontalSize(
+                              2,
+                            ),
+                            blurRadius: getHorizontalSize(
+                              2,
+                            ),
+                            offset: Offset(
+                              0,
+                              4,
+                            ),
+                          ),
+                        ],
+                        borderRadius: BorderRadius.circular(15),
+                        color: ColorConstant.gray50,
+                      ),
+                    ),
+                    SizedBox(
+                      height: 15,
+                    ),
+                    Container(
+                      width: 200,
+                      padding: getPadding(left: 9, top: 5, right: 9, bottom: 5),
+                      decoration: AppDecoration.fillBlue600.copyWith(
+                          borderRadius: BorderRadiusStyle.roundedBorder16),
+                      child: Padding(
+                        padding: const EdgeInsets.all(4.0),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              'Add Collection',
+                              style: AppStyle.txtDMSansBoldItalic18,
+                            ),
+                            Icon(Icons.add, color: ColorConstant.whiteA700),
+                          ],
+                        ),
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(
+                        left: 30,
+                        right: 30,
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.only(top: 5),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Expanded(
+                              child: Container(
+                                height: 40,
+                                child: TextFormField(
+                                  decoration: InputDecoration(
+                                    hintStyle: TextStyle(
+                                      color: Colors.grey,
+                                    ),
+                                    filled: true,
+                                    fillColor: Colors.grey[300],
+                                    prefixIcon:
+                                        Icon(Icons.search, color: Colors.grey),
+                                    hintText: 'Search',
+                                    enabledBorder: OutlineInputBorder(
+                                      borderSide:
+                                          BorderSide(color: Colors.transparent),
+                                      borderRadius: BorderRadius.circular(15),
+                                    ),
+                                    focusedBorder: OutlineInputBorder(
+                                      borderSide:
+                                          BorderSide(color: Colors.transparent),
+                                      borderRadius: BorderRadius.circular(15),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                            SizedBox(
+                              width: 5,
+                            ),
+                            ElevatedButton(
+                              onPressed: () async {},
+                              child: Text('Search'),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    Padding(
+                      padding:
+                          const EdgeInsets.only(right: 30, left: 30, top: 10),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Container(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text(
+                                  'Cash Amount',
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                  ),
+                                ),
+                                SizedBox(
+                                  height: 5,
+                                ),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Text(
+                                      '₹',
+                                      style: TextStyle(
+                                        fontSize: 18,
+                                      ),
+                                    ),
+                                    Text(
+                                      collection!.data.cashAmount.toString(),
+                                      style: TextStyle(
+                                        fontSize: 18,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                            width: 150,
+                            height: 50,
+                            decoration: BoxDecoration(
+                              boxShadow: [
+                                BoxShadow(
+                                  color: ColorConstant.black9003f,
+                                  spreadRadius: getHorizontalSize(
+                                    2,
+                                  ),
+                                  blurRadius: getHorizontalSize(
+                                    2,
+                                  ),
+                                  offset: Offset(
+                                    0,
+                                    4,
+                                  ),
+                                ),
+                              ],
+                              borderRadius: BorderRadius.circular(15),
+                              color: ColorConstant.gray50,
+                            ),
+                          ),
+                          Container(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text(
+                                  'Bank Amount',
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                  ),
+                                ),
+                                SizedBox(
+                                  height: 5,
+                                ),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Text(
+                                      '₹',
+                                      style: TextStyle(
+                                        fontSize: 18,
+                                      ),
+                                    ),
+                                    Text(
+                                      collection!.data.bankAmount.toString(),
+                                      style: TextStyle(
+                                        fontSize: 18,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                            width: 150,
+                            height: 50,
+                            decoration: BoxDecoration(
+                              boxShadow: [
+                                BoxShadow(
+                                  color: ColorConstant.black9003f,
+                                  spreadRadius: getHorizontalSize(
+                                    2,
+                                  ),
+                                  blurRadius: getHorizontalSize(
+                                    2,
+                                  ),
+                                  offset: Offset(
+                                    0,
+                                    4,
+                                  ),
+                                ),
+                              ],
+                              borderRadius: BorderRadius.circular(15),
+                              color: ColorConstant.gray50,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    SizedBox(
+                      height: 15,
+                    ),
+                  ],
+                ),
+              ),
+              Container(
+                child: Column(
+                  children: [
+                    Padding(
+                      padding:
+                      const EdgeInsets.all(5),
+                      child: Table(
+                        columnWidths: {
+                          0: FixedColumnWidth(55.0),
+                          // Width of Column 1// Width of Column 2
+                          1: FixedColumnWidth(100.0),
+                          // Width of Column 3
+                          2: FixedColumnWidth(130.0),
+                          // Width of Column 4
+                          3: FixedColumnWidth(80.0),
+                          // Width of Column 5
+                        },
+                        children: [
+                          TableRow(
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(10),
+                              color: ColorConstant.gray300,
+                            ),
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Text('Sl No.'),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Text('Date'),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Text('Name'),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Text('Amount'),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Container(
+                child: Expanded(
+                  child: ListView.builder(
+                    itemCount: collection!.data.collectionReport.length,
+                    itemBuilder: (context, index) {
+                      // Each item in the ListView is represented by a Table widget
+                      return SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        child: Padding(
+                          padding: const EdgeInsets.all(5.0),
+                          child: Container(
+                            child: Table(
+                              columnWidths: {
+                                0: FixedColumnWidth(55.0),
+                                1: FixedColumnWidth(100.0),
+                                2: FixedColumnWidth(130.0),
+                                3: FixedColumnWidth(80.0),
+                              },
+                              children: [
+                                // Each TableRow represents a row in the Table
+                                TableRow(
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(10),
+                                    color: ColorConstant.gray100,
+                                  ),
+                                  children: [
+                                    Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: Text('Sl No.'),
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: Text(collection!.data.collectionReport[index].date.toString()),
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: Text(collection!.data.collectionReport[index].shopName),
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: Text(collection!.data.collectionReport[index].paidAmount.toString()),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+              ),
+            ],
+          ),
     );
   }
 

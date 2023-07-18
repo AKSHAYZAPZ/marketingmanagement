@@ -208,6 +208,14 @@ class AppStyle {
     fontFamily: 'DM Sans',
     fontWeight: FontWeight.w400,
   );
+  static TextStyle txtDMSansRegular18WhiteA702 = TextStyle(
+    color: ColorConstant.whiteA700,
+    fontSize: getFontSize(
+      16,
+    ),
+    fontFamily: 'DM Sans',
+    fontWeight: FontWeight.w400,
+  );
 
   static TextStyle txtDMSansMedium40 = TextStyle(
     color: ColorConstant.whiteA700,

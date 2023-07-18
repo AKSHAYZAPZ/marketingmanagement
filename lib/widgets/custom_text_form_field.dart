@@ -140,6 +140,15 @@ class CustomTextFormField extends StatelessWidget {
           fontFamily: 'DM Sans',
           fontWeight: FontWeight.w400,
         );
+      case TextFormFieldFontStyle.DMSansMedium10:
+        return TextStyle(
+          color: ColorConstant.black900,
+          fontSize: getFontSize(
+            10,
+          ),
+          fontFamily: 'DM Sans',
+          fontWeight: FontWeight.w500,
+        );
       default:
         return TextStyle(
           color: ColorConstant.gray80001,
@@ -163,6 +172,8 @@ class CustomTextFormField extends StatelessWidget {
         );
     }
   }
+
+
 
   _setBorderStyle() {
     switch (variant) {
@@ -189,6 +200,8 @@ class CustomTextFormField extends StatelessWidget {
     switch (variant) {
       case TextFormFieldVariant.UnderLineGray300:
         return false;
+      case TextFormFieldVariant.OutlineBlack9003f:
+        return true;
       case TextFormFieldVariant.OutlineWhiteA700:
         return false;
       case TextFormFieldVariant.None:
@@ -200,6 +213,10 @@ class CustomTextFormField extends StatelessWidget {
 
   _setPadding() {
     switch (padding) {
+      case TextFormFieldPadding.PaddingAll13:
+        return getPadding(
+          all: 13,
+        );
       case TextFormFieldPadding.PaddingT1:
         return getPadding(
           top: 1,
@@ -214,11 +231,13 @@ class CustomTextFormField extends StatelessWidget {
 }
 
 enum TextFormFieldPadding {
+  PaddingAll13,
   PaddingAll17,
   PaddingT1,
 }
 
 enum TextFormFieldShape {
+  RoundedBorder21,
   RoundedBorder24,
 }
 
@@ -226,9 +245,11 @@ enum TextFormFieldVariant {
   None,
   UnderLineGray300,
   OutlineWhiteA700,
+  OutlineBlack9003f,
 }
 
 enum TextFormFieldFontStyle {
+  DMSansMedium10,
   MontserratRomanMedium16,
   DMSansRegular18,
   DMSansRegular16,

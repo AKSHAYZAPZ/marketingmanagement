@@ -45,10 +45,10 @@ class AppRoutes {
     homeDashboardScreen: (context) => HomeDashboardScreen(id: '',),
     addShopScreen: (context) => AddShopScreen(id: '',),
     shopsScreen: (context) => ShopsScreen(),
-    shopDetailsTabContainerScreen: (context) => ShopDetailsTabContainerScreen(),
-    productScreen: (context) => ProductScreen(),
+    // shopDetailsTabContainerScreen: (context) => ShopDetailsTabContainerScreen(),
+    productScreen: (context) => ProductScreen(id: '',),
     productDScreen: (context) => ProductDScreen(),
-    collectionScreen: (context) => CollectionScreen(),
+    collectionScreen: (context) => CollectionScreen(id: '',),
     takeOrderScreen: (context) => TakeOrderScreen(),
     appNavigationScreen: (context) => AppNavigationScreen()
   };

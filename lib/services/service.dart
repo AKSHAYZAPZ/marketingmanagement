@@ -8,7 +8,9 @@ import '../model/attendance_model.dart';
 import '../model/checknumber.dart';
 import '../model/collection_model.dart';
 import '../model/dashboard_model.dart';
+import '../model/products_model.dart';
 import '../model/routemodel.dart';
+import '../model/shop_details_model.dart';
 import '../model/usermodel.dart';
 
 class HttpService {
@@ -144,13 +146,18 @@ class HttpService {
   }
 
   static Future getCollection(token, fdate, tdate) async {
+    print('fdate -- $fdate');
+    print('tdate -- $tdate');
+    print(token);
     final params = {'token': token, 'fdate': fdate, 'tdate': tdate};
     http.Response CollectionResp = await http.get(
       Uri.parse("${baseurl}collectionReport").replace(
         queryParameters: params,
       ),
     );
+    // print(CollectionResp.statusCode);
     if (CollectionResp.statusCode == 200) {
+      print(CollectionResp.body);
       return collectionFromJson(CollectionResp.body);
     }
   }
@@ -179,14 +186,35 @@ class HttpService {
         'search_key': searchkey,
       }),
     );
-    print(response.statusCode);
+    // print(response.statusCode);
     if (response.statusCode == 200) {
-      // print("----------------------------------${response.body}");
+      // print("${response.body}");
       return allshopsFromJson(response.body);
     }
   }
 
- static Future shopDetails(shopid,token)async{
-    http.post(Uri.parse("${baseurl}markAttendance"));
+  static Future shopDetails(shopid,token,fdate,tdate)async{
+   http.Response response = await http.post(Uri.parse("${baseurl}shopDetailsByID"),body: ({
+      'shop_id': shopid,
+      'token':token,
+      'fdate':fdate,
+      'tdate':tdate,
+    }));
+   if(response.statusCode==200){
+  return shopDetailFromJson(response.body);
+   }
  }
+
+  static Future getProducts(token,searchkey)async{
+  http.Response response = await http.post(Uri.parse("${baseurl}productDetails"),body:({
+        'token': token,
+        'search_key': searchkey,
+      }), );
+  // print(response.statusCode);
+  if(response.statusCode ==200){
+    // print("${response.body}");
+    return  productsFromJson(response.body);
+  }
+}
+
 }

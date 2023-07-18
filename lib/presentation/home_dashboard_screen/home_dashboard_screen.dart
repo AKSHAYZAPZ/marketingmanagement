@@ -134,8 +134,11 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> {
     return SafeArea(
       child: Scaffold(
         backgroundColor: ColorConstant.whiteA700,
-        body: dashboard != null
-            ? SingleChildScrollView(
+        body: dashboard == null
+        ?Center(
+          child: CircularProgressIndicator(),
+        )
+            : SingleChildScrollView(
                 physics: BouncingScrollPhysics(),
                 child: SizedBox(
                   width: double.maxFinite,
@@ -282,7 +285,7 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> {
                                           alignment: Alignment.topCenter,
                                           child: GestureDetector(
                                             onTap: () {
-                                              Get.to(ProductScreen());
+                                              Get.to(ProductScreen( id: widget.id));
                                             },
                                             child: Container(
                                               height: 90,
@@ -307,19 +310,34 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> {
                                         Container(
                                           child: IconButton(
                                             onPressed: () {
-                                              Get.to(ProductScreen());
+                                              Get.to(ProductScreen( id: widget.id));
                                             },
                                             icon: Icon(
-                                              Icons.arrow_forward,
-                                              color: Colors.white,
+                                              Icons.arrow_forward_ios_outlined,
+                                              color: ColorConstant.lightBlue700,
                                             ),
                                           ),
                                           width: 40,
                                           height: 40,
                                           decoration: BoxDecoration(
+                                              boxShadow: [
+                                                BoxShadow(
+                                                  color: ColorConstant.black9003f,
+                                                  spreadRadius: getHorizontalSize(
+                                                    2,
+                                                  ),
+                                                  blurRadius: getHorizontalSize(
+                                                    2,
+                                                  ),
+                                                  offset: Offset(
+                                                    0,
+                                                    4,
+                                                  ),
+                                                ),
+                                              ],
                                               borderRadius:
-                                                  BorderRadius.circular(10),
-                                              color: Colors.yellow),
+                                                  BorderRadius.circular(30),
+                                              color: ColorConstant.whiteA700),
                                         )
                                       ],
                                     ),
@@ -334,7 +352,7 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> {
                                           alignment: Alignment.topCenter,
                                           child: GestureDetector(
                                             onTap: () {
-                                              Get.to(CollectionScreen());
+                                              Get.to(CollectionScreen( id:widget.id));
                                             },
                                             child: Container(
                                               child: Center(
@@ -360,16 +378,31 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> {
                                           child: IconButton(
                                             onPressed: () {},
                                             icon: Icon(
-                                              Icons.arrow_forward,
-                                              color: Colors.white,
+                                              Icons.arrow_forward_ios_outlined,
+                                              color:  ColorConstant.lightBlue700,
                                             ),
                                           ),
                                           width: 40,
                                           height: 40,
                                           decoration: BoxDecoration(
+                                              boxShadow: [
+                                                BoxShadow(
+                                                  color: ColorConstant.black9003f,
+                                                  spreadRadius: getHorizontalSize(
+                                                    2,
+                                                  ),
+                                                  blurRadius: getHorizontalSize(
+                                                    2,
+                                                  ),
+                                                  offset: Offset(
+                                                    0,
+                                                    4,
+                                                  ),
+                                                ),
+                                              ],
                                               borderRadius:
-                                                  BorderRadius.circular(10),
-                                              color: Colors.yellow),
+                                                  BorderRadius.circular(30),
+                                              color: ColorConstant.whiteA700),
                                         )
                                       ],
                                     ),
@@ -382,39 +415,61 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> {
                                         ),
                                         Align(
                                           alignment: Alignment.topCenter,
-                                          child: Container(
-                                            child: Center(
-                                              child: Text(
-                                                'Add Shop',
-                                                style: TextStyle(
-                                                  color: Colors.white,
-                                                  fontSize: 14,
+                                          child: GestureDetector(
+                                            onTap: () {
+                                              onTapImgAddtobasketone(context);
+                                            },
+                                            child: Container(
+                                              child: Center(
+                                                child: Text(
+                                                  'Add Shop',
+                                                  style: TextStyle(
+                                                    color: Colors.white,
+                                                    fontSize: 14,
+                                                  ),
                                                 ),
                                               ),
-                                            ),
-                                            height: 90,
-                                            width: 90,
-                                            decoration: BoxDecoration(
-                                              color: ColorConstant.blue600,
-                                              borderRadius:
-                                                  BorderRadius.circular(15),
+                                              height: 90,
+                                              width: 90,
+                                              decoration: BoxDecoration(
+                                                color: ColorConstant.blue600,
+                                                borderRadius:
+                                                    BorderRadius.circular(15),
+                                              ),
                                             ),
                                           ),
                                         ),
                                         Container(
                                           child: IconButton(
-                                            onPressed: () {},
+                                            onPressed: () {
+                                              onTapImgAddtobasketone(context);
+                                            },
                                             icon: Icon(
-                                              Icons.add,
-                                              color: Colors.white,
+                                              Icons.arrow_forward_ios_outlined,
+                                              color:  ColorConstant.lightBlue700,
                                             ),
                                           ),
                                           width: 40,
                                           height: 40,
                                           decoration: BoxDecoration(
+                                              boxShadow: [
+                                                BoxShadow(
+                                                  color: ColorConstant.black9003f,
+                                                  spreadRadius: getHorizontalSize(
+                                                    2,
+                                                  ),
+                                                  blurRadius: getHorizontalSize(
+                                                    2,
+                                                  ),
+                                                  offset: Offset(
+                                                    0,
+                                                    4,
+                                                  ),
+                                                ),
+                                              ],
                                               borderRadius:
-                                                  BorderRadius.circular(10),
-                                              color: Colors.yellow),
+                                                  BorderRadius.circular(30),
+                                              color: ColorConstant.whiteA700),
                                         )
                                       ],
                                     ),
@@ -426,7 +481,7 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> {
                               padding: const EdgeInsets.only(
                                   left: 30, right: 30, top: 10),
                               child: Container(
-                                height: 70,
+                                height: 60,
                                 width: double.infinity,
                                 child: Padding(
                                   padding: const EdgeInsets.only(top: 20),
@@ -493,7 +548,7 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> {
                                                   .txtDMSansBold20Black900)),
                                       DropdownButton(
                                         hint: Text('Select Route'),
-                                        items: routelist!.data.length > 0
+                                        items: routelist !=null
                                             ? routelist!.data
                                                 .map<DropdownMenuItem<String>>(
                                                     (e) {
@@ -510,18 +565,9 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> {
                                           });
                                         },
                                       ),
-                                      CustomImageView(
-                                          imagePath:
-                                              ImageConstant.imgAddtobasket1,
-                                          height: getSize(34),
-                                          width: getSize(34),
-                                          margin: getMargin(bottom: 1),
-                                          onTap: () {
-                                            onTapImgAddtobasketone(context);
-                                          })
                                     ])),
                             Padding(
-                                padding: const EdgeInsets.all(12.0),
+                                padding: const EdgeInsets.all(8.0),
                                 child: dashboard!.data.shopDetails.length > 0
                                     ? ListView.builder(
                                         physics: BouncingScrollPhysics(),
@@ -530,13 +576,14 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> {
                                         itemBuilder: (context, index) {
                                           return GestureDetector(
                                             onTap: ()async {
+                                             var shopsId = await dashboard!.data.shopDetails[index].shopid.toString();
                                               // print('Clicked');
-                                                Navigator.push(context, MaterialPageRoute(builder: (context) => ShopDetailsPage(),));
+                                                Navigator.push(context, MaterialPageRoute(builder: (context) => ShopDetailsPage(id: widget.id, shopId:shopsId,),),);
                                             },
                                             child: Card(
                                               clipBehavior: Clip.antiAlias,
                                               elevation: 0,
-                                              margin: getMargin(top: 18),
+                                              margin: getMargin(top: 8),
                                               color: ColorConstant.blue600,
                                               shape: RoundedRectangleBorder(
                                                   borderRadius: BorderRadiusStyle
@@ -784,9 +831,7 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> {
                   ),
                 ),
               )
-            : Center(
-                child: CircularProgressIndicator(),
-              ),
+
       ),
     );
   }

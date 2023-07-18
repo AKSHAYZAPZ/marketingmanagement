@@ -65,11 +65,11 @@ class _MainPageState extends State<BottomNavigationScreen > {
           ),
           Offstage(
             offstage: _currentIndex != 2,
-            child: ProductScreen(),
+            child: ProductScreen(id: widget.id),
           ),
           Offstage(
             offstage: _currentIndex != 3,
-            child: CollectionScreen(),
+            child: CollectionScreen(id: widget.id),
           ),
         // _pages[_currentIndex],
         ],

@@ -1,3 +1,7 @@
+// To parse this JSON data, do
+//
+//     final collection = collectionFromJson(jsonString);
+
 import 'dart:convert';
 
 Collection collectionFromJson(String str) => Collection.fromJson(json.decode(str));
@@ -59,19 +63,23 @@ class Data {
 class CollectionReport {
   String shopName;
   int paidAmount;
+  String date;
 
   CollectionReport({
     required this.shopName,
     required this.paidAmount,
+    required this.date,
   });
 
   factory CollectionReport.fromJson(Map<String, dynamic> json) => CollectionReport(
     shopName: json["shop_name"],
     paidAmount: json["paidAmount"],
+    date: json["date"],
   );
 
   Map<String, dynamic> toJson() => {
     "shop_name": shopName,
     "paidAmount": paidAmount,
+    "date": date,
   };
 }
