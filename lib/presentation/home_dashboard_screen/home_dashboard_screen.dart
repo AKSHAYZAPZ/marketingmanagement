@@ -133,6 +133,10 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
+        // appBar: AppBar(
+        //   backgroundColor: ColorConstant.lightBlue700,
+        //   elevation: 0.1,
+        // ),
         backgroundColor: ColorConstant.whiteA700,
         body: dashboard == null
         ?Center(
@@ -268,220 +272,220 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> {
                           children: [
                             Container(
                               height: getVerticalSize(132),
-                              width: getHorizontalSize(375),
+                              width: double.infinity,
                               margin: getMargin(top: 9),
-                              child: Padding(
-                                padding: const EdgeInsets.only(left: 5),
-                                child: Row(
-                                  children: [
-                                    Stack(
-                                      alignment: Alignment.bottomCenter,
-                                      children: [
-                                        Container(
-                                          height: 90,
-                                          width: 105,
-                                        ),
-                                        Align(
-                                          alignment: Alignment.topCenter,
-                                          child: GestureDetector(
-                                            onTap: () {
-                                              Get.to(ProductScreen( id: widget.id));
-                                            },
-                                            child: Container(
-                                              height: 90,
-                                              width: 90,
-                                              decoration: BoxDecoration(
-                                                color: ColorConstant.blue600,
-                                                borderRadius:
-                                                    BorderRadius.circular(15),
-                                              ),
-                                              child: Center(
-                                                child: Text(
-                                                  'Products',
-                                                  style: TextStyle(
-                                                    color: Colors.white,
-                                                    fontSize: 14,
-                                                  ),
-                                                ),
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                        Container(
-                                          child: IconButton(
-                                            onPressed: () {
-                                              Get.to(ProductScreen( id: widget.id));
-                                            },
-                                            icon: Icon(
-                                              Icons.arrow_forward_ios_outlined,
-                                              color: ColorConstant.lightBlue700,
-                                            ),
-                                          ),
-                                          width: 40,
-                                          height: 40,
-                                          decoration: BoxDecoration(
-                                              boxShadow: [
-                                                BoxShadow(
-                                                  color: ColorConstant.black9003f,
-                                                  spreadRadius: getHorizontalSize(
-                                                    2,
-                                                  ),
-                                                  blurRadius: getHorizontalSize(
-                                                    2,
-                                                  ),
-                                                  offset: Offset(
-                                                    0,
-                                                    4,
-                                                  ),
-                                                ),
-                                              ],
+
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                children: [
+                                  Stack(
+                                    alignment: Alignment.bottomCenter,
+                                    children: [
+                                      Container(
+                                        height: 90,
+                                        width: 105,
+
+                                      ),
+                                      Align(
+                                        alignment: Alignment.topCenter,
+                                        child: GestureDetector(
+                                          onTap: () {
+                                            Get.to(ProductScreen( id: widget.id));
+                                          },
+                                          child: Container(
+                                            height: 90,
+                                            width: 90,
+                                            decoration: BoxDecoration(
+                                              color: ColorConstant.blue600,
                                               borderRadius:
-                                                  BorderRadius.circular(30),
-                                              color: ColorConstant.whiteA700),
-                                        )
-                                      ],
-                                    ),
-                                    Stack(
-                                      alignment: Alignment.bottomCenter,
-                                      children: [
-                                        Container(
-                                          height: 90,
-                                          width: 105,
-                                        ),
-                                        Align(
-                                          alignment: Alignment.topCenter,
-                                          child: GestureDetector(
-                                            onTap: () {
-                                              Get.to(CollectionScreen( id:widget.id));
-                                            },
-                                            child: Container(
-                                              child: Center(
-                                                child: Text(
-                                                  'Collection',
-                                                  style: TextStyle(
-                                                    color: Colors.white,
-                                                    fontSize: 14,
-                                                  ),
+                                                  BorderRadius.circular(15),
+                                            ),
+                                            child: Center(
+                                              child: Text(
+                                                'Products',
+                                                style: TextStyle(
+                                                  color: Colors.white,
+                                                  fontSize: 14,
                                                 ),
-                                              ),
-                                              height: 90,
-                                              width: 90,
-                                              decoration: BoxDecoration(
-                                                color: ColorConstant.blue600,
-                                                borderRadius:
-                                                    BorderRadius.circular(15),
                                               ),
                                             ),
                                           ),
                                         ),
-                                        Container(
-                                          child: IconButton(
-                                            onPressed: () {},
-                                            icon: Icon(
-                                              Icons.arrow_forward_ios_outlined,
-                                              color:  ColorConstant.lightBlue700,
-                                            ),
+                                      ),
+                                      Container(
+                                        child: IconButton(
+                                          onPressed: () {
+                                            Get.to(ProductScreen( id: widget.id));
+                                          },
+                                          icon: Icon(
+                                            Icons.arrow_forward_ios_outlined,
+                                            color: ColorConstant.lightBlue700,
                                           ),
-                                          width: 40,
-                                          height: 40,
-                                          decoration: BoxDecoration(
-                                              boxShadow: [
-                                                BoxShadow(
-                                                  color: ColorConstant.black9003f,
-                                                  spreadRadius: getHorizontalSize(
-                                                    2,
-                                                  ),
-                                                  blurRadius: getHorizontalSize(
-                                                    2,
-                                                  ),
-                                                  offset: Offset(
-                                                    0,
-                                                    4,
-                                                  ),
+                                        ),
+                                        width: 40,
+                                        height: 40,
+                                        decoration: BoxDecoration(
+                                            boxShadow: [
+                                              BoxShadow(
+                                                color: ColorConstant.black9003f,
+                                                spreadRadius: getHorizontalSize(
+                                                  2,
                                                 ),
-                                              ],
+                                                blurRadius: getHorizontalSize(
+                                                  2,
+                                                ),
+                                                offset: Offset(
+                                                  0,
+                                                  4,
+                                                ),
+                                              ),
+                                            ],
+                                            borderRadius:
+                                                BorderRadius.circular(30),
+                                            color: ColorConstant.whiteA700),
+                                      )
+                                    ],
+                                  ),
+                                  Stack(
+                                    alignment: Alignment.bottomCenter,
+                                    children: [
+                                      Container(
+                                        height: 90,
+                                        width: 105,
+                                      ),
+                                      Align(
+                                        alignment: Alignment.topCenter,
+                                        child: GestureDetector(
+                                          onTap: () {
+                                            Get.to(CollectionScreen( id:widget.id));
+                                          },
+                                          child: Container(
+                                            child: Center(
+                                              child: Text(
+                                                'Collection',
+                                                style: TextStyle(
+                                                  color: Colors.white,
+                                                  fontSize: 14,
+                                                ),
+                                              ),
+                                            ),
+                                            height: 90,
+                                            width: 90,
+                                            decoration: BoxDecoration(
+                                              color: ColorConstant.blue600,
                                               borderRadius:
-                                                  BorderRadius.circular(30),
-                                              color: ColorConstant.whiteA700),
-                                        )
-                                      ],
-                                    ),
-                                    Stack(
-                                      alignment: Alignment.bottomCenter,
-                                      children: [
-                                        Container(
-                                          height: 90,
-                                          width: 105,
-                                        ),
-                                        Align(
-                                          alignment: Alignment.topCenter,
-                                          child: GestureDetector(
-                                            onTap: () {
-                                              onTapImgAddtobasketone(context);
-                                            },
-                                            child: Container(
-                                              child: Center(
-                                                child: Text(
-                                                  'Add Shop',
-                                                  style: TextStyle(
-                                                    color: Colors.white,
-                                                    fontSize: 14,
-                                                  ),
-                                                ),
-                                              ),
-                                              height: 90,
-                                              width: 90,
-                                              decoration: BoxDecoration(
-                                                color: ColorConstant.blue600,
-                                                borderRadius:
-                                                    BorderRadius.circular(15),
-                                              ),
+                                                  BorderRadius.circular(15),
                                             ),
                                           ),
                                         ),
-                                        Container(
-                                          child: IconButton(
-                                            onPressed: () {
-                                              onTapImgAddtobasketone(context);
-                                            },
-                                            icon: Icon(
-                                              Icons.arrow_forward_ios_outlined,
-                                              color:  ColorConstant.lightBlue700,
-                                            ),
+                                      ),
+                                      Container(
+                                        child: IconButton(
+                                          onPressed: () {},
+                                          icon: Icon(
+                                            Icons.arrow_forward_ios_outlined,
+                                            color:  ColorConstant.lightBlue700,
                                           ),
-                                          width: 40,
-                                          height: 40,
-                                          decoration: BoxDecoration(
-                                              boxShadow: [
-                                                BoxShadow(
-                                                  color: ColorConstant.black9003f,
-                                                  spreadRadius: getHorizontalSize(
-                                                    2,
-                                                  ),
-                                                  blurRadius: getHorizontalSize(
-                                                    2,
-                                                  ),
-                                                  offset: Offset(
-                                                    0,
-                                                    4,
-                                                  ),
+                                        ),
+                                        width: 40,
+                                        height: 40,
+                                        decoration: BoxDecoration(
+                                            boxShadow: [
+                                              BoxShadow(
+                                                color: ColorConstant.black9003f,
+                                                spreadRadius: getHorizontalSize(
+                                                  2,
                                                 ),
-                                              ],
+                                                blurRadius: getHorizontalSize(
+                                                  2,
+                                                ),
+                                                offset: Offset(
+                                                  0,
+                                                  4,
+                                                ),
+                                              ),
+                                            ],
+                                            borderRadius:
+                                                BorderRadius.circular(30),
+                                            color: ColorConstant.whiteA700),
+                                      )
+                                    ],
+                                  ),
+                                  Stack(
+                                    alignment: Alignment.bottomCenter,
+                                    children: [
+                                      Container(
+                                        height: 90,
+                                        width: 105,
+                                      ),
+                                      Align(
+                                        alignment: Alignment.topCenter,
+                                        child: GestureDetector(
+                                          onTap: () {
+                                            onTapImgAddtobasketone(context);
+                                          },
+                                          child: Container(
+                                            child: Center(
+                                              child: Text(
+                                                'Add Shop',
+                                                style: TextStyle(
+                                                  color: Colors.white,
+                                                  fontSize: 14,
+                                                ),
+                                              ),
+                                            ),
+                                            height: 90,
+                                            width: 90,
+                                            decoration: BoxDecoration(
+                                              color: ColorConstant.blue600,
                                               borderRadius:
-                                                  BorderRadius.circular(30),
-                                              color: ColorConstant.whiteA700),
-                                        )
-                                      ],
-                                    ),
-                                  ],
-                                ),
+                                                  BorderRadius.circular(15),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                      Container(
+                                        child: IconButton(
+                                          onPressed: () {
+                                            onTapImgAddtobasketone(context);
+                                          },
+                                          icon: Icon(
+                                            Icons.arrow_forward_ios_outlined,
+                                            color:  ColorConstant.lightBlue700,
+                                          ),
+                                        ),
+                                        width: 40,
+                                        height: 40,
+                                        decoration: BoxDecoration(
+                                            boxShadow: [
+                                              BoxShadow(
+                                                color: ColorConstant.black9003f,
+                                                spreadRadius: getHorizontalSize(
+                                                  2,
+                                                ),
+                                                blurRadius: getHorizontalSize(
+                                                  2,
+                                                ),
+                                                offset: Offset(
+                                                  0,
+                                                  4,
+                                                ),
+                                              ),
+                                            ],
+                                            borderRadius:
+                                                BorderRadius.circular(30),
+                                            color: ColorConstant.whiteA700),
+                                      )
+                                    ],
+                                  ),
+                                ],
                               ),
                             ),
                             Padding(
                               padding: const EdgeInsets.only(
                                   left: 30, right: 30, top: 10),
                               child: Container(
-                                height: 60,
+                                height: 77,
                                 width: double.infinity,
                                 child: Padding(
                                   padding: const EdgeInsets.only(top: 20),
@@ -518,6 +522,13 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> {
                                         width: 5,
                                       ),
                                       ElevatedButton(
+                                        style: ElevatedButton.styleFrom(
+                                          backgroundColor: Colors.blue, // Set the background color of the button
+                                          padding: EdgeInsets.all(16.0), // Set the padding of the button
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.circular(8.0), // Set the border radius of the button
+                                          ),
+                                        ),
                                         onPressed: () async {
                                           searchKey = searchCntrller.text;
                                           getList();

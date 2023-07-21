@@ -1,12 +1,17 @@
 import 'package:custom_switch_widget/custom_switch_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:intl/intl.dart';
+import 'package:jibin_s_application1/model/shop_details_model.dart';
+import 'package:jibin_s_application1/presentation/takeoder_screen.dart';
 import 'package:jibin_s_application1/services/service.dart';
-
+import 'package:url_launcher/url_launcher.dart';
 import '../../core/utils/color_constant.dart';
 import '../../core/utils/image_constant.dart';
 import '../../core/utils/size_utils.dart';
 import '../../model/dashboard_model.dart';
+import '../../model/mark_visit_model.dart';
 import '../../theme/app_decoration.dart';
 import '../../theme/app_style.dart';
 import '../../widgets/custom_image_view.dart';
@@ -24,18 +29,48 @@ class ShopDetailsPage extends StatefulWidget {
 
 class _ShopDetailsPageState extends State<ShopDetailsPage>
     with SingleTickerProviderStateMixin {
+  MarkVisit? markVisit;
+  String whatsappurl = "https://wa.me/91";
+
   var tabbarController;
+  ShopDetails? shopDetails;
 
   String fdate = DateFormat('dd-MM-yyyy').format(DateTime.now());
   String tdate = DateFormat('dd-MM-yyyy').format(DateTime.now());
-
-  ShopDetail? shopDetail;
 
   final CustomSwitchController _switchcontroller =
       CustomSwitchController(initialValue: false);
 
   void _enable() async {
     _switchcontroller.enable();
+
+    LocationPermission permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+    } else {}
+    Position position = await Geolocator.getCurrentPosition(
+      desiredAccuracy: LocationAccuracy.high,
+    );
+
+    double latitudes = position.latitude;
+    double longitudes = position.longitude;
+
+    var latitude = latitudes.toString();
+    var longitude = longitudes.toString();
+    print(latitude);
+    print(longitude);
+
+    markVisit = await HttpService.markVisit(
+        widget.shopId, latitude, longitude, widget.id);
+    if (markVisit!.status == true) {
+      Fluttertoast.showToast(
+        msg: markVisit!.message,
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.BOTTOM,
+        backgroundColor: Colors.black,
+        textColor: Colors.white,
+      );
+    } else {}
   }
 
   void _disable() async {
@@ -50,13 +85,13 @@ class _ShopDetailsPageState extends State<ShopDetailsPage>
   }
 
   shopDetailingScreen() async {
-    print('shop id ---- ${widget.shopId}');
-    print('shop id ---- ${widget.id}');
-    print('fdate ---- ${fdate}');
-    print('fdate ---- ${tdate}');
-    shopDetail =
+    // print('shop id ---- ${widget.shopId}');
+    // print('shop id ---- ${widget.id}');
+    // print('fdate ---- ${fdate}');
+    // print('fdate ---- ${tdate}');
+    shopDetails =
         await HttpService.shopDetails(widget.shopId, widget.id, fdate, tdate);
-    if (shopDetail != null) {
+    if (shopDetails != null) {
       setState(() {});
     }
   }
@@ -81,7 +116,7 @@ class _ShopDetailsPageState extends State<ShopDetailsPage>
           },
         ),
       ),
-      body: shopDetail == null
+      body: shopDetails == null
           ? Center(
               child: CircularProgressIndicator(),
             )
@@ -156,21 +191,24 @@ class _ShopDetailsPageState extends State<ShopDetailsPage>
                                         CrossAxisAlignment.start,
                                     children: [
                                       Padding(
-                                        padding: const EdgeInsets.all(4.0),
+                                        padding: const EdgeInsets.all(1.0),
                                         child: Text(
-                                          'Tradly Store pribate limited',
+                                          shopDetails!.data.shopName,
                                           maxLines: 2,
                                           overflow: TextOverflow.ellipsis,
                                           style: AppStyle
                                               .txtDMSansRegular18WhiteA700,
                                         ),
                                       ),
-                                      Text(
-                                        'Nap junction, kathrikkadavu,Ernakulam kerala ',
-                                        maxLines: 2,
-                                        overflow: TextOverflow.ellipsis,
-                                        style: AppStyle
-                                            .txtDMSansRegular18WhiteA702,
+                                      Padding(
+                                        padding: const EdgeInsets.all(1.0),
+                                        child: Text(
+                                          shopDetails!.data.address,
+                                          maxLines: 2,
+                                          overflow: TextOverflow.ellipsis,
+                                          style: AppStyle
+                                              .txtDMSansRegular18WhiteA702,
+                                        ),
                                       ),
                                     ],
                                   ),
@@ -185,55 +223,68 @@ class _ShopDetailsPageState extends State<ShopDetailsPage>
                                 padding: const EdgeInsets.all(4.0),
                                 child: Row(
                                   children: [
-                                    Container(
-                                      height: getVerticalSize(42),
-                                      width: getHorizontalSize(61),
-                                      padding: getPadding(
-                                          left: 18,
-                                          top: 8,
-                                          right: 18,
-                                          bottom: 8),
-                                      decoration: AppDecoration
-                                          .outlineBlack9003f
-                                          .copyWith(
-                                              borderRadius: BorderRadiusStyle
-                                                  .roundedBorder12),
-                                      child: Stack(
-                                        children: [
-                                          CustomImageView(
-                                              imagePath:
-                                                  ImageConstant.imgWhatsapp31,
-                                              height: getSize(25),
-                                              width: getSize(25),
-                                              alignment: Alignment.topCenter),
-                                        ],
+                                    GestureDetector(
+                                      onTap: () async {
+                                        var whatsapp =
+                                            shopDetails!.data.whatsappNumber;
+                                        await launch(whatsappurl + whatsapp);
+                                      },
+                                      child: Container(
+                                        height: getVerticalSize(42),
+                                        width: getHorizontalSize(61),
+                                        padding: getPadding(
+                                            left: 18,
+                                            top: 8,
+                                            right: 18,
+                                            bottom: 8),
+                                        decoration: AppDecoration
+                                            .outlineBlack9003f
+                                            .copyWith(
+                                                borderRadius: BorderRadiusStyle
+                                                    .roundedBorder12),
+                                        child: Stack(
+                                          children: [
+                                            CustomImageView(
+                                                imagePath:
+                                                    ImageConstant.imgWhatsapp31,
+                                                height: getSize(25),
+                                                width: getSize(25),
+                                                alignment: Alignment.topCenter),
+                                          ],
+                                        ),
                                       ),
                                     ),
                                     SizedBox(
                                       width: 5,
                                     ),
-                                    Container(
-                                      height: getVerticalSize(42),
-                                      width: getHorizontalSize(61),
-                                      padding: getPadding(
-                                          left: 19,
-                                          top: 9,
-                                          right: 19,
-                                          bottom: 9),
-                                      decoration: AppDecoration
-                                          .outlineBlack9003f
-                                          .copyWith(
-                                              borderRadius: BorderRadiusStyle
-                                                  .roundedBorder12),
-                                      child: Stack(
-                                        children: [
-                                          CustomImageView(
-                                              imagePath: ImageConstant
-                                                  .imgRectangle23x23,
-                                              height: getSize(23),
-                                              width: getSize(23),
-                                              alignment: Alignment.topCenter)
-                                        ],
+                                    GestureDetector(
+                                      onTap: () async {
+                                        await launch(
+                                            "tel:/${shopDetails!.data.phoneNumber}");
+                                      },
+                                      child: Container(
+                                        height: getVerticalSize(42),
+                                        width: getHorizontalSize(61),
+                                        padding: getPadding(
+                                            left: 19,
+                                            top: 9,
+                                            right: 19,
+                                            bottom: 9),
+                                        decoration: AppDecoration
+                                            .outlineBlack9003f
+                                            .copyWith(
+                                                borderRadius: BorderRadiusStyle
+                                                    .roundedBorder12),
+                                        child: Stack(
+                                          children: [
+                                            CustomImageView(
+                                                imagePath: ImageConstant
+                                                    .imgRectangle23x23,
+                                                height: getSize(23),
+                                                width: getSize(23),
+                                                alignment: Alignment.topCenter)
+                                          ],
+                                        ),
                                       ),
                                     ),
                                   ],
@@ -253,7 +304,7 @@ class _ShopDetailsPageState extends State<ShopDetailsPage>
                                 style: AppStyle.txtDMSansRegular18WhiteA700,
                               ),
                               Text(
-                                '121212121212',
+                                shopDetails!.data.gstNo,
                                 style: AppStyle.txtDMSansRegular18WhiteA700,
                               ),
                             ],
@@ -263,7 +314,7 @@ class _ShopDetailsPageState extends State<ShopDetailsPage>
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Container(
-                              width: MediaQuery.of(context).size.width * 0.38,
+                              width: MediaQuery.of(context).size.width * 0.32,
                               height: MediaQuery.of(context).size.height * 0.10,
                               child: Padding(
                                 padding: const EdgeInsets.only(left: 10),
@@ -273,8 +324,11 @@ class _ShopDetailsPageState extends State<ShopDetailsPage>
                                       Icons.calendar_month,
                                       color: ColorConstant.whiteA700,
                                     ),
+                                    SizedBox(
+                                      width: 5,
+                                    ),
                                     Text(
-                                      '13-06-2023',
+                                      shopDetails!.data.createdAt,
                                       style:
                                           AppStyle.txtDMSansRegular18WhiteA702,
                                     ),
@@ -283,14 +337,46 @@ class _ShopDetailsPageState extends State<ShopDetailsPage>
                               ),
                             ),
                             Container(
-                              width: MediaQuery.of(context).size.width * 0.28,
+                              width: MediaQuery.of(context).size.width * 0.19,
                               height: MediaQuery.of(context).size.height * 0.10,
                               child: Icon(
                                 Icons.comment_outlined,
-                                size: 42,
+                                size: 32,
                                 color: ColorConstant.whiteA700,
                               ),
                             ),
+                            Container(
+                              width: MediaQuery.of(context).size.width * 0.28,
+                              height: MediaQuery.of(context).size.height * 0.10,
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  ElevatedButton(
+                                    onPressed: () {
+                                      Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) =>
+                                                TakeOderScreen(
+                                              id: widget.id,
+                                            ),
+                                          ));
+                                    },
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: Colors.green,
+                                      // Set the background color of the button
+                                      padding: EdgeInsets.all(16.0),
+                                      // Set the padding of the button
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(
+                                            8.0), // Set the border radius of the button
+                                      ),
+                                    ),
+                                    child: Text('Take oder'),
+                                  ),
+                                ],
+                              ),
+                            )
                           ],
                         )
                       ],
@@ -354,6 +440,7 @@ class _ShopDetailsPageState extends State<ShopDetailsPage>
                                         setState(() {
                                           fdate = DateFormat('dd-MM-yyyy')
                                               .format(selctedDatetimetemp);
+                                          shopDetailingScreen();
                                         });
                                       }
                                     },
@@ -421,10 +508,9 @@ class _ShopDetailsPageState extends State<ShopDetailsPage>
                                         return;
                                       } else {
                                         setState(() {
-                                          fdate = DateFormat('dd-MM-yyyy')
+                                          tdate = DateFormat('dd-MM-yyyy')
                                               .format(toDateselectTemp);
-                                          // print('==============$fdate');
-                                          // print('++++++++++++++++ $tdate');
+                                          shopDetailingScreen();
                                         });
                                       }
                                     },
@@ -471,10 +557,10 @@ class _ShopDetailsPageState extends State<ShopDetailsPage>
                     //// -----------------------------------tab bars here 1 oder details-----------------
                     Container(
                       child: Padding(
-                        padding: const EdgeInsets.all(8.0),
+                        padding: const EdgeInsets.all(10.0),
                         child: Column(
                           children: [
-                            Text('Recent Oders'),
+                            Text('Oder deatils'),
                             Container(
                               child: Column(
                                 children: [
@@ -483,10 +569,10 @@ class _ShopDetailsPageState extends State<ShopDetailsPage>
                                     child: Table(
                                       columnWidths: {
                                         0: FixedColumnWidth(50.0),
-                                        1: FixedColumnWidth(60.0),
+                                        1: FixedColumnWidth(100.0),
                                         2: FixedColumnWidth(100.0),
-                                        3: FixedColumnWidth(100.0),
-                                        4: FixedColumnWidth(50.0),
+                                        3: FixedColumnWidth(70.0),
+                                        4: FixedColumnWidth(60.0),
                                       },
                                       children: [
                                         TableRow(
@@ -498,13 +584,13 @@ class _ShopDetailsPageState extends State<ShopDetailsPage>
                                           children: [
                                             Padding(
                                               padding:
-                                                  const EdgeInsets.all(4.0),
+                                                  const EdgeInsets.all(8.0),
                                               child: Text('SlNo.'),
                                             ),
                                             Padding(
                                               padding:
                                                   const EdgeInsets.all(8.0),
-                                              child: Text('Data'),
+                                              child: Text('Date'),
                                             ),
                                             Padding(
                                               padding:
@@ -531,19 +617,20 @@ class _ShopDetailsPageState extends State<ShopDetailsPage>
                             ),
                             Expanded(
                               child: ListView.builder(
-                                itemCount: 3,
+                                itemCount:
+                                    shopDetails!.data.orderDetails.length,
                                 itemBuilder: (context, index) {
                                   return SingleChildScrollView(
                                     scrollDirection: Axis.horizontal,
                                     child: Padding(
-                                      padding: const EdgeInsets.all(5.0),
+                                      padding: const EdgeInsets.all(10.0),
                                       child: Container(
                                         child: Table(
                                           columnWidths: {
                                             0: FixedColumnWidth(50.0),
-                                            1: FixedColumnWidth(60.0),
+                                            1: FixedColumnWidth(100.0),
                                             2: FixedColumnWidth(100.0),
-                                            3: FixedColumnWidth(100.0),
+                                            3: FixedColumnWidth(70.0),
                                             4: FixedColumnWidth(60.0),
                                           },
                                           children: [
@@ -564,7 +651,10 @@ class _ShopDetailsPageState extends State<ShopDetailsPage>
                                                   padding:
                                                       const EdgeInsets.all(8.0),
                                                   child: Text(
-                                                    'maino',
+                                                    shopDetails!
+                                                        .data
+                                                        .orderDetails[index]
+                                                        .orderDate,
                                                     maxLines: 2,
                                                     overflow:
                                                         TextOverflow.ellipsis,
@@ -573,7 +663,11 @@ class _ShopDetailsPageState extends State<ShopDetailsPage>
                                                 Padding(
                                                   padding:
                                                       const EdgeInsets.all(8.0),
-                                                  child: Text('bainoo',
+                                                  child: Text(
+                                                      shopDetails!
+                                                          .data
+                                                          .orderDetails[index]
+                                                          .invoiceNo,
                                                       maxLines: 2,
                                                       overflow: TextOverflow
                                                           .ellipsis),
@@ -581,7 +675,12 @@ class _ShopDetailsPageState extends State<ShopDetailsPage>
                                                 Padding(
                                                   padding:
                                                       const EdgeInsets.all(8.0),
-                                                  child: Text('vainoo',
+                                                  child: Text(
+                                                      shopDetails!
+                                                          .data
+                                                          .orderDetails[index]
+                                                          .price
+                                                          .toString(),
                                                       maxLines: 2,
                                                       overflow: TextOverflow
                                                           .ellipsis),
@@ -612,7 +711,7 @@ class _ShopDetailsPageState extends State<ShopDetailsPage>
                         padding: const EdgeInsets.all(8.0),
                         child: Column(
                           children: [
-                            Text('Recent Oders'),
+                            Text('Invoice Details'),
                             Container(
                               child: Column(
                                 children: [
@@ -621,10 +720,10 @@ class _ShopDetailsPageState extends State<ShopDetailsPage>
                                     child: Table(
                                       columnWidths: {
                                         0: FixedColumnWidth(50.0),
-                                        1: FixedColumnWidth(60.0),
+                                        1: FixedColumnWidth(100.0),
                                         2: FixedColumnWidth(100.0),
-                                        3: FixedColumnWidth(100.0),
-                                        4: FixedColumnWidth(50.0),
+                                        3: FixedColumnWidth(70.0),
+                                        4: FixedColumnWidth(60.0),
                                       },
                                       children: [
                                         TableRow(
@@ -636,7 +735,7 @@ class _ShopDetailsPageState extends State<ShopDetailsPage>
                                           children: [
                                             Padding(
                                               padding:
-                                                  const EdgeInsets.all(4.0),
+                                                  const EdgeInsets.all(8.0),
                                               child: Text('SlNo.'),
                                             ),
                                             Padding(
@@ -669,8 +768,10 @@ class _ShopDetailsPageState extends State<ShopDetailsPage>
                             ),
                             Expanded(
                               child: ListView.builder(
-                                itemCount: 3,
+                                itemCount:
+                                    shopDetails!.data.invoiceDetails.length,
                                 itemBuilder: (context, index) {
+                                  int count = index + 1;
                                   return SingleChildScrollView(
                                     scrollDirection: Axis.horizontal,
                                     child: Padding(
@@ -679,9 +780,9 @@ class _ShopDetailsPageState extends State<ShopDetailsPage>
                                         child: Table(
                                           columnWidths: {
                                             0: FixedColumnWidth(50.0),
-                                            1: FixedColumnWidth(60.0),
+                                            1: FixedColumnWidth(100.0),
                                             2: FixedColumnWidth(100.0),
-                                            3: FixedColumnWidth(100.0),
+                                            3: FixedColumnWidth(70.0),
                                             4: FixedColumnWidth(60.0),
                                           },
                                           children: [
@@ -696,13 +797,16 @@ class _ShopDetailsPageState extends State<ShopDetailsPage>
                                                 Padding(
                                                   padding:
                                                       const EdgeInsets.all(8.0),
-                                                  child: Text('1'),
+                                                  child: Text(count.toString()),
                                                 ),
                                                 Padding(
                                                   padding:
                                                       const EdgeInsets.all(8.0),
                                                   child: Text(
-                                                    'maino',
+                                                    shopDetails!
+                                                        .data
+                                                        .invoiceDetails[index]
+                                                        .orderDate,
                                                     maxLines: 2,
                                                     overflow:
                                                         TextOverflow.ellipsis,
@@ -711,7 +815,11 @@ class _ShopDetailsPageState extends State<ShopDetailsPage>
                                                 Padding(
                                                   padding:
                                                       const EdgeInsets.all(8.0),
-                                                  child: Text('bainoo',
+                                                  child: Text(
+                                                      shopDetails!
+                                                          .data
+                                                          .invoiceDetails[index]
+                                                          .invoiceNo,
                                                       maxLines: 2,
                                                       overflow: TextOverflow
                                                           .ellipsis),
@@ -719,17 +827,21 @@ class _ShopDetailsPageState extends State<ShopDetailsPage>
                                                 Padding(
                                                   padding:
                                                       const EdgeInsets.all(8.0),
-                                                  child: Text('vainoo',
+                                                  child: Text(
+                                                      shopDetails!
+                                                          .data
+                                                          .invoiceDetails[index]
+                                                          .price
+                                                          .toString(),
                                                       maxLines: 2,
                                                       overflow: TextOverflow
                                                           .ellipsis),
                                                 ),
                                                 Padding(
-                                                    padding:
-                                                        const EdgeInsets.all(
-                                                            4.0),
-                                                    child:
-                                                        Icon(Icons.visibility)),
+                                                  padding:
+                                                      const EdgeInsets.all(4.0),
+                                                  child: Icon(Icons.visibility),
+                                                ),
                                               ],
                                             ),
                                           ],
@@ -750,7 +862,7 @@ class _ShopDetailsPageState extends State<ShopDetailsPage>
                         padding: const EdgeInsets.all(8.0),
                         child: Column(
                           children: [
-                            Text('Recent Oders'),
+                            Text('Payment Details'),
                             Container(
                               child: Column(
                                 children: [
@@ -759,8 +871,8 @@ class _ShopDetailsPageState extends State<ShopDetailsPage>
                                     child: Table(
                                       columnWidths: {
                                         0: FixedColumnWidth(50.0),
-                                        1: FixedColumnWidth(80.0),
-                                        2: FixedColumnWidth(110.0),
+                                        1: FixedColumnWidth(90.0),
+                                        2: FixedColumnWidth(100.0),
                                         3: FixedColumnWidth(130.0),
                                       },
                                       children: [
@@ -773,7 +885,7 @@ class _ShopDetailsPageState extends State<ShopDetailsPage>
                                           children: [
                                             Padding(
                                               padding:
-                                                  const EdgeInsets.all(4.0),
+                                                  const EdgeInsets.all(8.0),
                                               child: Text('SlNo.'),
                                             ),
                                             Padding(
@@ -801,8 +913,10 @@ class _ShopDetailsPageState extends State<ShopDetailsPage>
                             ),
                             Expanded(
                               child: ListView.builder(
-                                itemCount: 3,
+                                itemCount:
+                                    shopDetails!.data.paymentDetails.length,
                                 itemBuilder: (context, index) {
+                                  int count = index + 1;
                                   return SingleChildScrollView(
                                     scrollDirection: Axis.horizontal,
                                     child: Padding(
@@ -811,8 +925,8 @@ class _ShopDetailsPageState extends State<ShopDetailsPage>
                                         child: Table(
                                           columnWidths: {
                                             0: FixedColumnWidth(50.0),
-                                            1: FixedColumnWidth(80.0),
-                                            2: FixedColumnWidth(110.0),
+                                            1: FixedColumnWidth(90.0),
+                                            2: FixedColumnWidth(100.0),
                                             3: FixedColumnWidth(130.0),
                                           },
                                           children: [
@@ -827,13 +941,16 @@ class _ShopDetailsPageState extends State<ShopDetailsPage>
                                                 Padding(
                                                   padding:
                                                       const EdgeInsets.all(8.0),
-                                                  child: Text('1'),
+                                                  child: Text(count.toString()),
                                                 ),
                                                 Padding(
                                                   padding:
                                                       const EdgeInsets.all(8.0),
                                                   child: Text(
-                                                    'maino',
+                                                    shopDetails!
+                                                        .data
+                                                        .paymentDetails[index]
+                                                        .createdAt,
                                                     maxLines: 2,
                                                     overflow:
                                                         TextOverflow.ellipsis,
@@ -842,7 +959,11 @@ class _ShopDetailsPageState extends State<ShopDetailsPage>
                                                 Padding(
                                                   padding:
                                                       const EdgeInsets.all(8.0),
-                                                  child: Text('10000',
+                                                  child: Text(
+                                                      shopDetails!
+                                                          .data
+                                                          .paymentDetails[index]
+                                                          .paidAmount,
                                                       maxLines: 2,
                                                       overflow: TextOverflow
                                                           .ellipsis),
@@ -851,7 +972,10 @@ class _ShopDetailsPageState extends State<ShopDetailsPage>
                                                   padding:
                                                       const EdgeInsets.all(8.0),
                                                   child: Text(
-                                                      'Cash on Delivery',
+                                                      shopDetails!
+                                                          .data
+                                                          .paymentDetails[index]
+                                                          .paymentType,
                                                       maxLines: 2,
                                                       overflow: TextOverflow
                                                           .ellipsis),

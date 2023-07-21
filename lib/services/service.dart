@@ -3,11 +3,14 @@ import 'package:http/http.dart' as http;
 import 'package:jibin_s_application1/model/sendotp_model.dart';
 import '../model/Reset_model.dart';
 import '../model/addshopmodel.dart';
+import '../model/all_products_list_model.dart';
 import '../model/allshops_model.dart';
 import '../model/attendance_model.dart';
 import '../model/checknumber.dart';
 import '../model/collection_model.dart';
 import '../model/dashboard_model.dart';
+import '../model/mark_visit_model.dart';
+import '../model/product_by_id_model.dart';
 import '../model/products_model.dart';
 import '../model/routemodel.dart';
 import '../model/shop_details_model.dart';
@@ -59,7 +62,6 @@ class HttpService {
       return routelistFromJson(routeRsponse.body);
     } else {}
   }
-
 
   // shop adding ----------------------------- shop adding
 
@@ -193,28 +195,76 @@ class HttpService {
     }
   }
 
-  static Future shopDetails(shopid,token,fdate,tdate)async{
-   http.Response response = await http.post(Uri.parse("${baseurl}shopDetailsByID"),body: ({
-      'shop_id': shopid,
-      'token':token,
-      'fdate':fdate,
-      'tdate':tdate,
-    }));
-   if(response.statusCode==200){
-  return shopDetailFromJson(response.body);
-   }
- }
+  static Future shopDetails(shopid, token, fdate, tdate) async {
+    http.Response response =
+        await http.post(Uri.parse("${baseurl}shopDetailsByID"),
+            body: ({
+              'shop_id': shopid,
+              'token': token,
+              'fdate': fdate,
+              'tdate': tdate,
+            }));
+    if (response.statusCode == 200) {
+      return shopDetailsFromJson(response.body);
+    }
+  }
 
-  static Future getProducts(token,searchkey)async{
-  http.Response response = await http.post(Uri.parse("${baseurl}productDetails"),body:({
+  static Future getProducts(token, searchkey) async {
+    http.Response response = await http.post(
+      Uri.parse("${baseurl}productDetails"),
+      body: ({
         'token': token,
         'search_key': searchkey,
-      }), );
-  // print(response.statusCode);
-  if(response.statusCode ==200){
-    // print("${response.body}");
-    return  productsFromJson(response.body);
+      }),
+    );
+    // print(response.statusCode);
+    if (response.statusCode == 200) {
+      // print("${response.body}");
+      return productsFromJson(response.body);
+    }
   }
-}
 
+  static Future markVisit(shopid, latitude, longitude, token) async {
+    http.Response response = await http.post(
+      Uri.parse("${baseurl}addLocation"),
+      body: ({
+        'shop_id': shopid,
+        'latitude': latitude,
+        'longitude': longitude,
+        'token': token,
+      }),
+    );
+    if (response.statusCode == 200) {
+      // print(response.statusCode);
+      return markVisitFromJson(response.body);
+    } else {}
+  }
+
+  static Future productDetailsByID(productid) async {
+   http.Response response = await http.post(
+      Uri.parse("${baseurl}productDetailsByID"),
+      body: ({'product_id': productid}),
+    );
+   print(response.statusCode);
+   if(response.statusCode == 200){
+
+     return prouctByIdFromJson(response.body);
+   }else{
+
+   }
+  }
+
+//
+// static Future allProductList(token) async {
+// http.Response response =await http.post(Uri.parse("${baseurl}allProductDetails"),
+//       body: ({
+//         'token': token}
+//       ));
+//   if(response.statusCode ==200){
+//     // print(response.statusCode);
+//     return allProductListFromJson(response.body);
+//   }else{
+//     print(response.statusCode);
+//   }
+// }
 }

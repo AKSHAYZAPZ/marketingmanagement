@@ -51,7 +51,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       child: Text("Welcome to\nMEMA",
                           maxLines: null,
                           textAlign: TextAlign.center,
-                          style: AppStyle.txtDMSansMedium40)),
+                          style: AppStyle.txtDMSansMedium40),),
                   Padding(
                     padding: getPadding(top: 61),
                     child: Text("Login to your account",

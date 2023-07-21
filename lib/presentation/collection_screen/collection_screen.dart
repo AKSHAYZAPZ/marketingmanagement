@@ -22,11 +22,10 @@ class CollectionScreen extends StatefulWidget {
 
 class _CollectionScreenState extends State<CollectionScreen> {
   Collection? collection;
-  var FromSelection = 'From Date';
-  var ToSelection = 'To Date';
 
-  var fdate = '';
-  var tdate = '';
+
+  String fdate = DateFormat('dd-MM-yyyy').format(DateTime.now());
+  String tdate = DateFormat('dd-MM-yyyy').format(DateTime.now());
 
   String? fromselectDate;
   String? toselectDate;
@@ -81,7 +80,9 @@ class _CollectionScreenState extends State<CollectionScreen> {
                       margin: getMargin(left: 20, right: 20),
                       padding:
                           getPadding(left: 26, top: 5, right: 26, bottom: 5),
-                      decoration: AppDecoration.gradientTeal300Lightblue700
+                      decoration: BoxDecoration(
+                        color: ColorConstant.lightBlue700,
+                      )
                           .copyWith(
                               borderRadius: BorderRadiusStyle.roundedBorder19),
                       child: Row(
@@ -144,7 +145,7 @@ class _CollectionScreenState extends State<CollectionScreen> {
                                 Padding(
                                   padding: const EdgeInsets.only(left: 10),
                                   child: Text(
-                                    FromSelection,
+                                    fdate,
                                   ),
                                 ),
                                 GestureDetector(
@@ -163,9 +164,8 @@ class _CollectionScreenState extends State<CollectionScreen> {
                                         fromselectDate =
                                             DateFormat('dd-MM-yyyy')
                                                 .format(selctedDatetimetemp);
-                                        FromSelection = fromselectDate!;
-
                                         fdate = fromselectDate!;
+                                        collectionReport();
                                       });
                                     }
                                   },
@@ -213,7 +213,7 @@ class _CollectionScreenState extends State<CollectionScreen> {
                                 Padding(
                                   padding: const EdgeInsets.only(left: 10),
                                   child: Text(
-                                    ToSelection,
+                                    tdate,
                                   ),
                                 ),
                                 GestureDetector(
@@ -231,8 +231,6 @@ class _CollectionScreenState extends State<CollectionScreen> {
                                       setState(() {
                                         toselectDate = DateFormat('dd-MM-yyyy')
                                             .format(toDateselectTemp);
-                                         ToSelection = toselectDate!;
-
                                         tdate = toselectDate!;
                                         // print('==============$fdate');
                                         // print('++++++++++++++++ $tdate');
@@ -389,7 +387,7 @@ class _CollectionScreenState extends State<CollectionScreen> {
                     ),
                     Padding(
                       padding:
-                          const EdgeInsets.only(right: 30, left: 30, top: 10),
+                          const EdgeInsets.only(right: 15, left: 15, top: 10),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
@@ -547,7 +545,7 @@ class _CollectionScreenState extends State<CollectionScreen> {
                                 child: Text('Name'),
                               ),
                               Padding(
-                                padding: const EdgeInsets.all(8.0),
+                                padding: const EdgeInsets.all(10.0),
                                 child: Text('Amount'),
                               ),
                             ],
@@ -563,11 +561,12 @@ class _CollectionScreenState extends State<CollectionScreen> {
                   child: ListView.builder(
                     itemCount: collection!.data.collectionReport.length,
                     itemBuilder: (context, index) {
+                      int count = index+1;
                       // Each item in the ListView is represented by a Table widget
                       return SingleChildScrollView(
                         scrollDirection: Axis.horizontal,
                         child: Padding(
-                          padding: const EdgeInsets.all(5.0),
+                          padding: const EdgeInsets.all(7.0),
                           child: Container(
                             child: Table(
                               columnWidths: {
@@ -586,7 +585,7 @@ class _CollectionScreenState extends State<CollectionScreen> {
                                   children: [
                                     Padding(
                                       padding: const EdgeInsets.all(8.0),
-                                      child: Text('Sl No.'),
+                                      child: Text(count.toString()),
                                     ),
                                     Padding(
                                       padding: const EdgeInsets.all(8.0),

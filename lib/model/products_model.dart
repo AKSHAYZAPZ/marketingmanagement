@@ -58,12 +58,14 @@ class Datum {
 
 class ProductDetail {
   String categoryId;
+  String productId;
   String productName;
   String productCode;
   String sellingPrice;
 
   ProductDetail({
     required this.categoryId,
+    required this.productId,
     required this.productName,
     required this.productCode,
     required this.sellingPrice,
@@ -71,6 +73,7 @@ class ProductDetail {
 
   factory ProductDetail.fromJson(Map<String, dynamic> json) => ProductDetail(
     categoryId: json["category_id"],
+    productId: json["product_id"],
     productName: json["product_name"],
     productCode: json["product_code"],
     sellingPrice: json["selling_price"],
@@ -78,6 +81,7 @@ class ProductDetail {
 
   Map<String, dynamic> toJson() => {
     "category_id": categoryId,
+    "product_id": productId,
     "product_name": productName,
     "product_code": productCode,
     "selling_price": sellingPrice,

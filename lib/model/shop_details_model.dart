@@ -1,25 +1,25 @@
 // To parse this JSON data, do
 //
-//     final shopDetail = shopDetailFromJson(jsonString);
+//     final shopDetails = shopDetailsFromJson(jsonString);
 
 import 'dart:convert';
 
-ShopDetail shopDetailFromJson(String str) => ShopDetail.fromJson(json.decode(str));
+ShopDetails shopDetailsFromJson(String str) => ShopDetails.fromJson(json.decode(str));
 
-String shopDetailToJson(ShopDetail data) => json.encode(data.toJson());
+String shopDetailsToJson(ShopDetails data) => json.encode(data.toJson());
 
-class ShopDetail {
+class ShopDetails {
   bool status;
   String message;
   Data data;
 
-  ShopDetail({
+  ShopDetails({
     required this.status,
     required this.message,
     required this.data,
   });
 
-  factory ShopDetail.fromJson(Map<String, dynamic> json) => ShopDetail(
+  factory ShopDetails.fromJson(Map<String, dynamic> json) => ShopDetails(
     status: json["status"],
     message: json["message"],
     data: Data.fromJson(json["data"]),
@@ -84,7 +84,7 @@ class Detail {
   int id;
   String invoiceNo;
   String billNo;
-  DateTime orderDate;
+  String orderDate;
   String quantity;
   int price;
 
@@ -101,7 +101,7 @@ class Detail {
     id: json["id"],
     invoiceNo: json["invoice_no"],
     billNo: json["bill_no"],
-    orderDate: DateTime.parse(json["order_date"]),
+    orderDate: json["order_date"],
     quantity: json["quantity"],
     price: json["price"],
   );
@@ -110,7 +110,7 @@ class Detail {
     "id": id,
     "invoice_no": invoiceNo,
     "bill_no": billNo,
-    "order_date": orderDate.toIso8601String(),
+    "order_date": orderDate,
     "quantity": quantity,
     "price": price,
   };
