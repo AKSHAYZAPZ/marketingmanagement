@@ -202,7 +202,7 @@ class _ProductScreenState extends State<ProductScreen> {
                             padding: const EdgeInsets.all(1),
                             child: Table(
                               columnWidths: {
-                                0: FixedColumnWidth(45.0),
+                                0: FixedColumnWidth(55.0),
                                 1: FixedColumnWidth(60.0),
                                 2: FixedColumnWidth(120.0),
                                 3: FixedColumnWidth(80.0),
@@ -259,7 +259,7 @@ class _ProductScreenState extends State<ProductScreen> {
                               child: Container(
                                 child: Table(
                                   columnWidths: {
-                                    0: FixedColumnWidth(45.0),
+                                    0: FixedColumnWidth(55.0),
                                     1: FixedColumnWidth(60.0),
                                     2: FixedColumnWidth(120.0),
                                     3: FixedColumnWidth(80.0),

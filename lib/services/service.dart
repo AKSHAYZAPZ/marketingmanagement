@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:jibin_s_application1/model/post_oder_model.dart';
 import 'package:jibin_s_application1/model/sendotp_model.dart';
 import '../model/Reset_model.dart';
 import '../model/addshopmodel.dart';
@@ -195,14 +196,12 @@ class HttpService {
     }
   }
 
-  static Future shopDetails(shopid, token, fdate, tdate) async {
+  static Future shopDetails(shopid, token,) async {
     http.Response response =
         await http.post(Uri.parse("${baseurl}shopDetailsByID"),
             body: ({
               'shop_id': shopid,
               'token': token,
-              'fdate': fdate,
-              'tdate': tdate,
             }));
     if (response.statusCode == 200) {
       return shopDetailsFromJson(response.body);
@@ -241,30 +240,40 @@ class HttpService {
   }
 
   static Future productDetailsByID(productid) async {
-   http.Response response = await http.post(
+    http.Response response = await http.post(
       Uri.parse("${baseurl}productDetailsByID"),
       body: ({'product_id': productid}),
     );
-   print(response.statusCode);
-   if(response.statusCode == 200){
-
-     return prouctByIdFromJson(response.body);
-   }else{
-
-   }
+    print(response.statusCode);
+    if (response.statusCode == 200) {
+      return prouctByIdFromJson(response.body);
+    } else {}
   }
 
-//
-// static Future allProductList(token) async {
-// http.Response response =await http.post(Uri.parse("${baseurl}allProductDetails"),
-//       body: ({
-//         'token': token}
-//       ));
-//   if(response.statusCode ==200){
-//     // print(response.statusCode);
-//     return allProductListFromJson(response.body);
-//   }else{
-//     print(response.statusCode);
-//   }
-// }
+  static Future allProductList(token) async {
+    http.Response response = await http.post(
+        Uri.parse("${baseurl}allProductDetails"),
+        body: ({'token': token}));
+    if (response.statusCode == 200) {
+      print(response.body);
+      return allProductListsFromJson(response.body);
+    }
+  }
+
+  static Future postOrders(
+      shopid, orderdate, createdat, orderDetails, token) async {
+   http.Response response = await http.post(Uri.parse("${baseurl}allProductDetails"),
+        body: ({
+          'shop_id': shopid,
+          'order_date': orderdate,
+          'created_at': createdat,
+          'orderDetails': jsonEncode(orderDetails),
+          'token': token,
+        }),);
+    if(response.statusCode == 200){
+     return postOderFromJson(response.body);
+    }else{
+
+    }
+  }
 }

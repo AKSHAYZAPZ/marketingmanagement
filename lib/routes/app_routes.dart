@@ -49,7 +49,7 @@ class AppRoutes {
     productScreen: (context) => ProductScreen(id: '',),
     productDScreen: (context) => ProductDScreen(),
     collectionScreen: (context) => CollectionScreen(id: '',),
-    takeOrderScreen: (context) => TakeOrderScreen(),
+    // takeOrderScreen: (context) => TakeOrderScreen(),
     appNavigationScreen: (context) => AppNavigationScreen()
   };
 }

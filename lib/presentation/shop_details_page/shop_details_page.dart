@@ -16,6 +16,7 @@ import '../../theme/app_decoration.dart';
 import '../../theme/app_style.dart';
 import '../../widgets/custom_image_view.dart';
 import '../bottom_navigation_page/bottom_navigation.dart';
+import '../take_order_screen/take_order_screen.dart';
 
 class ShopDetailsPage extends StatefulWidget {
   ShopDetailsPage({Key? key, required this.id, required this.shopId})
@@ -90,7 +91,7 @@ class _ShopDetailsPageState extends State<ShopDetailsPage>
     // print('fdate ---- ${fdate}');
     // print('fdate ---- ${tdate}');
     shopDetails =
-        await HttpService.shopDetails(widget.shopId, widget.id, fdate, tdate);
+        await HttpService.shopDetails(widget.shopId, widget.id,);
     if (shopDetails != null) {
       setState(() {});
     }
@@ -358,7 +359,7 @@ class _ShopDetailsPageState extends State<ShopDetailsPage>
                                           MaterialPageRoute(
                                             builder: (context) =>
                                                 TakeOderScreen(
-                                              id: widget.id,
+                                              id: widget.shopId, token: widget.id,
                                             ),
                                           ));
                                     },

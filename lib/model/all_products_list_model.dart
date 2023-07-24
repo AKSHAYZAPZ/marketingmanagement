@@ -1,59 +1,39 @@
 // To parse this JSON data, do
 //
-//     final allProductList = allProductListFromJson(jsonString);
+//     final allProductLists = allProductListsFromJson(jsonString);
 
 import 'dart:convert';
 
-AllProductList allProductListFromJson(String str) => AllProductList.fromJson(json.decode(str));
+List<AllProductLists> allProductListsFromJson(String str) => List<AllProductLists>.from(json.decode(str).map((x) => AllProductLists.fromJson(x)));
 
-String allProductListToJson(AllProductList data) => json.encode(data.toJson());
+String allProductListsToJson(List<AllProductLists> data) => json.encode(List<dynamic>.from(data.map((x) => x.toJson())));
 
-class AllProductList {
-  bool status;
-  String message;
-  List<Datum> data;
-
-  AllProductList({
-    required this.status,
-    required this.message,
-    required this.data,
-  });
-
-  factory AllProductList.fromJson(Map<String, dynamic> json) => AllProductList(
-    status: json["status"],
-    message: json["message"],
-    data: List<Datum>.from(json["data"].map((x) => Datum.fromJson(x))),
-  );
-
-  Map<String, dynamic> toJson() => {
-    "status": status,
-    "message": message,
-    "data": List<dynamic>.from(data.map((x) => x.toJson())),
-  };
-}
-
-class Datum {
-  String id;
+class AllProductLists {
+  int productId;
+  int categoryid;
   String productName;
   String productCode;
   int sellingPrice;
 
-  Datum({
-    required this.id,
+  AllProductLists({
+    required this.productId,
+    required this.categoryid,
     required this.productName,
     required this.productCode,
     required this.sellingPrice,
   });
 
-  factory Datum.fromJson(Map<String, dynamic> json) => Datum(
-    id: json["id"],
+  factory AllProductLists.fromJson(Map<String, dynamic> json) => AllProductLists(
+    productId: json["product_id"],
+    categoryid: json["categoryid"],
     productName: json["product_name"],
     productCode: json["product_code"],
     sellingPrice: json["selling_price"],
   );
 
   Map<String, dynamic> toJson() => {
-    "id": id,
+    "product_id": productId,
+    "categoryid": categoryid,
     "product_name": productName,
     "product_code": productCode,
     "selling_price": sellingPrice,

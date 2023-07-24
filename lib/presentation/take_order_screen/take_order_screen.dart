@@ -1,680 +1,467 @@
-import 'package:flutter/material.dart';
-import 'package:jibin_s_application1/core/app_export.dart';
-import 'package:jibin_s_application1/widgets/app_bar/appbar_image.dart';
-import 'package:jibin_s_application1/widgets/app_bar/appbar_title.dart';
-import 'package:jibin_s_application1/widgets/app_bar/custom_app_bar.dart';
-import 'package:jibin_s_application1/widgets/custom_button.dart';
+import 'dart:convert';
 
-class TakeOrderScreen extends StatelessWidget {
-  const TakeOrderScreen({Key? key}) : super(key: key);
+import 'package:flutter/material.dart';
+import 'package:flutter_typeahead/flutter_typeahead.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:intl/intl.dart';
+import 'package:jibin_s_application1/presentation/shop_details_page/shop_details_page.dart';
+import '../../core/utils/color_constant.dart';
+import '../../core/utils/size_utils.dart';
+import '../../model/all_products_list_model.dart';
+import '../../model/post_oder_model.dart';
+import '../../services/service.dart';
+
+class MyResult {
+  final String title;
+  final String subtitle;
+  final int sellingPrice;
+  final int quantity;
+  final int productId;
+  final int categoryId;
+
+  MyResult({
+    required this.title,
+    required this.subtitle,
+    required this.sellingPrice,
+    required this.quantity,
+    required this.productId,
+    required this.categoryId,
+  });
+}
+
+class TakeOderScreen extends StatefulWidget {
+  TakeOderScreen({Key? key, required this.id, required this.token}) : super(key: key);
+  String id;
+  String token;
+
+  @override
+  State<TakeOderScreen> createState() => _TakeOderScreenState();
+}
+
+class _TakeOderScreenState extends State<TakeOderScreen> {
+
+  PostOder? postOder;
+
+  String orderdate = DateFormat('dd-MM-yyyy').format(DateTime.now());
+  String createdate = DateFormat('dd-MM-yyyy').format(DateTime.now());
+
+  final TextEditingController _searchController = TextEditingController();
+  TextEditingController quantityController = TextEditingController();
+  List<AllProductLists>? allProductList;
+  var productCode;
+  int? sellingPrice;
+  int? quantity;
+  int? prdtId;
+  int? catgryId;
+
+  List<String> selectedProduct = [];
+  List<String> selectedCode = [];
+  List<int> selectedPrice = [];
+  List<int> selectedQuantity = [];
+  List<int> selectedPdtId = [];
+  List<int> selectedCatgryId = [];
+
+  Map<String, dynamic> addProductInfoToMap(
+    int categoryId,
+    int productId,
+    String productName,
+    int quantity,
+    int price,
+    String productCode,
+  ) {
+    return {
+      'category_id': categoryId,
+      'product_id': productId,
+      'product_name': productName,
+      'quantity': quantity,
+      'amount': price,
+      'product_code': productCode,
+    };
+  }
+
+  List<Map<String, dynamic>> productDataList = [];
+
+  @override
+  void initState() {
+    super.initState();
+    allProducts();
+  }
+
+  allProducts() async {
+    allProductList = await HttpService.allProductList(widget.token);
+
+    if (allProductList != null) {
+      setState(() {});
+    }
+  }
+
+  Future<List<MyResult>> getSearchResults(String query) async {
+    await Future.delayed(Duration(seconds: 1));
+    return List.generate(
+      allProductList!.length,
+      (index) => MyResult(
+        title: allProductList![index].productName,
+        subtitle: allProductList![index].productCode,
+        sellingPrice: allProductList![index].sellingPrice,
+        quantity: quantityController.text != ''
+            ? int.parse(quantityController.text)
+            : 0,
+        productId: allProductList![index].productId,
+        categoryId: allProductList![index].categoryid,
+      ),
+    );
+  }
+
+  Future<List<MyResult>> getSuggestions(String query) async {
+    List<MyResult> results = await getSearchResults(query);
+    List<MyResult> filteredResults = results
+        .where((result) =>
+            result.title.toLowerCase().contains(query.toLowerCase()) ||
+            result.subtitle.toLowerCase().contains(query.toLowerCase()))
+        .toList();
+
+    return filteredResults;
+  }
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-        child: Scaffold(
-            backgroundColor: ColorConstant.whiteA700,
-            appBar: CustomAppBar(
-                height: getVerticalSize(129),
-                leadingWidth: 95,
-                leading: Container(
-                    height: getVerticalSize(17),
-                    width: getHorizontalSize(21),
-                    margin: getMargin(left: 74, top: 50, bottom: 62),
-                    child: Stack(alignment: Alignment.topCenter, children: [
-                      AppbarImage(
-                          height: getVerticalSize(17),
-                          width: getHorizontalSize(21),
-                          svgPath: ImageConstant.imgArrowleft,
-                          onTap: () {
-                            onTapArrowleft6(context);
-                          }),
-                      AppbarImage(
-                          height: getVerticalSize(17),
-                          width: getHorizontalSize(21),
-                          svgPath: ImageConstant.imgArrowleft)
-                    ])),
-                centerTitle: true,
-                title: SizedBox(
-                    height: getVerticalSize(29),
-                    width: getHorizontalSize(117),
-                    child: Stack(alignment: Alignment.topCenter, children: [
-                      AppbarTitle(text: "Take Order"),
-                      AppbarTitle(
-                          text: "Collection", margin: getMargin(right: 8))
-                    ])),
-                styleType: Style.bgStyle_4),
-            body: Container(
-                width: double.maxFinite,
-                padding: getPadding(top: 5, bottom: 5),
-                child: Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
+    return Scaffold(
+      appBar: AppBar(
+        centerTitle: true,
+        title: Text('Take Oder'),
+      ),
+      body: allProductList == null
+          ? Center(child: CircularProgressIndicator())
+          : Container(
+              child: Column(children: [
+                SizedBox(
+                  height: 10,
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Container(
+                    width: double.infinity,
+                    height: 50,
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Container(
+                            width: MediaQuery.of(context).size.width * 0.5,
+                            height: MediaQuery.of(context).size.height * 0.5,
+                            decoration: BoxDecoration(
+                              boxShadow: [
+                                BoxShadow(
+                                  color: ColorConstant.black9003f,
+                                  spreadRadius: getHorizontalSize(
+                                    2,
+                                  ),
+                                  blurRadius: getHorizontalSize(
+                                    2,
+                                  ),
+                                  offset: Offset(
+                                    0,
+                                    4,
+                                  ),
+                                ),
+                              ],
+                              borderRadius: BorderRadius.circular(22),
+                              color: ColorConstant.gray50,
+                            ),
+                            child: Padding(
+                              padding:
+                                  const EdgeInsets.only(left: 20, right: 8),
+                              child: TypeAheadFormField<MyResult>(
+                                noItemsFoundBuilder: (context) {
+                                  return SizedBox(
+                                    child: Center(
+                                      child: Text("No item found"),
+                                    ),
+                                  );
+                                },
+                                textFieldConfiguration: TextFieldConfiguration(
+                                  controller: _searchController,
+                                  decoration: InputDecoration(
+                                      border: InputBorder.none,
+                                      //labelText: 'Search',
+                                      hintStyle: TextStyle(fontSize: 12),
+                                      hintText: 'Product Name or code'),
+                                ),
+                                suggestionsCallback: getSuggestions,
+                                itemBuilder: (context, MyResult suggestion) {
+                                  return ListTile(
+                                    title: Text(suggestion.title),
+                                    //subtitle: Text(suggestion.subtitle),
+                                  );
+                                },
+                                onSuggestionSelected: (MyResult suggestion) {
+                                  // print("selected ${suggestion.title}");
+                                  _searchController.text = suggestion.title;
+                                  productCode = suggestion.subtitle;
+                                  sellingPrice = suggestion.sellingPrice;
+                                  prdtId = suggestion.productId;
+                                  catgryId = suggestion.categoryId;
+                                },
+                              ),
+                            )),
+                        SizedBox(
+                          width: 9,
+                        ),
+                        Container(
+                            width: MediaQuery.of(context).size.width * 0.3,
+                            height: MediaQuery.of(context).size.height * 0.5,
+                            decoration: BoxDecoration(
+                              boxShadow: [
+                                BoxShadow(
+                                  color: ColorConstant.black9003f,
+                                  spreadRadius: getHorizontalSize(
+                                    2,
+                                  ),
+                                  blurRadius: getHorizontalSize(
+                                    2,
+                                  ),
+                                  offset: Offset(
+                                    0,
+                                    4,
+                                  ),
+                                ),
+                              ],
+                              borderRadius: BorderRadius.circular(22),
+                              color: ColorConstant.gray50,
+                            ),
+                            child: Center(
+                              child: TextFormField(
+                                controller: quantityController,
+                                decoration: InputDecoration(
+                                  hintText: 'Quantity',
+                                  enabledBorder: OutlineInputBorder(
+                                    borderSide:
+                                        BorderSide(color: Colors.transparent),
+                                  ),
+                                  focusedBorder: OutlineInputBorder(
+                                    borderSide:
+                                        BorderSide(color: Colors.transparent),
+                                  ),
+                                ),
+                              ),
+                            )),
+                        SizedBox(
+                          width: 9,
+                        ),
+                        Expanded(
+                          child: Padding(
+                            padding: const EdgeInsets.only(top: 5),
+                            child: Container(
+                              height: MediaQuery.of(context).size.height * 0.4,
+                              decoration: BoxDecoration(
+                                  color: ColorConstant.lightBlue700,
+                                  borderRadius: BorderRadius.circular(20)),
+                              child: Center(
+                                  child: GestureDetector(
+                                onTap: () {
+                                  setState(() {
+                                    // productAdded = productAdded + 1;
+                                    quantity =
+                                        int.parse(quantityController.text);
+
+                                    productDataList.add(addProductInfoToMap(
+                                      catgryId!,
+                                      prdtId!,
+                                      _searchController.text,
+                                      quantity!,
+                                      quantity! * sellingPrice!,
+                                      productCode,
+                                    ));
+                                    _searchController.text = '';
+                                    quantityController.text = '';
+
+                                    // selectedProduct.add(_searchController.text);
+                                    // selectedCode.add(productCode);
+                                    // selectedPrice.add(sellingPrice!);
+                                    // selectedQuantity.add(quantity!);
+                                    // selectedPdtId.add(prdtId!);
+                                    // selectedCatgryId.add(catgryId!);
+                                    // print(quantity);
+                                  });
+                                  // for (Map<String, dynamic> productData in productDataList) {
+                                  //   print(
+                                  //       "Product ID: ${productData['product_id']}, Category ID: ${productData['category_id']}, Product Name: ${productData['product_name']}");
+                                  // }
+                                },
+                                child: Text(
+                                  '+',
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 25,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              )),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                SizedBox(
+                  height: 10,
+                ),
+                Container(
+                  child: Column(
                     children: [
                       Padding(
-                          padding: getPadding(left: 23, top: 42, right: 26),
-                          child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Container(
-                                    height: getVerticalSize(50),
-                                    width: getHorizontalSize(281),
-                                    margin: getMargin(bottom: 2),
-                                    child: Stack(
-                                        alignment: Alignment.centerRight,
-                                        children: [
-                                          Align(
-                                              alignment: Alignment.centerLeft,
-                                              child: Container(
-                                                  height: getVerticalSize(50),
-                                                  width: getHorizontalSize(178),
-                                                  decoration: BoxDecoration(
-                                                      color:
-                                                          ColorConstant.gray50,
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                              getHorizontalSize(
-                                                                  12)),
-                                                      boxShadow: [
-                                                        BoxShadow(
-                                                            color: ColorConstant
-                                                                .black9003f,
-                                                            spreadRadius:
-                                                                getHorizontalSize(
-                                                                    2),
-                                                            blurRadius:
-                                                                getHorizontalSize(
-                                                                    2),
-                                                            offset:
-                                                                Offset(0, 4))
-                                                      ]))),
-                                          Align(
-                                              alignment: Alignment.centerRight,
-                                              child: Container(
-                                                  height: getVerticalSize(50),
-                                                  width: getHorizontalSize(90),
-                                                  decoration: BoxDecoration(
-                                                      color:
-                                                          ColorConstant.gray50,
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                              getHorizontalSize(
-                                                                  12)),
-                                                      boxShadow: [
-                                                        BoxShadow(
-                                                            color: ColorConstant
-                                                                .black9003f,
-                                                            spreadRadius:
-                                                                getHorizontalSize(
-                                                                    2),
-                                                            blurRadius:
-                                                                getHorizontalSize(
-                                                                    2),
-                                                            offset:
-                                                                Offset(0, 4))
-                                                      ]))),
-                                          Align(
-                                              alignment: Alignment.center,
-                                              child: Container(
-                                                  width: getHorizontalSize(216),
-                                                  margin: getMargin(
-                                                      left: 31,
-                                                      top: 16,
-                                                      right: 34,
-                                                      bottom: 15),
-                                                  child: Row(
-                                                      mainAxisAlignment:
-                                                          MainAxisAlignment
-                                                              .spaceBetween,
-                                                      children: [
-                                                        Padding(
-                                                            padding: getPadding(
-                                                                bottom: 1),
-                                                            child: Text(
-                                                                "Product Name/Code",
-                                                                overflow:
-                                                                    TextOverflow
-                                                                        .ellipsis,
-                                                                textAlign:
-                                                                    TextAlign
-                                                                        .left,
-                                                                style: AppStyle
-                                                                    .txtDMSansMedium12)),
-                                                        Padding(
-                                                            padding: getPadding(
-                                                                top: 1),
-                                                            child: Text("Qty",
-                                                                overflow:
-                                                                    TextOverflow
-                                                                        .ellipsis,
-                                                                textAlign:
-                                                                    TextAlign
-                                                                        .left,
-                                                                style: AppStyle
-                                                                    .txtDMSansMedium12))
-                                                      ])))
-                                        ])),
-                                Container(
-                                    height: getVerticalSize(40),
-                                    width: getHorizontalSize(83),
-                                    margin: getMargin(left: 17, top: 12),
-                                    child: Stack(
-                                        alignment: Alignment.center,
-                                        children: [
-                                          Align(
-                                              alignment: Alignment.center,
-                                              child: Container(
-                                                  height: getVerticalSize(35),
-                                                  width: getHorizontalSize(83),
-                                                  decoration: BoxDecoration(
-                                                      color: ColorConstant
-                                                          .lightBlue70001,
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                              getHorizontalSize(
-                                                                  12))))),
-                                          Align(
-                                              alignment: Alignment.center,
-                                              child: Row(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment.center,
-                                                  crossAxisAlignment:
-                                                      CrossAxisAlignment.start,
-                                                  children: [
-                                                    Padding(
-                                                        padding: getPadding(
-                                                            top: 9, bottom: 10),
-                                                        child: Text("Add ",
-                                                            overflow:
-                                                                TextOverflow
-                                                                    .ellipsis,
-                                                            textAlign:
-                                                                TextAlign.left,
-                                                            style: AppStyle
-                                                                .txtDMSansBold15)),
-                                                    Padding(
-                                                        padding: getPadding(
-                                                            left: 14),
-                                                        child: Text("+",
-                                                            overflow:
-                                                                TextOverflow
-                                                                    .ellipsis,
-                                                            textAlign:
-                                                                TextAlign.left,
-                                                            style: AppStyle
-                                                                .txtDMSansBold30))
-                                                  ]))
-                                        ]))
-                              ])),
-                      Align(
-                          alignment: Alignment.centerLeft,
-                          child: Padding(
-                              padding: getPadding(left: 42, top: 34, right: 69),
-                              child: Row(children: [
-                                Padding(
-                                    padding: getPadding(bottom: 1),
-                                    child: Text("SL No",
-                                        overflow: TextOverflow.ellipsis,
-                                        textAlign: TextAlign.left,
-                                        style: AppStyle.txtDMSansBold10)),
-                                Padding(
-                                    padding: getPadding(left: 18, bottom: 1),
-                                    child: Text("Product  Name",
-                                        overflow: TextOverflow.ellipsis,
-                                        textAlign: TextAlign.left,
-                                        style: AppStyle.txtDMSansBold10)),
-                                Padding(
-                                    padding: getPadding(left: 18, bottom: 1),
-                                    child: Text("Product Code",
-                                        overflow: TextOverflow.ellipsis,
-                                        textAlign: TextAlign.left,
-                                        style: AppStyle.txtDMSansBold10)),
-                                Padding(
-                                    padding: getPadding(left: 29, top: 1),
-                                    child: Text("Qty",
-                                        overflow: TextOverflow.ellipsis,
-                                        textAlign: TextAlign.left,
-                                        style: AppStyle.txtDMSansBold10)),
-                                Padding(
-                                    padding: getPadding(left: 42, bottom: 1),
-                                    child: Text("Price",
-                                        overflow: TextOverflow.ellipsis,
-                                        textAlign: TextAlign.left,
-                                        style: AppStyle.txtDMSansBold10))
-                              ]))),
-                      Container(
-                          height: getVerticalSize(173),
-                          width: getHorizontalSize(365),
-                          margin: getMargin(top: 14),
-                          child:
-                              Stack(alignment: Alignment.topCenter, children: [
-                            Align(
-                                alignment: Alignment.topCenter,
-                                child: Container(
-                                    height: getVerticalSize(29),
-                                    width: getHorizontalSize(365),
-                                    decoration: BoxDecoration(
-                                        color: ColorConstant.whiteA700,
-                                        boxShadow: [
-                                          BoxShadow(
-                                              color: ColorConstant.black9003f,
-                                              spreadRadius:
-                                                  getHorizontalSize(2),
-                                              blurRadius: getHorizontalSize(2),
-                                              offset: Offset(0, 4))
-                                        ]))),
-                            Align(
-                                alignment: Alignment.topCenter,
-                                child: Container(
-                                    height: getVerticalSize(29),
-                                    width: getHorizontalSize(365),
-                                    margin: getMargin(top: 36),
-                                    decoration: BoxDecoration(
-                                        color: ColorConstant.gray50,
-                                        boxShadow: [
-                                          BoxShadow(
-                                              color: ColorConstant.black9003f,
-                                              spreadRadius:
-                                                  getHorizontalSize(2),
-                                              blurRadius: getHorizontalSize(2),
-                                              offset: Offset(0, 4))
-                                        ]))),
-                            Align(
-                                alignment: Alignment.center,
-                                child: Container(
-                                    height: getVerticalSize(29),
-                                    width: getHorizontalSize(365),
-                                    decoration: BoxDecoration(
-                                        color: ColorConstant.whiteA700,
-                                        boxShadow: [
-                                          BoxShadow(
-                                              color: ColorConstant.black9003f,
-                                              spreadRadius:
-                                                  getHorizontalSize(2),
-                                              blurRadius: getHorizontalSize(2),
-                                              offset: Offset(0, 4))
-                                        ]))),
-                            Align(
-                                alignment: Alignment.bottomCenter,
-                                child: Container(
-                                    height: getVerticalSize(29),
-                                    width: getHorizontalSize(365),
-                                    margin: getMargin(bottom: 36),
-                                    decoration: BoxDecoration(
-                                        color: ColorConstant.gray50,
-                                        boxShadow: [
-                                          BoxShadow(
-                                              color: ColorConstant.black9003f,
-                                              spreadRadius:
-                                                  getHorizontalSize(2),
-                                              blurRadius: getHorizontalSize(2),
-                                              offset: Offset(0, 4))
-                                        ]))),
-                            Align(
-                                alignment: Alignment.bottomCenter,
-                                child: Container(
-                                    height: getVerticalSize(29),
-                                    width: getHorizontalSize(365),
-                                    decoration: BoxDecoration(
-                                        color: ColorConstant.whiteA700,
-                                        boxShadow: [
-                                          BoxShadow(
-                                              color: ColorConstant.black9003f,
-                                              spreadRadius:
-                                                  getHorizontalSize(2),
-                                              blurRadius: getHorizontalSize(2),
-                                              offset: Offset(0, 4))
-                                        ]))),
-                            Align(
-                                alignment: Alignment.centerLeft,
-                                child: Padding(
-                                    padding: getPadding(left: 9),
-                                    child: Column(
-                                        mainAxisSize: MainAxisSize.min,
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.start,
-                                        children: [
-                                          Row(children: [
-                                            Padding(
-                                                padding: getPadding(bottom: 2),
-                                                child: Text("1",
-                                                    overflow:
-                                                        TextOverflow.ellipsis,
-                                                    textAlign: TextAlign.left,
-                                                    style: AppStyle
-                                                        .txtDMSansBold10)),
-                                            Padding(
-                                                padding: getPadding(
-                                                    left: 43, top: 2),
-                                                child: Text("Shower",
-                                                    overflow:
-                                                        TextOverflow.ellipsis,
-                                                    textAlign: TextAlign.left,
-                                                    style: AppStyle
-                                                        .txtDMSansBold10)),
-                                            Padding(
-                                                padding: getPadding(
-                                                    left: 56, bottom: 2),
-                                                child: Text("54820",
-                                                    overflow:
-                                                        TextOverflow.ellipsis,
-                                                    textAlign: TextAlign.left,
-                                                    style: AppStyle
-                                                        .txtDMSansBold10)),
-                                            Padding(
-                                                padding: getPadding(
-                                                    left: 64, bottom: 2),
-                                                child: Text("50",
-                                                    overflow:
-                                                        TextOverflow.ellipsis,
-                                                    textAlign: TextAlign.left,
-                                                    style: AppStyle
-                                                        .txtDMSansBold10)),
-                                            Padding(
-                                                padding: getPadding(
-                                                    left: 46, bottom: 2),
-                                                child: Text("₹5000",
-                                                    overflow:
-                                                        TextOverflow.ellipsis,
-                                                    textAlign: TextAlign.left,
-                                                    style: AppStyle
-                                                        .txtDMSansBold10))
-                                          ]),
-                                          Padding(
-                                              padding: getPadding(
-                                                  left: 139, top: 19),
-                                              child: Text("54820",
-                                                  overflow:
-                                                      TextOverflow.ellipsis,
-                                                  textAlign: TextAlign.left,
-                                                  style: AppStyle
-                                                      .txtDMSansBold10)),
-                                          Padding(
-                                              padding: getPadding(
-                                                  left: 137, top: 22),
-                                              child: Text("54820",
-                                                  overflow:
-                                                      TextOverflow.ellipsis,
-                                                  textAlign: TextAlign.left,
-                                                  style: AppStyle
-                                                      .txtDMSansBold10)),
-                                          Padding(
-                                              padding: getPadding(
-                                                  left: 137, top: 20),
-                                              child: Text("54820",
-                                                  overflow:
-                                                      TextOverflow.ellipsis,
-                                                  textAlign: TextAlign.left,
-                                                  style: AppStyle
-                                                      .txtDMSansBold10)),
-                                          Padding(
-                                              padding: getPadding(
-                                                  left: 137, top: 24),
-                                              child: Text("54820",
-                                                  overflow:
-                                                      TextOverflow.ellipsis,
-                                                  textAlign: TextAlign.left,
-                                                  style:
-                                                      AppStyle.txtDMSansBold10))
-                                        ]))),
-                            Align(
-                                alignment: Alignment.topLeft,
-                                child: Padding(
-                                    padding: getPadding(
-                                        left: 8,
-                                        top: 42,
-                                        right: 27,
-                                        bottom: 116),
-                                    child: Row(children: [
-                                      Text("2",
-                                          overflow: TextOverflow.ellipsis,
-                                          textAlign: TextAlign.left,
-                                          style: AppStyle.txtDMSansBold10),
-                                      Padding(
-                                          padding: getPadding(left: 42),
-                                          child: Text("Water Motor",
-                                              overflow: TextOverflow.ellipsis,
-                                              textAlign: TextAlign.left,
-                                              style: AppStyle.txtDMSansBold10)),
-                                      Spacer(),
-                                      Text("40",
-                                          overflow: TextOverflow.ellipsis,
-                                          textAlign: TextAlign.left,
-                                          style: AppStyle.txtDMSansBold10),
-                                      Padding(
-                                          padding: getPadding(left: 46),
-                                          child: Text("₹6000",
-                                              overflow: TextOverflow.ellipsis,
-                                              textAlign: TextAlign.left,
-                                              style: AppStyle.txtDMSansBold10))
-                                    ]))),
-                            Align(
-                                alignment: Alignment.centerLeft,
-                                child: Padding(
-                                    padding: getPadding(
-                                        left: 8,
-                                        top: 78,
-                                        right: 27,
-                                        bottom: 79),
-                                    child: Row(children: [
-                                      Padding(
-                                          padding: getPadding(bottom: 1),
-                                          child: Text("3",
-                                              overflow: TextOverflow.ellipsis,
-                                              textAlign: TextAlign.left,
-                                              style: AppStyle.txtDMSansBold10)),
-                                      Padding(
-                                          padding: getPadding(left: 42, top: 1),
-                                          child: Text("PVC Pipe",
-                                              overflow: TextOverflow.ellipsis,
-                                              textAlign: TextAlign.left,
-                                              style: AppStyle.txtDMSansBold10)),
-                                      Spacer(),
-                                      Padding(
-                                          padding: getPadding(bottom: 1),
-                                          child: Text("30",
-                                              overflow: TextOverflow.ellipsis,
-                                              textAlign: TextAlign.left,
-                                              style: AppStyle.txtDMSansBold10)),
-                                      Padding(
-                                          padding:
-                                              getPadding(left: 47, bottom: 1),
-                                          child: Text("₹7000",
-                                              overflow: TextOverflow.ellipsis,
-                                              textAlign: TextAlign.left,
-                                              style: AppStyle.txtDMSansBold10))
-                                    ]))),
-                            Align(
-                                alignment: Alignment.bottomLeft,
-                                child: Padding(
-                                    padding: getPadding(
-                                        left: 8,
-                                        top: 112,
-                                        right: 27,
-                                        bottom: 46),
-                                    child: Row(children: [
-                                      Text("4",
-                                          overflow: TextOverflow.ellipsis,
-                                          textAlign: TextAlign.left,
-                                          style: AppStyle.txtDMSansBold10),
-                                      Padding(
-                                          padding: getPadding(left: 41),
-                                          child: Text("Induction",
-                                              overflow: TextOverflow.ellipsis,
-                                              textAlign: TextAlign.left,
-                                              style: AppStyle.txtDMSansBold10)),
-                                      Spacer(),
-                                      Text("35",
-                                          overflow: TextOverflow.ellipsis,
-                                          textAlign: TextAlign.left,
-                                          style: AppStyle.txtDMSansBold10),
-                                      Padding(
-                                          padding: getPadding(left: 46),
-                                          child: Text("₹8000",
-                                              overflow: TextOverflow.ellipsis,
-                                              textAlign: TextAlign.left,
-                                              style: AppStyle.txtDMSansBold10))
-                                    ]))),
-                            Align(
-                                alignment: Alignment.bottomLeft,
-                                child: Padding(
-                                    padding: getPadding(
-                                        left: 8,
-                                        top: 150,
-                                        right: 28,
-                                        bottom: 7),
-                                    child: Row(children: [
-                                      Text("5",
-                                          overflow: TextOverflow.ellipsis,
-                                          textAlign: TextAlign.left,
-                                          style: AppStyle.txtDMSansBold10),
-                                      Padding(
-                                          padding: getPadding(left: 41, top: 1),
-                                          child: Text("Pipe",
-                                              overflow: TextOverflow.ellipsis,
-                                              textAlign: TextAlign.left,
-                                              style: AppStyle.txtDMSansBold10)),
-                                      Spacer(),
-                                      Text("15",
-                                          overflow: TextOverflow.ellipsis,
-                                          textAlign: TextAlign.left,
-                                          style: AppStyle.txtDMSansBold10),
-                                      Padding(
-                                          padding:
-                                              getPadding(left: 49, bottom: 1),
-                                          child: Text("₹2500",
-                                              overflow: TextOverflow.ellipsis,
-                                              textAlign: TextAlign.left,
-                                              style: AppStyle.txtDMSansBold10))
-                                    ])))
-                          ])),
-                      CustomButton(
-                          width: getHorizontalSize(219),
-                          text: "Generate Bill",
-                          margin: getMargin(top: 32, right: 40),
-                          shape: ButtonShape.RoundedBorder24,
-                          fontStyle: ButtonFontStyle.DMSansMedium20WhiteA700,
-                          alignment: Alignment.centerRight),
-                      Align(
-                          alignment: Alignment.centerLeft,
-                          child: Container(
-                              height: getVerticalSize(1),
-                              width: getHorizontalSize(8),
-                              margin: getMargin(left: 7, top: 42),
+                        padding: const EdgeInsets.all(1),
+                        child: Table(
+                          columnWidths: {
+                            0: FixedColumnWidth(60.0),
+                            1: FixedColumnWidth(85.0),
+                            2: FixedColumnWidth(100.0),
+                            3: FixedColumnWidth(65.0),
+                            4: FixedColumnWidth(70.0),
+                          },
+                          children: [
+                            TableRow(
                               decoration: BoxDecoration(
-                                  color: ColorConstant.blueGray100))),
-                      Spacer(),
-                      Divider(
-                          height: getVerticalSize(1),
-                          thickness: getVerticalSize(1),
-                          color: ColorConstant.gray100,
-                          indent: getHorizontalSize(21),
-                          endIndent: getHorizontalSize(20)),
-                      SizedBox(
-                          height: getVerticalSize(63),
-                          width: double.maxFinite,
-                          child:
-                              Stack(alignment: Alignment.centerLeft, children: [
-                            Align(
-                                alignment: Alignment.center,
-                                child: Container(
-                                    margin: getMargin(left: 21, right: 20),
-                                    padding: getPadding(left: 64, right: 64),
-                                    decoration: AppDecoration.fillWhiteA700,
-                                    child: Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        children: [
-                                          Container(
-                                              height: getVerticalSize(63),
-                                              width: getHorizontalSize(77),
-                                              decoration: BoxDecoration(
-                                                  color:
-                                                      ColorConstant.whiteA700)),
-                                          CustomImageView(
-                                              svgPath: ImageConstant.imgClock,
-                                              height: getVerticalSize(63),
-                                              width: getHorizontalSize(77),
-                                              margin: getMargin(left: 13)),
-                                          Container(
-                                              height: getVerticalSize(63),
-                                              width: getHorizontalSize(77),
-                                              margin: getMargin(left: 13),
-                                              decoration: BoxDecoration(
-                                                  color:
-                                                      ColorConstant.whiteA700))
-                                        ]))),
-                            Align(
-                                alignment: Alignment.centerLeft,
-                                child: Container(
-                                    height: getVerticalSize(63),
-                                    width: getHorizontalSize(77),
-                                    padding: getPadding(
-                                        left: 27,
-                                        top: 21,
-                                        right: 27,
-                                        bottom: 21),
-                                    decoration: AppDecoration.fillWhiteA700,
-                                    child: Stack(children: [
-                                      CustomImageView(
-                                          svgPath: ImageConstant.imgHome,
-                                          height: getSize(21),
-                                          width: getSize(21),
-                                          alignment: Alignment.center)
-                                    ]))),
-                            Align(
-                                alignment: Alignment.centerRight,
-                                child: Container(
-                                    margin: getMargin(left: 111),
-                                    padding: getPadding(top: 21, bottom: 21),
-                                    child: Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
-                                        children: [
-                                          CustomImageView(
-                                              svgPath: ImageConstant.imgTicket,
-                                              height: getVerticalSize(18),
-                                              width: getHorizontalSize(22),
-                                              margin:
-                                                  getMargin(top: 2, bottom: 1)),
-                                          CustomImageView(
-                                              svgPath: ImageConstant.imgMenu,
-                                              height: getVerticalSize(20),
-                                              width: getHorizontalSize(16),
-                                              margin:
-                                                  getMargin(top: 1, right: 119))
-                                        ]))),
-                            Align(
-                                alignment: Alignment.centerRight,
-                                child: Container(
-                                    height: getVerticalSize(63),
-                                    width: getHorizontalSize(77),
-                                    padding: getPadding(
-                                        left: 25,
-                                        top: 19,
-                                        right: 25,
-                                        bottom: 19),
-                                    decoration: AppDecoration.fillWhiteA700,
-                                    child: Stack(children: [
-                                      CustomImageView(
-                                          imagePath:
-                                              ImageConstant.imgPlaceholder,
-                                          height: getSize(24),
-                                          width: getSize(24),
-                                          radius: BorderRadius.circular(
-                                              getHorizontalSize(12)),
-                                          alignment: Alignment.center)
-                                    ])))
-                          ]))
-                    ]))));
-  }
+                                borderRadius: BorderRadius.circular(10),
+                                color: ColorConstant.gray300,
+                              ),
+                              children: [
+                                Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Text('Sl No.'),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Text('Code'),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Text('Name'),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Text('Qty'),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Text('Price'),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Container(
+                  child: Expanded(
+                      child: ListView.builder(
+                    itemCount: productDataList.length,
+                    itemBuilder: (context, childIndex) {
+                      int count = childIndex + 1;
+                      return SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        child: Padding(
+                          padding: const EdgeInsets.all(5.0),
+                          child: Container(
+                            child: Table(
+                              columnWidths: {
+                                0: FixedColumnWidth(60.0),
+                                1: FixedColumnWidth(85.0),
+                                2: FixedColumnWidth(100.0),
+                                3: FixedColumnWidth(65.0),
+                                4: FixedColumnWidth(70.0),
+                              },
+                              children: [
+                                // Each TableRow represents a row in the Table
+                                TableRow(
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(10),
+                                    color: ColorConstant.gray100,
+                                  ),
+                                  children: [
+                                    Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: Text(count.toString()),
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: Text(
+                                        productDataList[childIndex]['product_code'],
+                                        maxLines: 2,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: Text(productDataList[childIndex]['product_name'],
+                                          maxLines: 2,
+                                          overflow: TextOverflow.ellipsis),
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: Text(
+                                          productDataList[childIndex]['quantity']
+                                              .toString(),
+                                          maxLines: 2,
+                                          overflow: TextOverflow.ellipsis),
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: Text(
+                                          productDataList[childIndex]['amount']
+                                              .toString(),
+                                          maxLines: 2,
+                                          overflow: TextOverflow.ellipsis),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      );
+                    },
+                    //]
+                  )),
+                ),
+              ]),
+            ),
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: ()async {
+          List orderDetails = productDataList.map(
+                (e) {
+              return {
+                "category_id": "${e['category_id']}",
+                "product_id": "${e['product_id']}",
+                "quantity":"${e['quantity']}",
+                "amount":"${e["amount"]}"
+              };
+            },
+          ).toList();
+          // String jsonData =  jsonEncode(orderDetails);
 
-  /// Navigates back to the previous screen.
-  ///
-  /// This function takes a [BuildContext] object as a parameter, which is used
-  /// to navigate back to the previous screen.
-  onTapArrowleft6(BuildContext context) {
-    Navigator.pop(context);
+            print(orderDetails);
+
+          postOder = await HttpService.postOrders(widget.id, orderdate, createdate ,orderDetails , widget.token);
+        if(postOder != null)  {
+          setState(() {
+            if(postOder!.status ==true){
+              Fluttertoast.showToast(
+                msg: postOder!.message,
+                toastLength: Toast.LENGTH_SHORT,
+                gravity: ToastGravity.BOTTOM,
+                backgroundColor: Colors.black,
+                textColor: Colors.white,
+              );
+            }
+            Navigator.push(context, MaterialPageRoute(builder: (context) => ShopDetailsPage(id:widget.token, shopId:widget.id ),));
+          });
+        }
+        },
+        label: Text('Generate Bill'),
+      ),
+    );
   }
 }
