@@ -7,10 +7,14 @@ import '../model/addshopmodel.dart';
 import '../model/all_products_list_model.dart';
 import '../model/allshops_model.dart';
 import '../model/attendance_model.dart';
+import '../model/cashpayment_model.dart';
 import '../model/checknumber.dart';
 import '../model/collection_model.dart';
 import '../model/dashboard_model.dart';
+import '../model/invoice_details_model.dart';
 import '../model/mark_visit_model.dart';
+import '../model/oder_details_model.dart';
+import '../model/online_payment_model.dart';
 import '../model/product_by_id_model.dart';
 import '../model/products_model.dart';
 import '../model/routemodel.dart';
@@ -196,12 +200,14 @@ class HttpService {
     }
   }
 
-  static Future shopDetails(shopid, token,) async {
+  static Future shopDetails(shopid, token, fdate, tdate) async {
     http.Response response =
         await http.post(Uri.parse("${baseurl}shopDetailsByID"),
             body: ({
               'shop_id': shopid,
               'token': token,
+              'fdate': fdate,
+              'tdate': tdate,
             }));
     if (response.statusCode == 200) {
       return shopDetailsFromJson(response.body);
@@ -262,17 +268,68 @@ class HttpService {
 
   static Future postOrders(
       shopid, orderdate, createdat, orderDetails, token) async {
-   http.Response response = await http.post(Uri.parse("${baseurl}allProductDetails"),
-        body: ({
-          'shop_id': shopid,
-          'order_date': orderdate,
-          'created_at': createdat,
-          'orderDetails': jsonEncode(orderDetails),
-          'token': token,
-        }),);
-    if(response.statusCode == 200){
-     return postOderFromJson(response.body);
-    }else{
+    http.Response response = await http.post(
+      Uri.parse("${baseurl}postOrders"),
+      body: ({
+        'shop_id': shopid,
+        'order_date': orderdate,
+        'created_at': createdat,
+        'orderDetails': jsonEncode(orderDetails),
+        'token': token,
+      }),
+    );
+    if (response.statusCode == 200) {
+      return postOderFromJson(response.body);
+    } else {}
+  }
+
+  static Future orderDetailsByID(oderId, token) async {
+    http.Response response = await http.post(
+        Uri.parse("${baseurl}orderDetailsByID"),
+        body: ({'token': token, 'order_id': oderId}));
+    // print(response.statusCode);
+    if (response.statusCode == 200) {
+      return oderDetailsModelFromJson(response.body);
+    } else {}
+  }
+
+  static Future invoiceDetailsByID(oderId, token) async {
+    http.Response response = await http.post(
+        Uri.parse("${baseurl}invoiceDetailsByID"),
+        body: ({'token': token, 'order_id': oderId}));
+    print(response.statusCode);
+    if (response.statusCode == 200) {
+      return invoiceDetailsModelFromJson(response.body);
+    } else {}
+  }
+
+  static Future paymentByCash(paidAmount, date, token, shopId) async {
+     http.Response response = await http.post(
+      Uri.parse("${baseurl}paymentByCash"),
+      body: ({
+        'paid_amount': paidAmount,
+        'created_at': date,
+        'token': token,
+        'shop_id': shopId,
+      }),
+    );
+     if(response.statusCode ==200){
+      return cashPaymentFromJson(response.body);
+     }
+  }
+
+  static Future postOnlinePayment(paidAmount, date, token, shopId) async {
+    http.Response response = await http.post(
+      Uri.parse("${baseurl}postOnlinePayment"),
+      body: ({
+        'amount': paidAmount,
+        'pay_date': date,
+        'token': token,
+        'shop_id': shopId,
+      }),
+    );
+    if(response.statusCode ==200){
+     return onlinePaymentFromJson(response.body);
 
     }
   }

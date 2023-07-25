@@ -230,6 +230,7 @@ class _TakeOderScreenState extends State<TakeOderScreen> {
                             ),
                             child: Center(
                               child: TextFormField(
+                                keyboardType: TextInputType.number,
                                 controller: quantityController,
                                 decoration: InputDecoration(
                                   hintText: 'Quantity',

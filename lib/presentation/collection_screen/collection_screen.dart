@@ -1,4 +1,5 @@
 import 'package:intl/intl.dart';
+import 'package:jibin_s_application1/presentation/add_collection_screen/add_collection_screen.dart';
 import 'package:jibin_s_application1/services/service.dart';
 
 import '../../model/collection_model.dart';
@@ -318,22 +319,27 @@ class _CollectionScreenState extends State<CollectionScreen> {
                     SizedBox(
                       height: 15,
                     ),
-                    Container(
-                      width: 200,
-                      padding: getPadding(left: 9, top: 5, right: 9, bottom: 5),
-                      decoration: AppDecoration.fillBlue600.copyWith(
-                          borderRadius: BorderRadiusStyle.roundedBorder16),
-                      child: Padding(
-                        padding: const EdgeInsets.all(4.0),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(
-                              'Add Collection',
-                              style: AppStyle.txtDMSansBoldItalic18,
-                            ),
-                            Icon(Icons.add, color: ColorConstant.whiteA700),
-                          ],
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.push(context, MaterialPageRoute(builder: (context) => AddCollectionScreen(id: widget.id),));
+                      },
+                      child: Container(
+                        width: 200,
+                        padding: getPadding(left: 9, top: 5, right: 9, bottom: 5),
+                        decoration: AppDecoration.fillBlue600.copyWith(
+                            borderRadius: BorderRadiusStyle.roundedBorder16),
+                        child: Padding(
+                          padding: const EdgeInsets.all(4.0),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                'Add Collection',
+                                style: AppStyle.txtDMSansBoldItalic18,
+                              ),
+                              Icon(Icons.add, color: ColorConstant.whiteA700),
+                            ],
+                          ),
                         ),
                       ),
                     ),
@@ -513,7 +519,7 @@ class _CollectionScreenState extends State<CollectionScreen> {
                   children: [
                     Padding(
                       padding:
-                      const EdgeInsets.all(5),
+                      const EdgeInsets.all(2),
                       child: Table(
                         columnWidths: {
                           0: FixedColumnWidth(55.0),

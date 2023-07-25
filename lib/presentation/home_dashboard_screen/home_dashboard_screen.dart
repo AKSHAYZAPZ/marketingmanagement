@@ -381,7 +381,9 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> {
                                       ),
                                       Container(
                                         child: IconButton(
-                                          onPressed: () {},
+                                          onPressed: () {
+                                            Get.to(CollectionScreen( id:widget.id));
+                                          },
                                           icon: Icon(
                                             Icons.arrow_forward_ios_outlined,
                                             color:  ColorConstant.lightBlue700,

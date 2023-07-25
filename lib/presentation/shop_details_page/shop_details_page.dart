@@ -4,7 +4,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:intl/intl.dart';
 import 'package:jibin_s_application1/model/shop_details_model.dart';
-import 'package:jibin_s_application1/presentation/takeoder_screen.dart';
+import 'package:jibin_s_application1/presentation/invoice_details_screen/invoice_details_screen.dart';
 import 'package:jibin_s_application1/services/service.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../core/utils/color_constant.dart';
@@ -16,6 +16,7 @@ import '../../theme/app_decoration.dart';
 import '../../theme/app_style.dart';
 import '../../widgets/custom_image_view.dart';
 import '../bottom_navigation_page/bottom_navigation.dart';
+import '../oder_details_screen/oder_details_screen.dart';
 import '../take_order_screen/take_order_screen.dart';
 
 class ShopDetailsPage extends StatefulWidget {
@@ -91,7 +92,7 @@ class _ShopDetailsPageState extends State<ShopDetailsPage>
     // print('fdate ---- ${fdate}');
     // print('fdate ---- ${tdate}');
     shopDetails =
-        await HttpService.shopDetails(widget.shopId, widget.id,);
+        await HttpService.shopDetails(widget.shopId, widget.id, fdate, tdate);
     if (shopDetails != null) {
       setState(() {});
     }
@@ -107,13 +108,12 @@ class _ShopDetailsPageState extends State<ShopDetailsPage>
         leading: IconButton(
           icon: Icon(Icons.arrow_back),
           onPressed: () {
-            // Handle the back button press here
-            // Navigator.pushReplacement(
-            //   context,
-            //   MaterialPageRoute(
-            //     builder: (context) => BottomNavigationScreen(id: widget.id),
-            //   ),
-            // );
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                builder: (context) => BottomNavigationScreen(id: widget.id),
+              ),
+            );
           },
         ),
       ),
@@ -359,7 +359,8 @@ class _ShopDetailsPageState extends State<ShopDetailsPage>
                                           MaterialPageRoute(
                                             builder: (context) =>
                                                 TakeOderScreen(
-                                              id: widget.shopId, token: widget.id,
+                                              id: widget.shopId,
+                                              token: widget.id,
                                             ),
                                           ));
                                     },
@@ -441,6 +442,7 @@ class _ShopDetailsPageState extends State<ShopDetailsPage>
                                         setState(() {
                                           fdate = DateFormat('dd-MM-yyyy')
                                               .format(selctedDatetimetemp);
+                                          print(fdate);
                                           shopDetailingScreen();
                                         });
                                       }
@@ -621,6 +623,7 @@ class _ShopDetailsPageState extends State<ShopDetailsPage>
                                 itemCount:
                                     shopDetails!.data.orderDetails.length,
                                 itemBuilder: (context, index) {
+                                  int count = index + 1;
                                   return SingleChildScrollView(
                                     scrollDirection: Axis.horizontal,
                                     child: Padding(
@@ -646,7 +649,7 @@ class _ShopDetailsPageState extends State<ShopDetailsPage>
                                                 Padding(
                                                   padding:
                                                       const EdgeInsets.all(8.0),
-                                                  child: Text('1'),
+                                                  child: Text(count.toString()),
                                                 ),
                                                 Padding(
                                                   padding:
@@ -687,11 +690,29 @@ class _ShopDetailsPageState extends State<ShopDetailsPage>
                                                           .ellipsis),
                                                 ),
                                                 Padding(
-                                                    padding:
-                                                        const EdgeInsets.all(
-                                                            4.0),
+                                                  padding:
+                                                      const EdgeInsets.all(4.0),
+                                                  child: GestureDetector(
+                                                    onTap: () {
+                                                      int oderId = shopDetails!
+                                                          .data
+                                                          .orderDetails[index]
+                                                          .id;
+                                                      Navigator.push(
+                                                          context,
+                                                          MaterialPageRoute(
+                                                            builder: (context) =>
+                                                                OderDetailsScreen(
+                                                              oderid: oderId
+                                                                  .toString(),
+                                                              token: widget.id,
+                                                            ),
+                                                          ));
+                                                    },
                                                     child:
-                                                        Icon(Icons.visibility)),
+                                                        Icon(Icons.visibility),
+                                                  ),
+                                                ),
                                               ],
                                             ),
                                           ],
@@ -706,7 +727,7 @@ class _ShopDetailsPageState extends State<ShopDetailsPage>
                         ),
                       ),
                     ),
-                    //// -----------------------------------tab bars here 2 payment details-----------------
+                    //// -----------------------------------tab bars here 2 invoice details-----------------
                     Container(
                       child: Padding(
                         padding: const EdgeInsets.all(8.0),
@@ -841,7 +862,17 @@ class _ShopDetailsPageState extends State<ShopDetailsPage>
                                                 Padding(
                                                   padding:
                                                       const EdgeInsets.all(4.0),
-                                                  child: Icon(Icons.visibility),
+                                                  child: GestureDetector(
+                                                    onTap: () {
+                                                     String oderId= shopDetails!
+                                                          .data
+                                                          .invoiceDetails[index]
+                                                          .id.toString();
+                                                      Navigator.push(context, MaterialPageRoute(builder: (context) => InvoiceDetailsScreen(oderid: oderId , token: widget.id),));
+                                                    },
+                                                    child:
+                                                        Icon(Icons.visibility),
+                                                  ),
                                                 ),
                                               ],
                                             ),
