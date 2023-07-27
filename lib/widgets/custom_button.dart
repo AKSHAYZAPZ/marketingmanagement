@@ -161,6 +161,8 @@ class CustomButton extends StatelessWidget {
         return ColorConstant.lightGreenA700;
       case ButtonVariant.FillLightblueA200:
         return ColorConstant.lightBlueA200;
+      case ButtonVariant.FillLightblue700:
+        return ColorConstant.lightBlue700;
       case ButtonVariant.GradientTeal300Lightblue700:
         return null;
       default:
@@ -364,6 +366,7 @@ enum ButtonVariant {
   FillOrange600,
   FillLightgreenA700,
   FillLightblueA200,
+  FillLightblue700,
   FillBlue600,
 }
 

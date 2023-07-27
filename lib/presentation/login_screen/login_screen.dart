@@ -26,6 +26,7 @@ class _LoginScreenState extends State<LoginScreen> {
   TextEditingController passwordController = TextEditingController();
 
   GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  bool isVisible =true;
 
   @override
   Widget build(BuildContext context) {
@@ -77,6 +78,27 @@ class _LoginScreenState extends State<LoginScreen> {
                       fontStyle: TextFormFieldFontStyle.DMSansRegular19,
                       textInputType: TextInputType.emailAddress),
                   CustomTextFormField(
+                      suffix: isVisible
+                          ? IconButton(
+                          onPressed: () {
+                            setState(() {
+                              isVisible = !isVisible;
+                            });
+                          },
+                          icon: Icon(
+                            Icons.visibility_off,
+                            color: Colors.white,
+                          ))
+                          : IconButton(
+                          onPressed: () {
+                            setState(() {
+                              isVisible = !isVisible;
+                            });
+                          },
+                          icon: Icon(
+                            Icons.visibility,
+                            color: Colors.white,
+                          )),
                       validator: (value) {
                         if (value!.isEmpty) {
                           return 'Please enter Password';
@@ -84,7 +106,6 @@ class _LoginScreenState extends State<LoginScreen> {
                           return null;
                         }
                       },
-                      focusNode: FocusNode(),
                       controller: passwordController,
                       hintText: "Password",
                       margin: getMargin(top: 21),
@@ -92,7 +113,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       fontStyle: TextFormFieldFontStyle.DMSansRegular19,
                       textInputAction: TextInputAction.done,
                       textInputType: TextInputType.visiblePassword,
-                      isObscureText: true),
+                      isObscureText: isVisible ? true : false),
                   CustomButton(
                       height: getVerticalSize(59),
                       text: "Login",

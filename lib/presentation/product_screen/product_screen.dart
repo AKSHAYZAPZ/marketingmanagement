@@ -157,6 +157,7 @@ class _ProductScreenState extends State<ProductScreen> {
                               child: TextFormField(
                                 controller: searchCntrller,
                                 decoration: InputDecoration(
+                                  contentPadding: EdgeInsets.fromLTRB(0, 10, 0, 10),
                                   hintStyle: TextStyle(
                                     color: Colors.grey,
                                   ),
@@ -250,7 +251,6 @@ class _ProductScreenState extends State<ProductScreen> {
                         itemCount:
                             products!.data[firstIndex].productDetails.length,
                         itemBuilder: (context, childIndex) {
-                          // Each item in the ListView is represented by a Table widget
                           int count = childIndex + 1;
                           return SingleChildScrollView(
                             scrollDirection: Axis.horizontal,

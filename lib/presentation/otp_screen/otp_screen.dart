@@ -68,17 +68,20 @@ class _OtpScreenState extends State<OtpScreen> {
         width: double.maxFinite,
         child: SafeArea(
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.start,
             children: [
-              Text('Phone Verification',
+              Text('OTP Verification',
                   style: AppStyle.txtRobotoMedium24),
               SizedBox(
-                height: 20,
+                height: 180,
               ),
               Text(
                   'Enter your OTP code here',
                   textAlign: TextAlign.center,
                   style: AppStyle.txtDMSansRegular18WhiteA700),
+              SizedBox(
+                height: 30,
+              ),
             Padding(
               padding: const EdgeInsets.only(left: 40,right: 40),
               child: Row(
@@ -88,6 +91,7 @@ class _OtpScreenState extends State<OtpScreen> {
                       (index) => SizedBox(
                     width: 50, // Set the desired width for each TextField
                     child: TextField(
+
                       controller: _controllers[index],
                       focusNode: _focusNodes[index],
                       keyboardType: TextInputType.number,
@@ -95,11 +99,15 @@ class _OtpScreenState extends State<OtpScreen> {
                       maxLength: 1,
                       onChanged: (value) => _otpValueChanged(value, index),
                       decoration: InputDecoration(
+
+                        fillColor: Colors.white,
                         enabledBorder: UnderlineInputBorder(
                           borderSide: BorderSide(color: Colors.white),
                         ),
                         counterText: '',
-
+                      ),
+                      style: TextStyle(
+                        color: Colors.white,
                       ),
                     ),
                   ),
@@ -122,7 +130,7 @@ class _OtpScreenState extends State<OtpScreen> {
                     }
                     if(enteredOtp ==widget.otp){
                       Fluttertoast.showToast(
-                        msg: 'OTO verified',
+                        msg: 'OTP verified',
                         toastLength: Toast.LENGTH_SHORT,
                         gravity: ToastGravity.BOTTOM,
                         backgroundColor: Colors.black,

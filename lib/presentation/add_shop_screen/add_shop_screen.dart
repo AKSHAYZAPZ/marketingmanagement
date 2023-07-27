@@ -74,10 +74,24 @@ class _AddShopScreenState extends State<AddShopScreen> {
       return true;
       },
       child: SafeArea(
-
         child: Scaffold(
-          backgroundColor: ColorConstant.whiteA700,
-          resizeToAvoidBottomInset: false,
+          appBar: AppBar(
+            backgroundColor: ColorConstant.lightBlue700,
+            centerTitle: true,
+            title: Text('Shops'),
+            leading: IconButton(
+              icon: Icon(Icons.arrow_back),
+              onPressed: () {
+                // Handle the back button press here
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => BottomNavigationScreen(id: widget.id),
+                  ),
+                );
+              },
+            ),
+          ),
           body: routelist != null
               ? SingleChildScrollView(
                   child: SizedBox(
@@ -85,53 +99,16 @@ class _AddShopScreenState extends State<AddShopScreen> {
                     child: Column(
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
-                          SizedBox(
-                            height: getVerticalSize(131),
-                            width: double.maxFinite,
-                            child: Stack(
-                              alignment: Alignment.center,
-                              children: [
-                                CustomImageView(
-                                    imagePath: ImageConstant.imgOverlay,
-                                    height: getVerticalSize(70),
-                                    width: getHorizontalSize(430),
-                                    radius: BorderRadius.circular(
-                                        getHorizontalSize(16)),
-                                    alignment: Alignment.center),
-                                Align(
-                                  alignment: Alignment.center,
-                                  child: Container(
-                                    padding: getPadding(top: 49, bottom: 49),
-                                    decoration: BoxDecoration(
-                                        image: DecorationImage(
-                                            image: AssetImage(
-                                                ImageConstant.imgGroup44),
-                                            fit: BoxFit.cover)),
-                                    child: Column(
-                                      mainAxisSize: MainAxisSize.min,
-                                      mainAxisAlignment: MainAxisAlignment.center,
-                                      children: [
-                                        CustomAppBar(
-                                          height: getVerticalSize(31),
-                                          leadingWidth: 41,
-                                          leading: AppbarImage(
-                                              height: getVerticalSize(17),
-                                              width: getHorizontalSize(21),
-                                              svgPath: ImageConstant.imgArrowleft,
-                                              margin: getMargin(
-                                                  left: 20, top: 4, bottom: 7),
-                                              onTap: () {
-                                                onTapArrowleft(context);
-                                              }),
-                                          centerTitle: true,
-                                          title: AppbarTitle(text: "Add Shop"),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
+                          Stack(
+                            alignment: Alignment.center,
+                            children: [
+                              Column(
+                                mainAxisSize: MainAxisSize.min,
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                ],
+                              ),
+                            ],
                           ),
                           Container(
                             padding: getPadding(top: 6, bottom: 6),
@@ -150,8 +127,11 @@ class _AddShopScreenState extends State<AddShopScreen> {
                                               style: AppStyle
                                                   .txtMontserratRegular14))),
                                   CustomTextFormField(
-                                      focusNode: FocusNode(),
-                                      autofocus: true,
+                                    validator: (value) {
+                                      if(value!.isEmpty){
+                                        return 'Please enter Shopname';
+                                      }
+                                    },
                                       controller: shopnameController,
                                       margin:
                                           getMargin(left: 39, top: 14, right: 42)),
@@ -165,8 +145,11 @@ class _AddShopScreenState extends State<AddShopScreen> {
                                               style: AppStyle
                                                   .txtMontserratRegular14))),
                                   CustomTextFormField(
-                                      focusNode: FocusNode(),
-                                      autofocus: true,
+                                      validator: (value) {
+                                        if(value!.isEmpty){
+                                          return 'Please enter Adress';
+                                        }
+                                      },
                                       controller: addressController,
                                       margin:
                                           getMargin(left: 39, top: 15, right: 42)),
@@ -181,17 +164,15 @@ class _AddShopScreenState extends State<AddShopScreen> {
                                                   .txtMontserratRegular14))),
                                   CustomTextFormField(
                                       textInputType: TextInputType.phone,
-                                      // validator: (value) {
-                                      //   if(value!.isEmpty){
-                                      //     return 'Please enter mobile number';
-                                      //   }else  if (value.length != 10){
-                                      //     return 'Please enter valid Mobilenumber';
-                                      //   }else{
-                                      //     return null;
-                                      //   }
-                                      // },
-                                      focusNode: FocusNode(),
-                                      autofocus: true,
+                                      validator: (value) {
+                                        if(value!.isEmpty){
+                                          return 'Please enter mobile number';
+                                        }else  if (value.length != 10){
+                                          return 'Please enter valid Mobilenumber';
+                                        }else{
+                                          return null;
+                                        }
+                                      },
                                       controller: mobilenoController,
                                       margin:
                                           getMargin(left: 39, top: 14, right: 42)),
@@ -206,18 +187,16 @@ class _AddShopScreenState extends State<AddShopScreen> {
                                               style: AppStyle
                                                   .txtMontserratRegular14))),
                                   CustomTextFormField(
-                                    // validator: (value) {
-                                    //   if(value!.isEmpty){
-                                    //     return 'Please enter whatsapp number';
-                                    //   }else  if (value.length != 10){
-                                    //     return 'Please enter valid Mobilenumber';
-                                    //   }else{
-                                    //     return null;
-                                    //   }
-                                    // },
+                                    validator: (value) {
+                                      if(value!.isEmpty){
+                                        return 'Please enter whatsapp number';
+                                      }else  if (value.length != 10){
+                                        return 'Please enter valid Mobilenumber';
+                                      }else{
+                                        return null;
+                                      }
+                                    },
                                     textInputType: TextInputType.phone,
-                                      focusNode: FocusNode(),
-                                      autofocus: true,
                                       controller: whatsappController,
                                       margin: getMargin(left: 39, right: 42)),
                                   Align(
@@ -232,8 +211,6 @@ class _AddShopScreenState extends State<AddShopScreen> {
                                     ),
                                   ),
                                   CustomTextFormField(
-                                      focusNode: FocusNode(),
-                                      autofocus: true,
                                       controller: gstnumberController,
                                       margin: getMargin(left: 39, right: 42),
                                       textInputAction: TextInputAction.done),

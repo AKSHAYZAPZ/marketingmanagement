@@ -94,6 +94,7 @@ class _ShopsScreenState extends State<ShopsScreen> {
                                   child: TextFormField(
                                     controller: searchCntrller,
                                     decoration: InputDecoration(
+                                      contentPadding: EdgeInsets.fromLTRB(0, 10, 0, 10),
                                       hintStyle: TextStyle(
                                         color: Colors.grey,
                                       ),
@@ -102,6 +103,7 @@ class _ShopsScreenState extends State<ShopsScreen> {
                                       prefixIcon: Icon(Icons.search,
                                           color: Colors.grey),
                                       hintText: 'Search',
+
                                       enabledBorder: OutlineInputBorder(
                                         borderSide: BorderSide(
                                             color: Colors.transparent),
@@ -124,7 +126,10 @@ class _ShopsScreenState extends State<ShopsScreen> {
                               ElevatedButton(
                                 onPressed: () async {
                                   searchKey = searchCntrller.text;
-                                  getShops();
+                                  setState(() {
+                                    getShops();
+                                  });
+
                                   // shops  = await HttpService.shopList(widget.id,searchKey,route);
                                 },
                                 child: Text('Search'),
@@ -153,6 +158,7 @@ class _ShopsScreenState extends State<ShopsScreen> {
                                     allshops!.data[index].createdAt,
                                     allshops!.data[index].whatsappNo,
                                     allshops!.data[index].phoneNo,
+                                    token
                                   );
                                 })
                             : Text('No Data'),

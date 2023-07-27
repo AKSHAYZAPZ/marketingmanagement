@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:jibin_s_application1/core/app_export.dart';
 import 'package:jibin_s_application1/presentation/product_screen/product_screen.dart';
 import '../collection_screen/collection_screen.dart';
 import '../home_dashboard_screen/home_dashboard_screen.dart';
+import '../settings_screen/settings_screen.dart';
 import '../shops_screen/shops_screen.dart';
 
 class BottomNavigationScreen  extends StatefulWidget {
@@ -24,9 +26,9 @@ class _MainPageState extends State<BottomNavigationScreen > {
   Widget build(BuildContext context) {
     return Scaffold(
       bottomNavigationBar: BottomNavigationBar(
-        fixedColor: Colors.blue,
-        unselectedItemColor: Colors.grey,
-        backgroundColor: Colors.blue,
+        fixedColor: ColorConstant.lightBlue700,
+        unselectedItemColor: Colors.grey[400],
+        backgroundColor: ColorConstant.lightBlue700,
         currentIndex: _currentIndex,
         onTap: (int index) {
           setState(() {
@@ -50,6 +52,10 @@ class _MainPageState extends State<BottomNavigationScreen > {
               icon:Icon(Icons.collections_bookmark_outlined),
               label: 'Collection'
           ),
+          BottomNavigationBarItem(
+              icon:Icon(Icons.settings),
+              label: 'Settings'
+          ),
         ],
       ),
       body:
@@ -70,6 +76,10 @@ class _MainPageState extends State<BottomNavigationScreen > {
           Offstage(
             offstage: _currentIndex != 3,
             child: CollectionScreen(id: widget.id),
+          ),
+          Offstage(
+            offstage: _currentIndex != 4,
+            child: SettingsScreen(id: widget.id),
           ),
         // _pages[_currentIndex],
         ],

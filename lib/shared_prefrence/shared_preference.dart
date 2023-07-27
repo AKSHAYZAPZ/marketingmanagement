@@ -1,13 +1,25 @@
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
+
 import 'package:geolocator/geolocator.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class CommonFuntion{
+
+
   static addDataToSharedPreferences(String key,dynamic value) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.setString(key, value);
-    print('Data added to SharedPreferences: $key - $value');
+
+     if(key == 'token'){
+       await prefs.setString(key, value);
+     }
+     else if( key == 'name'){
+       await prefs.setString(key, value);
+     }else{
+       prefs.clear();
+     }
+
+
+    // print('Data added to SharedPreferences: $key - $value');
   }
 
   static getSavedKey(key) async {

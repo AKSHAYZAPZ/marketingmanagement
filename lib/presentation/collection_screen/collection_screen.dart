@@ -358,6 +358,7 @@ class _CollectionScreenState extends State<CollectionScreen> {
                                 height: 40,
                                 child: TextFormField(
                                   decoration: InputDecoration(
+                                    contentPadding: EdgeInsets.fromLTRB(0, 10, 0, 10),
                                     hintStyle: TextStyle(
                                       color: Colors.grey,
                                     ),

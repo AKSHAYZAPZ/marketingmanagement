@@ -10,13 +10,21 @@ import '../../theme/app_style.dart';
 import '../../widgets/custom_button.dart';
 import '../../widgets/custom_text_form_field.dart';
 
-class PasswordChangeScreen extends StatelessWidget {
+class PasswordChangeScreen extends StatefulWidget {
   PasswordChangeScreen({Key? key, required this.phone}) : super(key: key);
 
   var phone;
+
+  @override
+  State<PasswordChangeScreen> createState() => _PasswordChangeScreenState();
+}
+
+class _PasswordChangeScreenState extends State<PasswordChangeScreen> {
   GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
+  bool isVisible = true;
   TextEditingController newPassController = TextEditingController();
+
   TextEditingController reenterPassController = TextEditingController();
 
   @override
@@ -40,13 +48,13 @@ class PasswordChangeScreen extends StatelessWidget {
                 children: [
                   SizedBox(
                       width: getHorizontalSize(224),
-                      child: Text("Welcome to\nMEMA",
+                      child: Text("Change Password",
                           maxLines: null,
                           textAlign: TextAlign.center,
-                          style: AppStyle.txtDMSansMedium40)),
+                          style: AppStyle.txtDMSansBold30)),
                   Padding(
                     padding: getPadding(top: 61),
-                    child: Text("Change Password",
+                    child: Text("Set the new password here",
                         overflow: TextOverflow.ellipsis,
                         textAlign: TextAlign.left,
                         style: AppStyle.txtRobotoMedium24),
@@ -67,6 +75,27 @@ class PasswordChangeScreen extends StatelessWidget {
                       fontStyle: TextFormFieldFontStyle.DMSansRegular19,
                       textInputType: TextInputType.emailAddress),
                   CustomTextFormField(
+                      suffix: isVisible
+                          ? IconButton(
+                          onPressed: () {
+                            setState(() {
+                              isVisible = !isVisible;
+                            });
+                          },
+                          icon: Icon(
+                            Icons.visibility_off,
+                            color: Colors.white,
+                          ))
+                          : IconButton(
+                          onPressed: () {
+                            setState(() {
+                              isVisible = !isVisible;
+                            });
+                          },
+                          icon: Icon(
+                            Icons.visibility,
+                            color: Colors.white,
+                          )),
                       validator: (value) {
                         if (value!.isEmpty) {
                           return 'Please enter Password';
@@ -100,7 +129,7 @@ class PasswordChangeScreen extends StatelessWidget {
                         if (newpass == repass) {
                           print('resetting  : $newpass');
                           ResetPassword reset =
-                              await HttpService.resetPassword(phone, newpass);
+                              await HttpService.resetPassword(widget.phone, newpass);
                           if (reset.status == true) {
                             Fluttertoast.showToast(
                               msg: reset.message,

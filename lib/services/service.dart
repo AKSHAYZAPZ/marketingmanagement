@@ -14,7 +14,7 @@ import '../model/dashboard_model.dart';
 import '../model/invoice_details_model.dart';
 import '../model/mark_visit_model.dart';
 import '../model/oder_details_model.dart';
-import '../model/online_payment_model.dart';
+import '../model/payment_type_model.dart';
 import '../model/product_by_id_model.dart';
 import '../model/products_model.dart';
 import '../model/routemodel.dart';
@@ -92,7 +92,7 @@ class HttpService {
       // print('status code:  ${addShopResponse.statusCode}');
       return addshopFromJson(addShopResponse.body);
     } else {
-      print('status code:  ${addShopResponse.statusCode}');
+      // print('status code:  ${addShopResponse.statusCode}');
     }
   }
 
@@ -111,11 +111,11 @@ class HttpService {
     // Handle the response
     if (response.statusCode == 200) {
       // Successful request
-      print('Response: ${response.body}');
+      // print('Response: ${response.body}');
       return checkNumberFromJson(response.body);
     } else {
       // Error in the request
-      print('Error: ${response.statusCode}');
+      // print('Error: ${response.statusCode}');
     }
   }
 
@@ -131,13 +131,13 @@ class HttpService {
       // print('Response: ${verifyresponse.body}');
       return sendotpFromJson(verifyresponse.body);
     } else {
-      print(verifyresponse.statusCode);
+      // print(verifyresponse.statusCode);
     }
   }
 
   static Future resetPassword(mob, password) async {
     final params = {'phoneNumber': mob, 'password': password};
-    print('params    : $params');
+    // print('params    : $params');
     http.Response resetResponse = await http.get(
       Uri.parse("${baseurl}resetPassword").replace(
         queryParameters: params,
@@ -148,14 +148,14 @@ class HttpService {
       // print('Response: ${resetResponse.body}');
       return resetPasswordFromJson(resetResponse.body);
     } else {
-      print(resetResponse.statusCode);
+      // print(resetResponse.statusCode);
     }
   }
 
   static Future getCollection(token, fdate, tdate) async {
-    print('fdate -- $fdate');
-    print('tdate -- $tdate');
-    print(token);
+    // print('fdate -- $fdate');
+    // print('tdate -- $tdate');
+    // print(token);
     final params = {'token': token, 'fdate': fdate, 'tdate': tdate};
     http.Response CollectionResp = await http.get(
       Uri.parse("${baseurl}collectionReport").replace(
@@ -164,7 +164,7 @@ class HttpService {
     );
     // print(CollectionResp.statusCode);
     if (CollectionResp.statusCode == 200) {
-      print(CollectionResp.body);
+      // print(CollectionResp.body);
       return collectionFromJson(CollectionResp.body);
     }
   }
@@ -201,6 +201,10 @@ class HttpService {
   }
 
   static Future shopDetails(shopid, token, fdate, tdate) async {
+    // print(shopid);
+    // print(token);
+    // print(fdate);
+    // print(tdate);
     http.Response response =
         await http.post(Uri.parse("${baseurl}shopDetailsByID"),
             body: ({
@@ -250,7 +254,7 @@ class HttpService {
       Uri.parse("${baseurl}productDetailsByID"),
       body: ({'product_id': productid}),
     );
-    print(response.statusCode);
+    // print(response.statusCode);
     if (response.statusCode == 200) {
       return prouctByIdFromJson(response.body);
     } else {}
@@ -261,7 +265,7 @@ class HttpService {
         Uri.parse("${baseurl}allProductDetails"),
         body: ({'token': token}));
     if (response.statusCode == 200) {
-      print(response.body);
+      // print(response.body);
       return allProductListsFromJson(response.body);
     }
   }
@@ -297,40 +301,33 @@ class HttpService {
     http.Response response = await http.post(
         Uri.parse("${baseurl}invoiceDetailsByID"),
         body: ({'token': token, 'order_id': oderId}));
-    print(response.statusCode);
+    // print(response.statusCode);
     if (response.statusCode == 200) {
       return invoiceDetailsModelFromJson(response.body);
     } else {}
   }
 
-  static Future paymentByCash(paidAmount, date, token, shopId) async {
-     http.Response response = await http.post(
+  static Future paymentByCash(paidAmount, date, token, shopId,type) async {
+    http.Response response = await http.post(
       Uri.parse("${baseurl}paymentByCash"),
       body: ({
         'paid_amount': paidAmount,
         'created_at': date,
         'token': token,
         'shop_id': shopId,
+        'payment_type':type,
       }),
     );
-     if(response.statusCode ==200){
+    if (response.statusCode == 200) {
       return cashPaymentFromJson(response.body);
-     }
+    }
   }
 
-  static Future postOnlinePayment(paidAmount, date, token, shopId) async {
-    http.Response response = await http.post(
-      Uri.parse("${baseurl}postOnlinePayment"),
-      body: ({
-        'amount': paidAmount,
-        'pay_date': date,
-        'token': token,
-        'shop_id': shopId,
-      }),
-    );
-    if(response.statusCode ==200){
-     return onlinePaymentFromJson(response.body);
-
+  static Future paymentTypes() async {
+    http.Response response =
+        await http.get(Uri.parse("${baseurl}paymentTypes"));
+    if (response.statusCode == 200) {
+      return paymentTypeFromJson(response.body);
     }
   }
 }
