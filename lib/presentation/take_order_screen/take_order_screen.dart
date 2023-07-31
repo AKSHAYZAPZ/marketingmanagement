@@ -257,6 +257,7 @@ class _TakeOderScreenState extends State<TakeOderScreen> {
                                     contentPadding:
                                         EdgeInsets.fromLTRB(15, 10, 0, 10),
                                     hintText: 'Quantity',
+                                    hintStyle: TextStyle(fontSize: 13),
                                     enabledBorder: OutlineInputBorder(
                                       borderSide:
                                           BorderSide(color: Colors.transparent),
@@ -279,22 +280,25 @@ class _TakeOderScreenState extends State<TakeOderScreen> {
                                   if (_formKey.currentState != null &&
                                       _formKey.currentState!.validate()) {
                                     _formKey.currentState!.save();
-                                  }
-                                  setState(() {
-                                    // productAdded = productAdded + 1;
-                                    quantity =
-                                        int.parse(quantityController.text);
+                                    setState(() {
+                                      // productAdded = productAdded + 1;
+                                      quantity =
+                                          int.parse(quantityController.text);
 
-                                    productDataList.add(addProductInfoToMap(
-                                      catgryId!,
-                                      prdtId!,
-                                      _searchController.text,
-                                      quantity!,
-                                      quantity! * sellingPrice!,
-                                      productCode,
-                                    ));
-                                    _searchController.text = '';
-                                    quantityController.text = '';
+                                      productDataList.add(addProductInfoToMap(
+                                        catgryId!,
+                                        prdtId!,
+                                        _searchController.text,
+                                        quantity!,
+                                        quantity! * sellingPrice!,
+                                        productCode,
+                                      ));
+                                      _searchController.text = '';
+                                      quantityController.text = '';
+                                    });
+                                  }
+
+
 
                                     // selectedProduct.add(_searchController.text);
                                     // selectedCode.add(productCode);
@@ -303,7 +307,7 @@ class _TakeOderScreenState extends State<TakeOderScreen> {
                                     // selectedPdtId.add(prdtId!);
                                     // selectedCatgryId.add(catgryId!);
                                     // print(quantity);
-                                  });
+
                                   // for (Map<String, dynamic> productData in productDataList) {
                                   //   print(
                                   //       "Product ID: ${productData['product_id']}, Category ID: ${productData['category_id']}, Product Name: ${productData['product_name']}");
@@ -342,11 +346,10 @@ class _TakeOderScreenState extends State<TakeOderScreen> {
                           padding: const EdgeInsets.all(1),
                           child: Table(
                             columnWidths: {
-                              0: FixedColumnWidth(60.0),
-                              1: FixedColumnWidth(85.0),
-                              2: FixedColumnWidth(100.0),
-                              3: FixedColumnWidth(65.0),
-                              4: FixedColumnWidth(70.0),
+                              0: FixedColumnWidth(MediaQuery.of(context).size.width * 0.26), // Using 10%
+                              1: FixedColumnWidth(MediaQuery.of(context).size.width * 0.32), // Using 30%
+                              2: FixedColumnWidth(MediaQuery.of(context).size.width * 0.21), // Using 20%
+                              3: FixedColumnWidth(MediaQuery.of(context).size.width * 0.16),
                             },
                             children: [
                               TableRow(
@@ -355,10 +358,6 @@ class _TakeOderScreenState extends State<TakeOderScreen> {
                                   color: ColorConstant.gray300,
                                 ),
                                 children: [
-                                  Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: Text('Sl No.'),
-                                  ),
                                   Padding(
                                     padding: const EdgeInsets.all(8.0),
                                     child: Text('Code'),
@@ -396,11 +395,10 @@ class _TakeOderScreenState extends State<TakeOderScreen> {
                             child: Container(
                               child: Table(
                                 columnWidths: {
-                                  0: FixedColumnWidth(60.0),
-                                  1: FixedColumnWidth(85.0),
-                                  2: FixedColumnWidth(100.0),
-                                  3: FixedColumnWidth(65.0),
-                                  4: FixedColumnWidth(70.0),
+                                  0: FixedColumnWidth(MediaQuery.of(context).size.width * 0.26), // Using 10%
+                                  1: FixedColumnWidth(MediaQuery.of(context).size.width * 0.32), // Using 30%
+                                  2: FixedColumnWidth(MediaQuery.of(context).size.width * 0.21), // Using 20%
+                                  3: FixedColumnWidth(MediaQuery.of(context).size.width * 0.16),
                                 },
                                 children: [
                                   // Each TableRow represents a row in the Table
@@ -410,10 +408,6 @@ class _TakeOderScreenState extends State<TakeOderScreen> {
                                       color: ColorConstant.gray100,
                                     ),
                                     children: [
-                                      Padding(
-                                        padding: const EdgeInsets.all(8.0),
-                                        child: Text(count.toString()),
-                                      ),
                                       Padding(
                                         padding: const EdgeInsets.all(8.0),
                                         child: Text(
@@ -502,7 +496,7 @@ class _TakeOderScreenState extends State<TakeOderScreen> {
             }
           }
         },
-        label: Text('Generate Bill'),
+        label: Text('Take oder'),
       ),
     );
   }

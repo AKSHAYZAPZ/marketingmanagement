@@ -307,7 +307,7 @@ class CustomButton extends StatelessWidget {
             1,
           ),
           colors: [
-            ColorConstant.teal300,
+            ColorConstant.lightBlue700,
             ColorConstant.lightBlue700,
           ],
         );

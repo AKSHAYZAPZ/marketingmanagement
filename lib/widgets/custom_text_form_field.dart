@@ -135,7 +135,7 @@ class CustomTextFormField extends StatelessWidget {
         return TextStyle(
           color: ColorConstant.whiteA700,
           fontSize: getFontSize(
-            18,
+            24,
           ),
           fontFamily: 'DM Sans',
           fontWeight: FontWeight.w400,
@@ -144,7 +144,7 @@ class CustomTextFormField extends StatelessWidget {
         return TextStyle(
           color: ColorConstant.black900,
           fontSize: getFontSize(
-            10,
+            14,
           ),
           fontFamily: 'DM Sans',
           fontWeight: FontWeight.w500,

@@ -63,7 +63,9 @@ class _PasswordChangeScreenState extends State<PasswordChangeScreen> {
                       validator: (value) {
                         if (value!.isEmpty) {
                           return 'Please enter Password';
-                        } else {
+                        } else if(value!.length < 6){
+                          return 'Password must be at least 6 characters';
+                        }else {
                           return null;
                         }
                       },
@@ -77,28 +79,30 @@ class _PasswordChangeScreenState extends State<PasswordChangeScreen> {
                   CustomTextFormField(
                       suffix: isVisible
                           ? IconButton(
-                          onPressed: () {
-                            setState(() {
-                              isVisible = !isVisible;
-                            });
-                          },
-                          icon: Icon(
-                            Icons.visibility_off,
-                            color: Colors.white,
-                          ))
+                              onPressed: () {
+                                setState(() {
+                                  isVisible = !isVisible;
+                                });
+                              },
+                              icon: Icon(
+                                Icons.visibility_off,
+                                color: Colors.white,
+                              ))
                           : IconButton(
-                          onPressed: () {
-                            setState(() {
-                              isVisible = !isVisible;
-                            });
-                          },
-                          icon: Icon(
-                            Icons.visibility,
-                            color: Colors.white,
-                          )),
+                              onPressed: () {
+                                setState(() {
+                                  isVisible = !isVisible;
+                                });
+                              },
+                              icon: Icon(
+                                Icons.visibility,
+                                color: Colors.white,
+                              )),
                       validator: (value) {
                         if (value!.isEmpty) {
                           return 'Please enter Password';
+                        }else if(value!.length < 6){
+                          return 'Password must be at least 6 characters';
                         } else {
                           return null;
                         }
@@ -113,23 +117,22 @@ class _PasswordChangeScreenState extends State<PasswordChangeScreen> {
                       textInputType: TextInputType.visiblePassword,
                       isObscureText: true),
                   CustomButton(
-                      height: getVerticalSize(59),
-                      text: "Change Password",
-                      margin: getMargin(top: 47),
-                      variant: ButtonVariant.FillWhiteA700,
-                      shape: ButtonShape.RoundedBorder24,
-                      fontStyle: ButtonFontStyle.DMSansMedium20,
-                      onTap: () async {
-                        if (_formKey.currentState != null &&
-                            _formKey.currentState!.validate()) {
-                          _formKey.currentState!.save();
-                        }
+                    height: getVerticalSize(59),
+                    text: "Change Password",
+                    margin: getMargin(top: 47),
+                    variant: ButtonVariant.FillWhiteA700,
+                    shape: ButtonShape.RoundedBorder24,
+                    fontStyle: ButtonFontStyle.DMSansMedium20,
+                    onTap: () async {
+                      if (_formKey.currentState != null &&
+                          _formKey.currentState!.validate()) {
+                        _formKey.currentState!.save();
                         var newpass = newPassController.text;
                         var repass = reenterPassController.text;
                         if (newpass == repass) {
                           print('resetting  : $newpass');
-                          ResetPassword reset =
-                              await HttpService.resetPassword(widget.phone, newpass);
+                          ResetPassword reset = await HttpService.resetPassword(
+                              widget.phone, newpass);
                           if (reset.status == true) {
                             Fluttertoast.showToast(
                               msg: reset.message,
@@ -161,7 +164,9 @@ class _PasswordChangeScreenState extends State<PasswordChangeScreen> {
                             textColor: Colors.white,
                           );
                         }
-                      }),
+                      }
+                    },
+                  ),
                 ],
               ),
             ),

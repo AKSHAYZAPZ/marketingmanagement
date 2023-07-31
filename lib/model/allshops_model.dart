@@ -38,7 +38,9 @@ class Datum {
   String address;
   String phoneNo;
   String whatsappNo;
-  DateTime createdAt;
+  String createdAt;
+  String route;
+  int balance;
 
   Datum({
     required this.id,
@@ -47,6 +49,8 @@ class Datum {
     required this.phoneNo,
     required this.whatsappNo,
     required this.createdAt,
+    required this.route,
+    required this.balance,
   });
 
   factory Datum.fromJson(Map<String, dynamic> json) => Datum(
@@ -55,7 +59,9 @@ class Datum {
     address: json["address"],
     phoneNo: json["phone_no"],
     whatsappNo: json["whatsapp_no"],
-    createdAt: DateTime.parse(json["created_at"]),
+    createdAt: json["created_at"],
+    route: json["route"],
+    balance: json["balance"],
   );
 
   Map<String, dynamic> toJson() => {
@@ -64,6 +70,8 @@ class Datum {
     "address": address,
     "phone_no": phoneNo,
     "whatsapp_no": whatsappNo,
-    "created_at": createdAt.toIso8601String(),
+    "created_at": createdAt,
+    "route": route,
+    "balance": balance,
   };
 }

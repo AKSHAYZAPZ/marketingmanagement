@@ -79,7 +79,10 @@ class _ProductScreenState extends State<ProductScreen> {
                       mainAxisAlignment: MainAxisAlignment.start,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text('Categories', style: AppStyle.txtDMSansBold18),
+                        Padding(
+                          padding: const EdgeInsets.only(left: 8),
+                          child: Text('Categories', style: AppStyle.txtDMSansBold18),
+                        ),
                         SizedBox(
                           height: 5,
                         ),
@@ -144,105 +147,95 @@ class _ProductScreenState extends State<ProductScreen> {
                       ],
                     ),
                   ),
-                  Padding(
-                    padding: const EdgeInsets.only(left: 15, right: 15, top: 1),
-                    child: Container(
-                      height: 70,
-                      width: double.infinity,
-                      child: Row(
-                        children: [
-                          Expanded(
-                            child: Container(
-                              height: 40,
-                              child: TextFormField(
-                                controller: searchCntrller,
-                                decoration: InputDecoration(
-                                  contentPadding: EdgeInsets.fromLTRB(0, 10, 0, 10),
-                                  hintStyle: TextStyle(
-                                    color: Colors.grey,
-                                  ),
-                                  filled: true,
-                                  fillColor: Colors.grey[300],
-                                  prefixIcon:
-                                      Icon(Icons.search, color: Colors.grey),
-                                  hintText: 'Search',
-                                  enabledBorder: OutlineInputBorder(
-                                    borderSide:
-                                        BorderSide(color: Colors.transparent),
-                                    borderRadius: BorderRadius.circular(15),
-                                  ),
-                                  focusedBorder: OutlineInputBorder(
-                                    borderSide:
-                                        BorderSide(color: Colors.transparent),
-                                    borderRadius: BorderRadius.circular(15),
-                                  ),
+                  Container(
+                    height: 70,
+                    width: double.infinity,
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: Container(
+                            height: 40,
+                            child: TextFormField(
+                              controller: searchCntrller,
+                              decoration: InputDecoration(
+                                contentPadding: EdgeInsets.fromLTRB(0, 10, 0, 10),
+                                hintStyle: TextStyle(
+                                  color: Colors.grey,
+                                ),
+                                filled: true,
+                                fillColor: Colors.grey[300],
+                                prefixIcon:
+                                    Icon(Icons.search, color: Colors.grey),
+                                hintText: 'Search',
+                                enabledBorder: OutlineInputBorder(
+                                  borderSide:
+                                      BorderSide(color: Colors.transparent),
+                                  borderRadius: BorderRadius.circular(15),
+                                ),
+                                focusedBorder: OutlineInputBorder(
+                                  borderSide:
+                                      BorderSide(color: Colors.transparent),
+                                  borderRadius: BorderRadius.circular(15),
                                 ),
                               ),
                             ),
                           ),
-                          SizedBox(
-                            width: 5,
-                          ),
-                          ElevatedButton(
-                            onPressed: () async {
-                              searchKey = searchCntrller.text;
-                              productDetails();
-                            },
-                            child: Text('Search'),
-                          ),
-                        ],
-                      ),
+                        ),
+                        SizedBox(
+                          width: 5,
+                        ),
+                        ElevatedButton(
+                          onPressed: () async {
+                            searchKey = searchCntrller.text;
+                            productDetails();
+                          },
+                          child: Text('Search'),
+                        ),
+                      ],
                     ),
                   ),
-                  SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    child: Container(
-                      child: Column(
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.all(1),
-                            child: Table(
-                              columnWidths: {
-                                0: FixedColumnWidth(55.0),
-                                1: FixedColumnWidth(60.0),
-                                2: FixedColumnWidth(120.0),
-                                3: FixedColumnWidth(80.0),
-                                4: FixedColumnWidth(55.0),
-                              },
-                              children: [
-                                TableRow(
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(10),
-                                    color: ColorConstant.gray300,
-                                  ),
-                                  children: [
-                                    Padding(
-                                      padding: const EdgeInsets.all(8.0),
-                                      child: Text('Sl No.'),
-                                    ),
-                                    Padding(
-                                      padding: const EdgeInsets.all(8.0),
-                                      child: Text('Code'),
-                                    ),
-                                    Padding(
-                                      padding: const EdgeInsets.all(8.0),
-                                      child: Text('Name'),
-                                    ),
-                                    Padding(
-                                      padding: const EdgeInsets.all(8.0),
-                                      child: Text('Price'),
-                                    ),
-                                    Padding(
-                                      padding: const EdgeInsets.all(8.0),
-                                      child: Text('View'),
-                                    ),
-                                  ],
+                  Container(
+                    width: MediaQuery.of(context).size.width,
+                    child: Column(
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.all(1),
+                          child: Table(
+                            columnWidths: {
+                              0: FixedColumnWidth(MediaQuery.of(context).size.width * 0.20), // Using 10%
+                              1: FixedColumnWidth(MediaQuery.of(context).size.width * 0.33), // Using 30%
+                              2: FixedColumnWidth(MediaQuery.of(context).size.width * 0.23), // Using 20%
+                              3: FixedColumnWidth(MediaQuery.of(context).size.width * 0.17),
+                            },
+                            children: [
+                              TableRow(
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(10),
+                                  color: ColorConstant.gray300,
                                 ),
-                              ],
-                            ),
+                                children: [
+                                  Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Text('Code'),
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Text('Name'),
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Text('Price'),
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Text('View'),
+                                  ),
+                                ],
+                              ),
+                            ],
                           ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
                   ),
                   Container(
@@ -251,87 +244,78 @@ class _ProductScreenState extends State<ProductScreen> {
                         itemCount:
                             products!.data[firstIndex].productDetails.length,
                         itemBuilder: (context, childIndex) {
-                          int count = childIndex + 1;
-                          return SingleChildScrollView(
-                            scrollDirection: Axis.horizontal,
-                            child: Padding(
-                              padding: const EdgeInsets.all(5.0),
-                              child: Container(
-                                child: Table(
-                                  columnWidths: {
-                                    0: FixedColumnWidth(55.0),
-                                    1: FixedColumnWidth(60.0),
-                                    2: FixedColumnWidth(120.0),
-                                    3: FixedColumnWidth(80.0),
-                                    4: FixedColumnWidth(50.0),
-                                  },
-                                  children: [
-                                    // Each TableRow represents a row in the Table
-                                    TableRow(
-                                      decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(10),
-                                        color: ColorConstant.gray100,
-                                      ),
-                                      children: [
-                                        Padding(
-                                          padding: const EdgeInsets.all(8.0),
-                                          child: Text(count.toString()),
+                          return Padding(
+                            padding: const EdgeInsets.all(5.0),
+                            child: Container(
+                              child: Table(
+                                columnWidths: {
+                                  0: FixedColumnWidth(MediaQuery.of(context).size.width * 0.20), // Using 10%
+                                  1: FixedColumnWidth(MediaQuery.of(context).size.width * 0.33), // Using 30%
+                                  2: FixedColumnWidth(MediaQuery.of(context).size.width * 0.23), // Using 20%
+                                  3: FixedColumnWidth(MediaQuery.of(context).size.width * 0.17),
+                                },
+                                children: [
+                                  // Each TableRow represents a row in the Table
+                                  TableRow(
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(10),
+                                      color: ColorConstant.gray100,
+                                    ),
+                                    children: [
+                                      Padding(
+                                        padding: const EdgeInsets.all(8.0),
+                                        child: Text(
+                                          products!
+                                              .data[firstIndex]
+                                              .productDetails[childIndex]
+                                              .productCode,
+                                          maxLines: 2,
+                                          overflow: TextOverflow.ellipsis,
                                         ),
-                                        Padding(
-                                          padding: const EdgeInsets.all(8.0),
-                                          child: Text(
+                                      ),
+                                      Padding(
+                                        padding: const EdgeInsets.all(8.0),
+                                        child: Text(
                                             products!
                                                 .data[firstIndex]
                                                 .productDetails[childIndex]
-                                                .productCode,
+                                                .productName,
                                             maxLines: 2,
-                                            overflow: TextOverflow.ellipsis,
-                                          ),
-                                        ),
-                                        Padding(
-                                          padding: const EdgeInsets.all(8.0),
-                                          child: Text(
-                                              products!
-                                                  .data[firstIndex]
-                                                  .productDetails[childIndex]
-                                                  .productName,
-                                              maxLines: 2,
-                                              overflow: TextOverflow.ellipsis),
-                                        ),
-                                        Padding(
-                                          padding: const EdgeInsets.all(8.0),
-                                          child: Text(
-                                              products!
-                                                  .data[firstIndex]
-                                                  .productDetails[childIndex]
-                                                  .sellingPrice,
-                                              maxLines: 2,
-                                              overflow: TextOverflow.ellipsis),
-                                        ),
-                                        Padding(
-                                          padding: const EdgeInsets.all(8.0),
+                                            overflow: TextOverflow.ellipsis),
+                                      ),
+                                      Padding(
+                                        padding: const EdgeInsets.all(8.0),
+                                        child: Text(
+                                            products!
+                                                .data[firstIndex]
+                                                .productDetails[childIndex]
+                                                .sellingPrice,
+                                            maxLines: 2,
+                                            overflow: TextOverflow.ellipsis),
+                                      ),
+                                      Padding(
+                                        padding: const EdgeInsets.all(8.0),
+                                        child: GestureDetector(
                                           child: GestureDetector(
-                                            child: GestureDetector(
-                                                onTap: () {
-                                                  String productid = products!
-                                                      .data[firstIndex]
-                                                      .productDetails[childIndex]
-                                                      .productId.toString();
-                                                  Navigator.push(
-                                                    context,
-                                                    MaterialPageRoute(
-                                                      builder: (context) =>
-                                                          ProductDetailScreen( prdctId: productid,),
-                                                    ),
-                                                  );
-                                                },
-                                                child: Icon(Icons.visibility)),
-                                          ),
+                                              onTap: () {
+                                                String productid = products!
+                                                    .data[firstIndex]
+                                                    .productDetails[childIndex]
+                                                    .productId.toString();
+                                                Navigator.push(
+                                                  context,
+                                                  MaterialPageRoute(
+                                                    builder: (context) =>
+                                                        ProductDetailScreen( prdctId: productid,),
+                                                  ),
+                                                );
+                                              },
+                                              child: Icon(Icons.visibility)),
                                         ),
-                                      ],
-                                    ),
-                                  ],
-                                ),
+                                      ),
+                                    ],
+                                  ),
+                                ],
                               ),
                             ),
                           );

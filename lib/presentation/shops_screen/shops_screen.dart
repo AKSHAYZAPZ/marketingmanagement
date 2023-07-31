@@ -1,6 +1,7 @@
 import 'package:jibin_s_application1/presentation/home_dashboard_screen/home_dashboard_screen.dart';
 import 'package:jibin_s_application1/services/service.dart';
 import '../../model/allshops_model.dart';
+import '../../model/routemodel.dart';
 import '../../shared_prefrence/shared_preference.dart';
 import '../bottom_navigation_page/bottom_navigation.dart';
 import '../shops_screen/widgets/shops_item_widget.dart';
@@ -21,14 +22,31 @@ class _ShopsScreenState extends State<ShopsScreen> {
   TextEditingController searchCntrller = TextEditingController();
 
   Allshops? allshops;
+  Routelist? routelist;
 
+  var route ='';
   var searchKey = '';
   var token = '';
+
 
   @override
   void initState() {
     super.initState();
     getid();
+    getRoutes();
+  }
+
+
+  getRoutes() async {
+    routelist = await HttpService.getRoute(token);
+    // print('routes---------- :${routelist!.data.length}');
+    if (routelist == null) {
+      return Center(
+        child: CircularProgressIndicator(),
+      );
+    } else {
+      setState(() {});
+    }
   }
 
   getid() async {
@@ -40,7 +58,7 @@ class _ShopsScreenState extends State<ShopsScreen> {
   }
 
   getShops() async {
-    allshops = await HttpService.allShops(token, searchKey);
+    allshops = await HttpService.allShops(token, searchKey, route);
     if (allshops!.data.length > 0) {
       setState(() {});
     }
@@ -73,7 +91,7 @@ class _ShopsScreenState extends State<ShopsScreen> {
                 child: CircularProgressIndicator(),
               )
             : Padding(
-                padding: const EdgeInsets.only(left: 10, right: 10),
+                padding: const EdgeInsets.only(left: 8, right: 8),
                 child: SizedBox(
                   width: double.maxFinite,
                   child: Column(
@@ -82,7 +100,7 @@ class _ShopsScreenState extends State<ShopsScreen> {
                     children: [
                       Padding(
                         padding: const EdgeInsets.only(
-                            left: 15, right: 15, top: 5),
+                            left: 5, right: 5,),
                         child: Container(
                           height: 70,
                           width: double.infinity,
@@ -103,7 +121,6 @@ class _ShopsScreenState extends State<ShopsScreen> {
                                       prefixIcon: Icon(Icons.search,
                                           color: Colors.grey),
                                       hintText: 'Search',
-
                                       enabledBorder: OutlineInputBorder(
                                         borderSide: BorderSide(
                                             color: Colors.transparent),
@@ -121,7 +138,7 @@ class _ShopsScreenState extends State<ShopsScreen> {
                                 ),
                               ),
                               SizedBox(
-                                width: 5,
+                                width: 12,
                               ),
                               ElevatedButton(
                                 onPressed: () async {
@@ -136,6 +153,42 @@ class _ShopsScreenState extends State<ShopsScreen> {
                               ),
                             ],
                           ),
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(left: 8,right: 8),
+                        child: Row(
+                          mainAxisAlignment:
+                          MainAxisAlignment.spaceBetween,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Text("Shops",
+                                overflow: TextOverflow.ellipsis,
+                                textAlign: TextAlign.left,
+                                style: AppStyle
+                                    .txtDMSansBold20Black900),
+                            DropdownButton(
+                              underline: Container(),
+                              value: route == '' ? null : route,
+                              hint: Text('Select Route'),
+                              items: routelist != null
+                                  ? routelist!.data
+                                  .map<DropdownMenuItem<String>>(
+                                      (e) {
+                                    return DropdownMenuItem<String>(
+                                      value: e.id.toString(),
+                                      child: Text(e.route),
+                                    );
+                                  }).toList()
+                                  : null,
+                              onChanged: (value) {
+                                setState(() {
+                                  route = value.toString();
+                                  getShops();
+                                });
+                              },
+                            ),
+                          ],
                         ),
                       ),
                       Expanded(
@@ -158,6 +211,7 @@ class _ShopsScreenState extends State<ShopsScreen> {
                                     allshops!.data[index].createdAt,
                                     allshops!.data[index].whatsappNo,
                                     allshops!.data[index].phoneNo,
+                                      allshops!.data[index].balance,
                                     token
                                   );
                                 })

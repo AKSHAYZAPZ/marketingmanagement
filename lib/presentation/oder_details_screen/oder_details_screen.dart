@@ -189,11 +189,26 @@ class _OderDetailsScreenState extends State<OderDetailsScreen> {
                     padding: const EdgeInsets.all(1),
                     child: Table(
                       columnWidths: {
-                        0: FixedColumnWidth(60.0),
-                        1: FixedColumnWidth(85.0),
-                        2: FixedColumnWidth(100.0),
-                        3: FixedColumnWidth(65.0),
-                        4: FixedColumnWidth(70.0),
+                        0: FixedColumnWidth(
+                            MediaQuery.of(context)
+                                .size
+                                .width *
+                                0.25), // Using 10%
+                        1: FixedColumnWidth(
+                            MediaQuery.of(context)
+                                .size
+                                .width *
+                                0.32), // Using 30%
+                        2: FixedColumnWidth(
+                            MediaQuery.of(context)
+                                .size
+                                .width *
+                                0.2), // Using 20%
+                        3: FixedColumnWidth(
+                            MediaQuery.of(context)
+                                .size
+                                .width *
+                                0.16),
                       },
                       children: [
                         TableRow(
@@ -202,10 +217,6 @@ class _OderDetailsScreenState extends State<OderDetailsScreen> {
                             color: ColorConstant.gray300,
                           ),
                           children: [
-                            Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Text('Sl No.'),
-                            ),
                             Padding(
                               padding: const EdgeInsets.all(8.0),
                               child: Text('Code'),
@@ -235,7 +246,7 @@ class _OderDetailsScreenState extends State<OderDetailsScreen> {
                   child: ListView.builder(
                     itemCount: oderDetailsModel!.data.orderDetails.length,
                     itemBuilder: (context, index) {
-                      int count = index + 1;
+
                       return SingleChildScrollView(
                         scrollDirection: Axis.horizontal,
                         child: Padding(
@@ -243,11 +254,26 @@ class _OderDetailsScreenState extends State<OderDetailsScreen> {
                           child: Container(
                             child: Table(
                               columnWidths: {
-                                0: FixedColumnWidth(60.0),
-                                1: FixedColumnWidth(85.0),
-                                2: FixedColumnWidth(100.0),
-                                3: FixedColumnWidth(65.0),
-                                4: FixedColumnWidth(70.0),
+                                0: FixedColumnWidth(
+                                    MediaQuery.of(context)
+                                        .size
+                                        .width *
+                                        0.25), // Using 10%
+                                1: FixedColumnWidth(
+                                    MediaQuery.of(context)
+                                        .size
+                                        .width *
+                                        0.32), // Using 30%
+                                2: FixedColumnWidth(
+                                    MediaQuery.of(context)
+                                        .size
+                                        .width *
+                                        0.2), // Using 20%
+                                3: FixedColumnWidth(
+                                    MediaQuery.of(context)
+                                        .size
+                                        .width *
+                                        0.16),
                               },
                               children: [
                                 // Each TableRow represents a row in the Table
@@ -257,10 +283,6 @@ class _OderDetailsScreenState extends State<OderDetailsScreen> {
                                     color: ColorConstant.gray100,
                                   ),
                                   children: [
-                                    Padding(
-                                      padding: const EdgeInsets.all(8.0),
-                                      child: Text(count.toString()),
-                                    ),
                                     Padding(
                                       padding: const EdgeInsets.all(8.0),
                                       child: Text(

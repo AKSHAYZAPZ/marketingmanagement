@@ -76,7 +76,8 @@ class _LoginScreenState extends State<LoginScreen> {
                       margin: getMargin(top: 64),
                       variant: TextFormFieldVariant.OutlineWhiteA700,
                       fontStyle: TextFormFieldFontStyle.DMSansRegular19,
-                      textInputType: TextInputType.emailAddress),
+                      textInputType: TextInputType.phone),
+                  SizedBox(height: 10,),
                   CustomTextFormField(
                       suffix: isVisible
                           ? IconButton(
@@ -102,7 +103,10 @@ class _LoginScreenState extends State<LoginScreen> {
                       validator: (value) {
                         if (value!.isEmpty) {
                           return 'Please enter Password';
-                        } else {
+                        }else if(value!.length < 6){
+                          return 'Password must be at least 6 characters';
+                        }
+                        else {
                           return null;
                         }
                       },
@@ -125,43 +129,50 @@ class _LoginScreenState extends State<LoginScreen> {
                         if (_formKey.currentState != null &&
                             _formKey.currentState!.validate()) {
                           _formKey.currentState!.save();
-                        }
-                        if (mobilenumberController.text.isNotEmpty &&
-                            passwordController.text.isNotEmpty) {
-                          var mobilenum = mobilenumberController.text;
-                          var password = passwordController.text;
-                          var userInfo =
-                              await HttpService.checkLogin(mobilenum, password);
-                          if (userInfo.status != false) {
-                            // print('taken:${userInfo.data.token}');
-                            // print(userInfo.data.username);
-                            // print(userInfo.message);
-                            key = userInfo.data.token;
-                            var username = userInfo.data.username;
-                            CommonFuntion.addDataToSharedPreferences(
-                                'token', key);
-                            CommonFuntion.addDataToSharedPreferences(
-                                'name', username);
-                            Fluttertoast.showToast(
-                              msg: userInfo.message,
-                              toastLength: Toast.LENGTH_SHORT,
-                              gravity: ToastGravity.BOTTOM,
-                              backgroundColor: Colors.black,
-                              textColor: Colors.white,
-                            );
-                            onTapLogin(context);
-                          } else {
-                            // print(userInfo.message);
-                            Fluttertoast.showToast(
-                              msg: userInfo.message,
-                              toastLength: Toast.LENGTH_SHORT,
-                              gravity: ToastGravity.BOTTOM,
-                              backgroundColor: Colors.black,
-                              textColor: Colors.white,
-                            );
+                          if (mobilenumberController.text.isNotEmpty &&
+                              passwordController.text.isNotEmpty) {
+                            var mobilenum = mobilenumberController.text;
+                            var password = passwordController.text;
+                            var userInfo =
+                            await HttpService.checkLogin(mobilenum, password);
+                            if (userInfo.status != false) {
+                              print('token:${userInfo.data.token}');
+                              // print(userInfo.data.username);
+                              // print(userInfo.message);
+                              key = userInfo.data.token;
+                              var username = userInfo.data.username;
+                              var name = username.toString()
+                                  .split(' ')
+                                  .map((word) => word[0].toUpperCase() + word.substring(1))
+                                  .join(' ');
+
+                              CommonFuntion.addDataToSharedPreferences(
+                                  'token', key);
+                              CommonFuntion.addDataToSharedPreferences(
+                                  'name', name);
+                              Fluttertoast.showToast(
+                                msg: userInfo.message,
+                                toastLength: Toast.LENGTH_SHORT,
+                                gravity: ToastGravity.BOTTOM,
+                                backgroundColor: Colors.black,
+                                textColor: Colors.white,
+                              );
+                              onTapLogin(context);
+                            } else {
+                              // print(userInfo.message);
+                              Fluttertoast.showToast(
+                                msg: userInfo.message,
+                                toastLength: Toast.LENGTH_SHORT,
+                                gravity: ToastGravity.BOTTOM,
+                                backgroundColor: Colors.black,
+                                textColor: Colors.white,
+                              );
+                            }
                           }
                         }
-                      }),
+
+                      },
+                  ),
                   Padding(
                     padding: getPadding(top: 41),
                     child: GestureDetector(

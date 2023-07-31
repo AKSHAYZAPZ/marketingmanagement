@@ -4,12 +4,14 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:intl/intl.dart';
 import 'package:jibin_s_application1/model/shop_details_model.dart';
+import 'package:jibin_s_application1/presentation/add_collection_screen/add_collection_screen.dart';
 import 'package:jibin_s_application1/presentation/invoice_details_screen/invoice_details_screen.dart';
 import 'package:jibin_s_application1/services/service.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../core/utils/color_constant.dart';
 import '../../core/utils/image_constant.dart';
 import '../../core/utils/size_utils.dart';
+import '../../model/add_comment_model.dart';
 import '../../model/dashboard_model.dart';
 import '../../model/mark_visit_model.dart';
 import '../../theme/app_decoration.dart';
@@ -39,6 +41,8 @@ class _ShopDetailsPageState extends State<ShopDetailsPage>
 
   String fdate = DateFormat('dd-MM-yyyy').format(DateTime.now());
   String tdate = DateFormat('dd-MM-yyyy').format(DateTime.now());
+
+  TextEditingController _commentController = TextEditingController();
 
   final CustomSwitchController _switchcontroller =
       CustomSwitchController(initialValue: false);
@@ -152,22 +156,24 @@ class _ShopDetailsPageState extends State<ShopDetailsPage>
                   padding: const EdgeInsets.all(12.0),
                   child: Container(
                     width: double.infinity,
-                    height: MediaQuery.of(context).size.height * 0.25,
                     decoration: BoxDecoration(
                         color: ColorConstant.lightBlue700,
                         borderRadius: BorderRadius.circular(15)),
                     child: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Container(
-                              width: 50,
-                              height: 50,
-                              child: Padding(
-                                padding: const EdgeInsets.all(4.0),
+                            Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Container(
+                                width: 50,
+                                height: 50,
+                                // color: Colors.green,
                                 child: Container(
-                                  width: 60,
-                                  height: 60,
                                   decoration: BoxDecoration(
                                     color: ColorConstant.whiteA700,
                                     borderRadius: BorderRadius.circular(50),
@@ -181,9 +187,7 @@ class _ShopDetailsPageState extends State<ShopDetailsPage>
                               ),
                             ),
                             Container(
-                                width: MediaQuery.of(context).size.width * 0.48,
-                                height:
-                                    MediaQuery.of(context).size.height * 0.12,
+                                width: MediaQuery.of(context).size.width * 0.40,
                                 child: Padding(
                                   padding: const EdgeInsets.all(8.0),
                                   child: Column(
@@ -214,15 +218,19 @@ class _ShopDetailsPageState extends State<ShopDetailsPage>
                                     ],
                                   ),
                                 )),
-                            Container(
-                              height: MediaQuery.of(context).size.height * 0.08,
-                              width: MediaQuery.of(context).size.width * 0.32,
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                              child: Padding(
-                                padding: const EdgeInsets.all(4.0),
+                            Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Container(
+                                height:
+                                    MediaQuery.of(context).size.height * 0.05,
+                                width: MediaQuery.of(context).size.width * 0.33,
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(10),
+                                  // color: Colors.yellow
+                                ),
                                 child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
                                   children: [
                                     GestureDetector(
                                       onTap: () async {
@@ -296,19 +304,74 @@ class _ShopDetailsPageState extends State<ShopDetailsPage>
                         ),
                         Container(
                           width: double.infinity,
-                          height: 20,
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Text(
-                                'GST NO :',
-                                style: AppStyle.txtDMSansRegular18WhiteA700,
-                              ),
-                              Text(
-                                shopDetails!.data.gstNo,
-                                style: AppStyle.txtDMSansRegular18WhiteA700,
-                              ),
-                            ],
+                          height: 40,
+                          child: Padding(
+                            padding: const EdgeInsets.only(left: 8),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Row(
+                                  children: [
+                                    Text(
+                                      'GST NO :',
+                                      style:
+                                          AppStyle.txtDMSansRegular18WhiteA700,
+                                    ),
+                                    Text(
+                                      shopDetails!.data.gstNo,
+                                      style:
+                                          AppStyle.txtDMSansRegular18WhiteA700,
+                                    ),
+                                  ],
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.only(right: 10),
+                                  child: GestureDetector(
+                                    onTap: () {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) =>
+                                              AddCollectionScreen(
+                                                  id: widget.id),
+                                        ),
+                                      );
+                                    },
+                                    child: Container(
+                                      width: MediaQuery.of(context).size.width *
+                                          0.3,
+                                      height:
+                                          MediaQuery.of(context).size.height *
+                                              0.9,
+                                      decoration: BoxDecoration(
+                                          boxShadow: [
+                                            BoxShadow(
+                                              color: ColorConstant.black9003f,
+                                              spreadRadius: getHorizontalSize(
+                                                1,
+                                              ),
+                                              blurRadius: getHorizontalSize(
+                                                1,
+                                              ),
+                                              offset: Offset(
+                                                0,
+                                                2,
+                                              ),
+                                            ),
+                                          ],
+                                          color: Colors.white,
+                                          borderRadius:
+                                              BorderRadius.circular(15)),
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [Text('Collection +')],
+                                      ),
+                                    ),
+                                  ),
+                                )
+                              ],
+                            ),
                           ),
                         ),
                         Row(
@@ -316,7 +379,7 @@ class _ShopDetailsPageState extends State<ShopDetailsPage>
                           children: [
                             Container(
                               width: MediaQuery.of(context).size.width * 0.32,
-                              height: MediaQuery.of(context).size.height * 0.10,
+                              height: MediaQuery.of(context).size.height * 0.05,
                               child: Padding(
                                 padding: const EdgeInsets.only(left: 10),
                                 child: Row(
@@ -339,16 +402,19 @@ class _ShopDetailsPageState extends State<ShopDetailsPage>
                             ),
                             Container(
                               width: MediaQuery.of(context).size.width * 0.19,
-                              height: MediaQuery.of(context).size.height * 0.10,
-                              child: Icon(
-                                Icons.comment_outlined,
-                                size: 32,
-                                color: ColorConstant.whiteA700,
+                              height: MediaQuery.of(context).size.height * 0.05,
+                              child: GestureDetector(
+                                onTap: _showPopupTextField,
+                                child: Icon(
+                                  Icons.comment_outlined,
+                                  size: 32,
+                                  color: ColorConstant.whiteA700,
+                                ),
                               ),
                             ),
                             Container(
-                              width: MediaQuery.of(context).size.width * 0.28,
-                              height: MediaQuery.of(context).size.height * 0.10,
+                              width: MediaQuery.of(context).size.width * 0.32,
+                              height: MediaQuery.of(context).size.height * 0.08,
                               child: Column(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
@@ -367,7 +433,11 @@ class _ShopDetailsPageState extends State<ShopDetailsPage>
                                     style: ElevatedButton.styleFrom(
                                       backgroundColor: Colors.green,
                                       // Set the background color of the button
-                                      padding: EdgeInsets.all(16.0),
+                                      padding: EdgeInsets.only(
+                                          left: 22,
+                                          right: 22,
+                                          top: 5,
+                                          bottom: 5),
                                       // Set the padding of the button
                                       shape: RoundedRectangleBorder(
                                         borderRadius: BorderRadius.circular(
@@ -386,157 +456,146 @@ class _ShopDetailsPageState extends State<ShopDetailsPage>
                   ),
                 ),
                 Container(
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: [
-                      Padding(
-                        padding:
-                            const EdgeInsets.only(left: 15, right: 15, top: 15),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: [
-                            Container(
-                              width: 150,
-                              height: 40,
-                              decoration: BoxDecoration(
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: ColorConstant.black9003f,
-                                    spreadRadius: getHorizontalSize(
-                                      1,
-                                    ),
-                                    blurRadius: getHorizontalSize(
-                                      1,
-                                    ),
-                                    offset: Offset(
-                                      0,
-                                      2,
-                                    ),
-                                  ),
-                                ],
-                                borderRadius: BorderRadius.circular(10),
-                                color: ColorConstant.gray50,
+                  child: Padding(
+                    padding:
+                        const EdgeInsets.only(left: 15, right: 15, top: 15),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Container(
+                          width: 150,
+                          height: 40,
+                          decoration: BoxDecoration(
+                            boxShadow: [
+                              BoxShadow(
+                                color: ColorConstant.black9003f,
+                                spreadRadius: getHorizontalSize(
+                                  1,
+                                ),
+                                blurRadius: getHorizontalSize(
+                                  1,
+                                ),
+                                offset: Offset(
+                                  0,
+                                  2,
+                                ),
                               ),
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Padding(
-                                    padding: const EdgeInsets.only(left: 10),
-                                    child: Text(
-                                      fdate.toString(),
-                                    ),
-                                  ),
-                                  GestureDetector(
-                                    onTap: () async {
-                                      final selctedDatetimetemp =
-                                          await showDatePicker(
-                                        context: context,
-                                        initialDate: DateTime.now(),
-                                        firstDate: DateTime(2000),
-                                        lastDate: DateTime(2100),
-                                      );
-                                      if (selctedDatetimetemp == null) {
-                                        return;
-                                      } else {
-                                        setState(() {
-                                          fdate = DateFormat('dd-MM-yyyy')
-                                              .format(selctedDatetimetemp);
-                                          print(fdate);
-                                          shopDetailingScreen();
-                                        });
-                                      }
-                                    },
-                                    child: Container(
-                                      child: Icon(
-                                        Icons.calendar_month,
-                                        color: Colors.white,
-                                      ),
-                                      width: 40,
-                                      height: 40,
-                                      decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(10),
-                                        color: ColorConstant.lightBlue700,
-                                      ),
-                                    ),
-                                  )
-                                ],
+                            ],
+                            borderRadius: BorderRadius.circular(10),
+                            color: ColorConstant.gray50,
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.only(left: 10),
+                                child: Text(
+                                  fdate.toString(),
+                                ),
                               ),
-                            ),
-                            SizedBox(
-                              width: 15,
-                            ),
-                            Container(
-                              width: 150,
-                              height: 40,
-                              decoration: BoxDecoration(
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: ColorConstant.black9003f,
-                                    spreadRadius: getHorizontalSize(
-                                      1,
-                                    ),
-                                    blurRadius: getHorizontalSize(
-                                      1,
-                                    ),
-                                    offset: Offset(
-                                      0,
-                                      2,
-                                    ),
+                              GestureDetector(
+                                onTap: () async {
+                                  final selctedDatetimetemp =
+                                      await showDatePicker(
+                                    context: context,
+                                    initialDate: DateTime.now(),
+                                    firstDate: DateTime(2000),
+                                    lastDate: DateTime(2100),
+                                  );
+                                  if (selctedDatetimetemp == null) {
+                                    return;
+                                  } else {
+                                    setState(() {
+                                      fdate = DateFormat('dd-MM-yyyy')
+                                          .format(selctedDatetimetemp);
+                                      print(fdate);
+                                      shopDetailingScreen();
+                                    });
+                                  }
+                                },
+                                child: Container(
+                                  child: Icon(
+                                    Icons.calendar_month,
+                                    color: Colors.white,
                                   ),
-                                ],
-                                borderRadius: BorderRadius.circular(10),
-                                color: ColorConstant.gray50,
-                              ),
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Padding(
-                                    padding: const EdgeInsets.only(left: 10),
-                                    child: Text(
-                                      tdate.toString(),
-                                    ),
+                                  width: 40,
+                                  height: 40,
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(10),
+                                    color: ColorConstant.lightBlue700,
                                   ),
-                                  GestureDetector(
-                                    onTap: () async {
-                                      final toDateselectTemp =
-                                          await showDatePicker(
-                                        context: context,
-                                        initialDate: DateTime.now(),
-                                        firstDate: DateTime(2000),
-                                        lastDate: DateTime(2100),
-                                      );
-                                      if (toDateselectTemp == null) {
-                                        return;
-                                      } else {
-                                        setState(() {
-                                          tdate = DateFormat('dd-MM-yyyy')
-                                              .format(toDateselectTemp);
-                                          shopDetailingScreen();
-                                        });
-                                      }
-                                    },
-                                    child: Container(
-                                      child: Icon(
-                                        Icons.calendar_month,
-                                        color: Colors.white,
-                                      ),
-                                      width: 40,
-                                      height: 40,
-                                      decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(10),
-                                        color: ColorConstant.lightBlue700,
-                                      ),
-                                    ),
-                                  )
-                                ],
-                              ),
-                            ),
-                          ],
+                                ),
+                              )
+                            ],
+                          ),
                         ),
-                      ),
-                    ],
+                        Container(
+                          width: 150,
+                          height: 40,
+                          decoration: BoxDecoration(
+                            boxShadow: [
+                              BoxShadow(
+                                color: ColorConstant.black9003f,
+                                spreadRadius: getHorizontalSize(
+                                  1,
+                                ),
+                                blurRadius: getHorizontalSize(
+                                  1,
+                                ),
+                                offset: Offset(
+                                  0,
+                                  2,
+                                ),
+                              ),
+                            ],
+                            borderRadius: BorderRadius.circular(10),
+                            color: ColorConstant.gray50,
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.only(left: 10),
+                                child: Text(
+                                  tdate.toString(),
+                                ),
+                              ),
+                              GestureDetector(
+                                onTap: () async {
+                                  final toDateselectTemp = await showDatePicker(
+                                    context: context,
+                                    initialDate: DateTime.now(),
+                                    firstDate: DateTime(2000),
+                                    lastDate: DateTime(2100),
+                                  );
+                                  if (toDateselectTemp == null) {
+                                    return;
+                                  } else {
+                                    setState(() {
+                                      tdate = DateFormat('dd-MM-yyyy')
+                                          .format(toDateselectTemp);
+                                      shopDetailingScreen();
+                                    });
+                                  }
+                                },
+                                child: Container(
+                                  child: Icon(
+                                    Icons.calendar_month,
+                                    color: Colors.white,
+                                  ),
+                                  width: 40,
+                                  height: 40,
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(10),
+                                    color: ColorConstant.lightBlue700,
+                                  ),
+                                ),
+                              )
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
                 TabBar(
@@ -556,86 +615,109 @@ class _ShopDetailsPageState extends State<ShopDetailsPage>
                   ],
                 ),
                 Expanded(
-                  child: TabBarView(controller: tabbarController, children: [
-                    //// -----------------------------------tab bars here 1 oder details-----------------
-                    Container(
-                      child: Padding(
-                        padding: const EdgeInsets.all(10.0),
-                        child: Column(
-                          children: [
-                            Text('Oder deatils'),
-                            Container(
-                              child: Column(
-                                children: [
-                                  Padding(
-                                    padding: const EdgeInsets.all(5),
-                                    child: Table(
-                                      columnWidths: {
-                                        0: FixedColumnWidth(50.0),
-                                        1: FixedColumnWidth(100.0),
-                                        2: FixedColumnWidth(100.0),
-                                        3: FixedColumnWidth(70.0),
-                                        4: FixedColumnWidth(60.0),
-                                      },
-                                      children: [
-                                        TableRow(
-                                          decoration: BoxDecoration(
-                                            borderRadius:
-                                                BorderRadius.circular(10),
-                                            color: ColorConstant.gray300,
+                  child: TabBarView(
+                    controller: tabbarController,
+                    children: [
+                      //// -----------------------------------tab bars here 1 oder details-----------------
+                      Container(
+                        child: Padding(
+                          padding: const EdgeInsets.all(10.0),
+                          child: Column(
+                            children: [
+                              Container(
+                                child: Column(
+                                  children: [
+                                    Padding(
+                                      padding: const EdgeInsets.all(5),
+                                      child: Table(
+                                        columnWidths: {
+                                          0: FixedColumnWidth(
+                                              MediaQuery.of(context)
+                                                      .size
+                                                      .width *
+                                                  0.25), // Using 10%
+                                          1: FixedColumnWidth(
+                                              MediaQuery.of(context)
+                                                      .size
+                                                      .width *
+                                                  0.32), // Using 30%
+                                          2: FixedColumnWidth(
+                                              MediaQuery.of(context)
+                                                      .size
+                                                      .width *
+                                                  0.2), // Using 20%
+                                          3: FixedColumnWidth(
+                                              MediaQuery.of(context)
+                                                      .size
+                                                      .width *
+                                                  0.16),
+                                        },
+                                        children: [
+                                          TableRow(
+                                            decoration: BoxDecoration(
+                                              borderRadius:
+                                                  BorderRadius.circular(10),
+                                              color: ColorConstant.gray300,
+                                            ),
+                                            children: [
+                                              Padding(
+                                                padding:
+                                                    const EdgeInsets.all(8.0),
+                                                child: Text('Date'),
+                                              ),
+                                              Padding(
+                                                padding:
+                                                    const EdgeInsets.all(8.0),
+                                                child: Text('Invoice ID'),
+                                              ),
+                                              Padding(
+                                                padding:
+                                                    const EdgeInsets.all(8.0),
+                                                child: Text('Price'),
+                                              ),
+                                              Padding(
+                                                padding:
+                                                    const EdgeInsets.all(8.0),
+                                                child: Text('View'),
+                                              ),
+                                            ],
                                           ),
-                                          children: [
-                                            Padding(
-                                              padding:
-                                                  const EdgeInsets.all(8.0),
-                                              child: Text('SlNo.'),
-                                            ),
-                                            Padding(
-                                              padding:
-                                                  const EdgeInsets.all(8.0),
-                                              child: Text('Date'),
-                                            ),
-                                            Padding(
-                                              padding:
-                                                  const EdgeInsets.all(8.0),
-                                              child: Text('Invoice ID'),
-                                            ),
-                                            Padding(
-                                              padding:
-                                                  const EdgeInsets.all(8.0),
-                                              child: Text('Price'),
-                                            ),
-                                            Padding(
-                                              padding:
-                                                  const EdgeInsets.all(8.0),
-                                              child: Text('View'),
-                                            ),
-                                          ],
-                                        ),
-                                      ],
+                                        ],
+                                      ),
                                     ),
-                                  ),
-                                ],
+                                  ],
+                                ),
                               ),
-                            ),
-                            Expanded(
-                              child: ListView.builder(
-                                itemCount:
-                                    shopDetails!.data.orderDetails.length,
-                                itemBuilder: (context, index) {
-                                  int count = index + 1;
-                                  return SingleChildScrollView(
-                                    scrollDirection: Axis.horizontal,
-                                    child: Padding(
+                              Expanded(
+                                child: ListView.builder(
+                                  itemCount:
+                                      shopDetails!.data.orderDetails.length,
+                                  itemBuilder: (context, index) {
+                                    return Padding(
                                       padding: const EdgeInsets.all(10.0),
                                       child: Container(
                                         child: Table(
                                           columnWidths: {
-                                            0: FixedColumnWidth(50.0),
-                                            1: FixedColumnWidth(100.0),
-                                            2: FixedColumnWidth(100.0),
-                                            3: FixedColumnWidth(70.0),
-                                            4: FixedColumnWidth(60.0),
+                                            0: FixedColumnWidth(
+                                                MediaQuery.of(context)
+                                                        .size
+                                                        .width *
+                                                    0.25), // Using 10%
+                                            1: FixedColumnWidth(
+                                                MediaQuery.of(context)
+                                                        .size
+                                                        .width *
+                                                    0.32), // Using 30%
+                                            2: FixedColumnWidth(
+                                                MediaQuery.of(context)
+                                                        .size
+                                                        .width *
+                                                    0.2), // Using 20%
+                                            3: FixedColumnWidth(
+                                                MediaQuery.of(context)
+                                                        .size
+                                                        .width *
+                                                    0.16),
                                           },
                                           children: [
                                             // Each TableRow represents a row in the Table
@@ -646,11 +728,6 @@ class _ShopDetailsPageState extends State<ShopDetailsPage>
                                                 color: ColorConstant.gray100,
                                               ),
                                               children: [
-                                                Padding(
-                                                  padding:
-                                                      const EdgeInsets.all(8.0),
-                                                  child: Text(count.toString()),
-                                                ),
                                                 Padding(
                                                   padding:
                                                       const EdgeInsets.all(8.0),
@@ -718,94 +795,114 @@ class _ShopDetailsPageState extends State<ShopDetailsPage>
                                           ],
                                         ),
                                       ),
-                                    ),
-                                  );
-                                },
+                                    );
+                                  },
+                                ),
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
                       ),
-                    ),
-                    //// -----------------------------------tab bars here 2 invoice details-----------------
-                    Container(
-                      child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Column(
-                          children: [
-                            Text('Invoice Details'),
-                            Container(
-                              child: Column(
-                                children: [
-                                  Padding(
-                                    padding: const EdgeInsets.all(5),
-                                    child: Table(
-                                      columnWidths: {
-                                        0: FixedColumnWidth(50.0),
-                                        1: FixedColumnWidth(100.0),
-                                        2: FixedColumnWidth(100.0),
-                                        3: FixedColumnWidth(70.0),
-                                        4: FixedColumnWidth(60.0),
-                                      },
-                                      children: [
-                                        TableRow(
-                                          decoration: BoxDecoration(
-                                            borderRadius:
-                                                BorderRadius.circular(10),
-                                            color: ColorConstant.gray300,
+                      //// -----------------------------------tab bars here 2 invoice details-----------------
+                      Container(
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Column(
+                            children: [
+                              Container(
+                                child: Column(
+                                  children: [
+                                    Padding(
+                                      padding: const EdgeInsets.all(5),
+                                      child: Table(
+                                        columnWidths: {
+                                          0: FixedColumnWidth(
+                                              MediaQuery.of(context)
+                                                      .size
+                                                      .width *
+                                                  0.25), // Using 10%
+                                          1: FixedColumnWidth(
+                                              MediaQuery.of(context)
+                                                      .size
+                                                      .width *
+                                                  0.32), // Using 30%
+                                          2: FixedColumnWidth(
+                                              MediaQuery.of(context)
+                                                      .size
+                                                      .width *
+                                                  0.2), // Using 20%
+                                          3: FixedColumnWidth(
+                                              MediaQuery.of(context)
+                                                      .size
+                                                      .width *
+                                                  0.16),
+                                        },
+                                        children: [
+                                          TableRow(
+                                            decoration: BoxDecoration(
+                                              borderRadius:
+                                                  BorderRadius.circular(10),
+                                              color: ColorConstant.gray300,
+                                            ),
+                                            children: [
+                                              Padding(
+                                                padding:
+                                                    const EdgeInsets.all(8.0),
+                                                child: Text('Date'),
+                                              ),
+                                              Padding(
+                                                padding:
+                                                    const EdgeInsets.all(8.0),
+                                                child: Text('Invoice ID'),
+                                              ),
+                                              Padding(
+                                                padding:
+                                                    const EdgeInsets.all(8.0),
+                                                child: Text('Price'),
+                                              ),
+                                              Padding(
+                                                padding:
+                                                    const EdgeInsets.all(8.0),
+                                                child: Text('View'),
+                                              ),
+                                            ],
                                           ),
-                                          children: [
-                                            Padding(
-                                              padding:
-                                                  const EdgeInsets.all(8.0),
-                                              child: Text('SlNo.'),
-                                            ),
-                                            Padding(
-                                              padding:
-                                                  const EdgeInsets.all(8.0),
-                                              child: Text('Date'),
-                                            ),
-                                            Padding(
-                                              padding:
-                                                  const EdgeInsets.all(8.0),
-                                              child: Text('Invoice ID'),
-                                            ),
-                                            Padding(
-                                              padding:
-                                                  const EdgeInsets.all(8.0),
-                                              child: Text('Price'),
-                                            ),
-                                            Padding(
-                                              padding:
-                                                  const EdgeInsets.all(8.0),
-                                              child: Text('View'),
-                                            ),
-                                          ],
-                                        ),
-                                      ],
+                                        ],
+                                      ),
                                     ),
-                                  ),
-                                ],
+                                  ],
+                                ),
                               ),
-                            ),
-                            Expanded(
-                              child: ListView.builder(
-                                itemCount:
-                                    shopDetails!.data.invoiceDetails.length,
-                                itemBuilder: (context, index) {
-                                  int count = index + 1;
-                                  return SingleChildScrollView(
-                                    scrollDirection: Axis.horizontal,
-                                    child: Padding(
+                              Expanded(
+                                child: ListView.builder(
+                                  itemCount:
+                                      shopDetails!.data.invoiceDetails.length,
+                                  itemBuilder: (context, index) {
+                                    return Padding(
                                       padding: const EdgeInsets.all(5.0),
                                       child: Container(
                                         child: Table(
                                           columnWidths: {
-                                            0: FixedColumnWidth(50.0),
-                                            1: FixedColumnWidth(100.0),
-                                            2: FixedColumnWidth(100.0),
-                                            3: FixedColumnWidth(70.0),
-                                            4: FixedColumnWidth(60.0),
+                                            0: FixedColumnWidth(
+                                                MediaQuery.of(context)
+                                                        .size
+                                                        .width *
+                                                    0.25), // Using 10%
+                                            1: FixedColumnWidth(
+                                                MediaQuery.of(context)
+                                                        .size
+                                                        .width *
+                                                    0.32), // Using 30%
+                                            2: FixedColumnWidth(
+                                                MediaQuery.of(context)
+                                                        .size
+                                                        .width *
+                                                    0.2), // Using 20%
+                                            3: FixedColumnWidth(
+                                                MediaQuery.of(context)
+                                                        .size
+                                                        .width *
+                                                    0.16),
                                           },
                                           children: [
                                             // Each TableRow represents a row in the Table
@@ -816,11 +913,6 @@ class _ShopDetailsPageState extends State<ShopDetailsPage>
                                                 color: ColorConstant.gray100,
                                               ),
                                               children: [
-                                                Padding(
-                                                  padding:
-                                                      const EdgeInsets.all(8.0),
-                                                  child: Text(count.toString()),
-                                                ),
                                                 Padding(
                                                   padding:
                                                       const EdgeInsets.all(8.0),
@@ -864,11 +956,23 @@ class _ShopDetailsPageState extends State<ShopDetailsPage>
                                                       const EdgeInsets.all(4.0),
                                                   child: GestureDetector(
                                                     onTap: () {
-                                                     String oderId= shopDetails!
-                                                          .data
-                                                          .invoiceDetails[index]
-                                                          .id.toString();
-                                                      Navigator.push(context, MaterialPageRoute(builder: (context) => InvoiceDetailsScreen(oderid: oderId , token: widget.id),));
+                                                      String oderId =
+                                                          shopDetails!
+                                                              .data
+                                                              .invoiceDetails[
+                                                                  index]
+                                                              .id
+                                                              .toString();
+                                                      Navigator.push(
+                                                          context,
+                                                          MaterialPageRoute(
+                                                            builder: (context) =>
+                                                                InvoiceDetailsScreen(
+                                                                    oderid:
+                                                                        oderId,
+                                                                    token: widget
+                                                                        .id),
+                                                          ));
                                                     },
                                                     child:
                                                         Icon(Icons.visibility),
@@ -879,157 +983,212 @@ class _ShopDetailsPageState extends State<ShopDetailsPage>
                                           ],
                                         ),
                                       ),
-                                    ),
-                                  );
-                                },
+                                    );
+                                  },
+                                ),
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
                       ),
-                    ),
-                    //// -----------------------------------tab bars here 3 payment details-----------------
-                    Container(
-                      child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Column(
-                          children: [
-                            Text('Payment Details'),
-                            Container(
-                              child: Column(
-                                children: [
-                                  Padding(
-                                    padding: const EdgeInsets.all(3),
-                                    child: Table(
-                                      columnWidths: {
-                                        0: FixedColumnWidth(50.0),
-                                        1: FixedColumnWidth(90.0),
-                                        2: FixedColumnWidth(100.0),
-                                        3: FixedColumnWidth(130.0),
-                                      },
-                                      children: [
-                                        TableRow(
-                                          decoration: BoxDecoration(
-                                            borderRadius:
-                                                BorderRadius.circular(10),
-                                            color: ColorConstant.gray300,
-                                          ),
-                                          children: [
-                                            Padding(
-                                              padding:
-                                                  const EdgeInsets.all(8.0),
-                                              child: Text('SlNo.'),
+                      //// -----------------------------------tab bars here 3 payment details-----------------
+                      Container(
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Column(
+                            children: [
+                              Container(
+                                child: Column(
+                                  children: [
+                                    Padding(
+                                      padding: const EdgeInsets.all(3),
+                                      child: Table(
+                                        columnWidths: {
+                                          0: FixedColumnWidth(
+                                              MediaQuery.of(context)
+                                                      .size
+                                                      .width *
+                                                  0.26),
+                                          1: FixedColumnWidth(
+                                              MediaQuery.of(context)
+                                                      .size
+                                                      .width *
+                                                  0.33),
+                                          2: FixedColumnWidth(
+                                              MediaQuery.of(context)
+                                                      .size
+                                                      .width *
+                                                  0.36),
+                                        },
+                                        children: [
+                                          TableRow(
+                                            decoration: BoxDecoration(
+                                              borderRadius:
+                                                  BorderRadius.circular(10),
+                                              color: ColorConstant.gray300,
                                             ),
-                                            Padding(
-                                              padding:
-                                                  const EdgeInsets.all(8.0),
-                                              child: Text('Date'),
-                                            ),
-                                            Padding(
-                                              padding:
-                                                  const EdgeInsets.all(8.0),
-                                              child: Text('Amount'),
-                                            ),
-                                            Padding(
-                                              padding:
-                                                  const EdgeInsets.all(8.0),
-                                              child: Text('Payment Methord'),
-                                            ),
-                                          ],
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            Expanded(
-                              child: ListView.builder(
-                                itemCount:
-                                    shopDetails!.data.paymentDetails.length,
-                                itemBuilder: (context, index) {
-                                  int count = index + 1;
-                                  return SingleChildScrollView(
-                                    scrollDirection: Axis.horizontal,
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(5.0),
-                                      child: Container(
-                                        child: Table(
-                                          columnWidths: {
-                                            0: FixedColumnWidth(50.0),
-                                            1: FixedColumnWidth(90.0),
-                                            2: FixedColumnWidth(100.0),
-                                            3: FixedColumnWidth(130.0),
-                                          },
-                                          children: [
-                                            // Each TableRow represents a row in the Table
-                                            TableRow(
-                                              decoration: BoxDecoration(
-                                                borderRadius:
-                                                    BorderRadius.circular(10),
-                                                color: ColorConstant.gray100,
+                                            children: [
+                                              Padding(
+                                                padding:
+                                                    const EdgeInsets.all(8.0),
+                                                child: Text('Date'),
                                               ),
-                                              children: [
-                                                Padding(
-                                                  padding:
-                                                      const EdgeInsets.all(8.0),
-                                                  child: Text(count.toString()),
-                                                ),
-                                                Padding(
-                                                  padding:
-                                                      const EdgeInsets.all(8.0),
-                                                  child: Text(
-                                                    shopDetails!
-                                                        .data
-                                                        .paymentDetails[index]
-                                                        .createdAt,
-                                                    maxLines: 2,
-                                                    overflow:
-                                                        TextOverflow.ellipsis,
-                                                  ),
-                                                ),
-                                                Padding(
-                                                  padding:
-                                                      const EdgeInsets.all(8.0),
-                                                  child: Text(
-                                                      shopDetails!
-                                                          .data
-                                                          .paymentDetails[index]
-                                                          .paidAmount,
-                                                      maxLines: 2,
-                                                      overflow: TextOverflow
-                                                          .ellipsis),
-                                                ),
-                                                Padding(
-                                                  padding:
-                                                      const EdgeInsets.all(8.0),
-                                                  child: Text(
-                                                      shopDetails!
-                                                          .data
-                                                          .paymentDetails[index]
-                                                          .paymentType,
-                                                      maxLines: 2,
-                                                      overflow: TextOverflow
-                                                          .ellipsis),
-                                                ),
-                                              ],
-                                            ),
-                                          ],
-                                        ),
+                                              Padding(
+                                                padding:
+                                                    const EdgeInsets.all(8.0),
+                                                child: Text('Amount'),
+                                              ),
+                                              Padding(
+                                                padding:
+                                                    const EdgeInsets.all(8.0),
+                                                child: Text('Payment Methord'),
+                                              ),
+                                            ],
+                                          ),
+                                        ],
                                       ),
                                     ),
-                                  );
-                                },
+                                  ],
+                                ),
                               ),
-                            ),
-                          ],
+                              Expanded(
+                                child: ListView.builder(
+                                  itemCount:
+                                      shopDetails!.data.paymentDetails.length,
+                                  itemBuilder: (context, index) {
+                                    int count = index + 1;
+                                    return SingleChildScrollView(
+                                      scrollDirection: Axis.horizontal,
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(5.0),
+                                        child: Container(
+                                          child: Table(
+                                            columnWidths: {
+                                              0: FixedColumnWidth(
+                                                  MediaQuery.of(context)
+                                                          .size
+                                                          .width *
+                                                      0.26),
+                                              1: FixedColumnWidth(
+                                                  MediaQuery.of(context)
+                                                          .size
+                                                          .width *
+                                                      0.33),
+                                              2: FixedColumnWidth(
+                                                  MediaQuery.of(context)
+                                                          .size
+                                                          .width *
+                                                      0.36),
+                                            },
+                                            children: [
+                                              // Each TableRow represents a row in the Table
+                                              TableRow(
+                                                decoration: BoxDecoration(
+                                                  borderRadius:
+                                                      BorderRadius.circular(10),
+                                                  color: ColorConstant.gray100,
+                                                ),
+                                                children: [
+                                                  Padding(
+                                                    padding:
+                                                        const EdgeInsets.all(
+                                                            8.0),
+                                                    child: Text(
+                                                      shopDetails!
+                                                          .data
+                                                          .paymentDetails[index]
+                                                          .createdAt,
+                                                      maxLines: 2,
+                                                      overflow:
+                                                          TextOverflow.ellipsis,
+                                                    ),
+                                                  ),
+                                                  Padding(
+                                                    padding:
+                                                        const EdgeInsets.all(
+                                                            8.0),
+                                                    child: Text(
+                                                        shopDetails!
+                                                            .data
+                                                            .paymentDetails[
+                                                                index]
+                                                            .paidAmount,
+                                                        maxLines: 2,
+                                                        overflow: TextOverflow
+                                                            .ellipsis),
+                                                  ),
+                                                  Padding(
+                                                    padding:
+                                                        const EdgeInsets.all(
+                                                            8.0),
+                                                    child: Text(
+                                                        shopDetails!
+                                                            .data
+                                                            .paymentDetails[
+                                                                index]
+                                                            .paymentType,
+                                                        maxLines: 2,
+                                                        overflow: TextOverflow
+                                                            .ellipsis),
+                                                  ),
+                                                ],
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
-                      ),
-                    )
-                  ]),
+                      )
+                    ],
+                  ),
                 )
               ],
             ),
+    );
+  }
+
+  void _showPopupTextField() {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text('Enter Comment'),
+          content: TextFormField(
+            controller: _commentController,
+            decoration: InputDecoration(hintText: 'Type here...'),
+          ),
+          actions: [
+            TextButton(onPressed: () {
+              Navigator.of(context).pop();
+            }, child: Text('Close')),
+            ElevatedButton(
+              onPressed: () async {
+                var comment = _commentController.text;
+                AddComment addComment = await HttpService.addShopComments(
+                    widget.id, widget.shopId, comment);
+                setState(() {
+                  _commentController.text = '';
+                  Fluttertoast.showToast(
+                    msg: addComment!.message,
+                    toastLength: Toast.LENGTH_SHORT,
+                    gravity: ToastGravity.BOTTOM,
+                    backgroundColor: Colors.black,
+                    textColor: Colors.white,
+                  );
+                });
+                Navigator.of(context).pop(); // Close the dialog
+              },
+              child: Text('Add Comment'),
+            ),
+          ],
+        );
+      },
     );
   }
 }

@@ -34,20 +34,24 @@ class Dashboard {
 
 class Data {
   bool attendance;
+  String profileImg;
   List<ShopDetail> shopDetails;
 
   Data({
     required this.attendance,
+    required this.profileImg,
     required this.shopDetails,
   });
 
   factory Data.fromJson(Map<String, dynamic> json) => Data(
     attendance: json["attendance"],
+    profileImg: json["profile_img"],
     shopDetails: List<ShopDetail>.from(json["shop_details"].map((x) => ShopDetail.fromJson(x))),
   );
 
   Map<String, dynamic> toJson() => {
     "attendance": attendance,
+    "profile_img": profileImg,
     "shop_details": List<dynamic>.from(shopDetails.map((x) => x.toJson())),
   };
 }
@@ -59,6 +63,7 @@ class ShopDetail {
   String phoneNumber;
   String whatsappNumber;
   String createdAt;
+  int openingBalance;
 
   ShopDetail({
     required this.shopid,
@@ -67,6 +72,7 @@ class ShopDetail {
     required this.phoneNumber,
     required this.whatsappNumber,
     required this.createdAt,
+    required this.openingBalance,
   });
 
   factory ShopDetail.fromJson(Map<String, dynamic> json) => ShopDetail(
@@ -76,6 +82,7 @@ class ShopDetail {
     phoneNumber: json["phoneNumber"],
     whatsappNumber: json["whatsappNumber"],
     createdAt: json["created_at"],
+    openingBalance: json["openingBalance"],
   );
 
   Map<String, dynamic> toJson() => {
@@ -85,5 +92,6 @@ class ShopDetail {
     "phoneNumber": phoneNumber,
     "whatsappNumber": whatsappNumber,
     "created_at": createdAt,
+    "openingBalance": openingBalance,
   };
 }

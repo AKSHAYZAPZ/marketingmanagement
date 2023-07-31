@@ -3,6 +3,7 @@ import 'package:http/http.dart' as http;
 import 'package:jibin_s_application1/model/post_oder_model.dart';
 import 'package:jibin_s_application1/model/sendotp_model.dart';
 import '../model/Reset_model.dart';
+import '../model/add_comment_model.dart';
 import '../model/addshopmodel.dart';
 import '../model/all_products_list_model.dart';
 import '../model/allshops_model.dart';
@@ -40,7 +41,7 @@ class HttpService {
 
   // Dashboard----------------Dashboard
 
-  static Future shopList(token, searchkey, route) async {
+  static Future Dashborad(token, searchkey, route) async {
     var shoplistResponse = await http.post(
       Uri.parse("${baseurl}dashboard"),
       body: ({'token': token, 'search_key': searchkey, 'route': route}),
@@ -71,7 +72,7 @@ class HttpService {
   // shop adding ----------------------------- shop adding
 
   static Future addShop(
-      shopname, adress, phone, whatsapp, gst, route, token) async {
+      shopname, adress, phone, whatsapp, gst, route, token,balance) async {
     var addShopResponse = await http.post(
       Uri.parse("${baseurl}addShop"),
       body: ({
@@ -82,7 +83,7 @@ class HttpService {
         'gst_no': gst,
         'route': route,
         'token': token,
-        'openingBalance': '',
+        'openingBalance': balance,
         'latitude': '',
         'longitude': '',
       }),
@@ -152,11 +153,11 @@ class HttpService {
     }
   }
 
-  static Future getCollection(token, fdate, tdate) async {
+  static Future getCollection(token, fdate, tdate,search) async {
     // print('fdate -- $fdate');
     // print('tdate -- $tdate');
     // print(token);
-    final params = {'token': token, 'fdate': fdate, 'tdate': tdate};
+    final params = {'token': token, 'fdate': fdate, 'tdate': tdate, 'searchkey': search};
     http.Response CollectionResp = await http.get(
       Uri.parse("${baseurl}collectionReport").replace(
         queryParameters: params,
@@ -183,7 +184,7 @@ class HttpService {
     } else {}
   }
 
-  static Future allShops(token, searchkey) async {
+  static Future allShops(token, searchkey,route) async {
     // print('token----------- $token');
     // print('searchkey----------- $searchkey');
     http.Response response = await http.post(
@@ -191,6 +192,7 @@ class HttpService {
       body: ({
         'token': token,
         'search_key': searchkey,
+        'route' : route,
       }),
     );
     // print(response.statusCode);
@@ -330,4 +332,19 @@ class HttpService {
       return paymentTypeFromJson(response.body);
     }
   }
+  static Future addShopComments( token, shopId, comment) async {
+    http.Response response = await http.post(
+      Uri.parse("${baseurl}addShopComments"),
+      body: ({
+        'token': token,
+        'shop_id': shopId,
+        'comment':comment,
+      }),
+    );
+    if (response.statusCode == 200) {
+      // print(response.statusCode);
+      return addCommentFromJson(response.body);
+    }
+  }
+
 }

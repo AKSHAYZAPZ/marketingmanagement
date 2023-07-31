@@ -12,6 +12,7 @@ import '../../model/cashpayment_model.dart';
 import '../../model/payment_type_model.dart';
 import '../../theme/app_decoration.dart';
 import '../../theme/app_style.dart';
+import '../../widgets/custom_button.dart';
 
 class MyShopResult {
   final String shopname;
@@ -33,7 +34,6 @@ class AddCollectionScreen extends StatefulWidget {
 }
 
 class _AddCollectionScreenState extends State<AddCollectionScreen> {
-
   bool _validatedropdown = false;
 
   var dropdownvalue;
@@ -50,6 +50,7 @@ class _AddCollectionScreenState extends State<AddCollectionScreen> {
 
   String searchkey = '';
   String shopid = '';
+  String route = '';
 
   @override
   void initState() {
@@ -58,16 +59,15 @@ class _AddCollectionScreenState extends State<AddCollectionScreen> {
     dropdownvalues();
   }
 
-  dropdownvalues()async{
+  dropdownvalues() async {
     paymentType = await HttpService.paymentTypes();
-    if(paymentType != null){
-      setState(() {
-      });
+    if (paymentType != null) {
+      setState(() {});
     }
   }
 
   getallshops() async {
-    allshops = await HttpService.allShops(widget.id, searchkey);
+    allshops = await HttpService.allShops(widget.id, searchkey, route);
     if (allshops!.status == true) {
       setState(() {});
     }
@@ -103,9 +103,9 @@ class _AddCollectionScreenState extends State<AddCollectionScreen> {
         title: Text('Add Collcetion'),
         centerTitle: true,
       ),
-      body: allshops == null && paymentType==null
+      body: allshops == null && paymentType == null
           ? Center(
-              child: Text('No Shops Found'),
+              child: CircularProgressIndicator(),
             )
           : Form(
               key: _formKey,
@@ -120,9 +120,8 @@ class _AddCollectionScreenState extends State<AddCollectionScreen> {
                         validator: (value) {
                           if (value!.isEmpty) {
                             return 'Please enter shop name';
-                          } else if ( allshops!.data.
-                              where((element) =>
-                          element.shopName == value)
+                          } else if (allshops!.data
+                              .where((element) => element.shopName == value)
                               .isEmpty) {
                             return 'Entered shop not exist';
                           } else {
@@ -219,9 +218,9 @@ class _AddCollectionScreenState extends State<AddCollectionScreen> {
                     Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: TextFormField(
-                        controller:_amountController ,
+                        controller: _amountController,
                         validator: (value) {
-                          if(value!.isEmpty){
+                          if (value!.isEmpty) {
                             return 'Please enter Amount';
                           }
                         },
@@ -254,12 +253,12 @@ class _AddCollectionScreenState extends State<AddCollectionScreen> {
                             hint: Text('Select Payment'),
                             items: paymentType!.data.length > 0
                                 ? paymentType!.data
-                                .map<DropdownMenuItem<String>>((e) {
-                              return DropdownMenuItem<String>(
-                                value: e.id.toString(),
-                                child: Text(e.type),
-                              );
-                            }).toList()
+                                    .map<DropdownMenuItem<String>>((e) {
+                                    return DropdownMenuItem<String>(
+                                      value: e.id.toString(),
+                                      child: Text(e.type),
+                                    );
+                                  }).toList()
                                 : null,
                             onChanged: (selectedItem) {
                               setState(() {
@@ -274,68 +273,60 @@ class _AddCollectionScreenState extends State<AddCollectionScreen> {
                     SizedBox(
                       height: 15,
                     ),
-                    GestureDetector(
-                      onTap: ()async {
+                    CustomButton(
+                      text: "Pay",
+                      variant: ButtonVariant.FillLightblue700,
+                      margin: getMargin(left: 10, top: 5, right: 10),
+                      shape: ButtonShape.RoundedBorder24,
+                      fontStyle: ButtonFontStyle.DMSansMedium20WhiteA700,
+                      onTap: () async {
                         if (_formKey.currentState != null &&
                             _formKey.currentState!.validate()) {
                           _formKey.currentState!.save();
-                        }
-                      String paidAmount = _amountController.text;
-                        if(_validatedropdown == false){
-                          Fluttertoast.showToast(
-                            msg: 'Please select Payment methord',
-                            toastLength: Toast.LENGTH_SHORT,
-                            gravity: ToastGravity.BOTTOM,
-                            backgroundColor: Colors.black,
-                            textColor: Colors.white,
-                          );
-                        }else{
-                          CashPayment cashPayment = await HttpService.paymentByCash(paidAmount, date, widget.id, shopid, dropdownvalue);
 
-
-                          if(cashPayment.status == true){
-                            _amountController.text ='';
-                            _searchController.text ='';
-                            Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => CollectionScreen(id: widget.id),));
-
+                          String paidAmount = _amountController.text;
+                          if (_validatedropdown == false) {
                             Fluttertoast.showToast(
-                              msg: cashPayment.message,
+                              msg: 'Please select Payment methord',
                               toastLength: Toast.LENGTH_SHORT,
                               gravity: ToastGravity.BOTTOM,
                               backgroundColor: Colors.black,
                               textColor: Colors.white,
                             );
+                          } else {
+                            CashPayment cashPayment =
+                                await HttpService.paymentByCash(paidAmount,
+                                    date, widget.id, shopid, dropdownvalue);
 
-                          }else{
-                            Fluttertoast.showToast(
-                              msg: cashPayment.message,
-                              toastLength: Toast.LENGTH_SHORT,
-                              gravity: ToastGravity.BOTTOM,
-                              backgroundColor: Colors.black,
-                              textColor: Colors.white,
-                            );
+                            if (cashPayment.status == true) {
+                              _amountController.text = '';
+                              _searchController.text = '';
+                              Navigator.pushReplacement(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) =>
+                                        CollectionScreen(id: widget.id),
+                                  ));
+                              Fluttertoast.showToast(
+                                msg: cashPayment.message,
+                                toastLength: Toast.LENGTH_SHORT,
+                                gravity: ToastGravity.BOTTOM,
+                                backgroundColor: Colors.black,
+                                textColor: Colors.white,
+                              );
+                            } else {
+                              Fluttertoast.showToast(
+                                msg: cashPayment.message,
+                                toastLength: Toast.LENGTH_SHORT,
+                                gravity: ToastGravity.BOTTOM,
+                                backgroundColor: Colors.black,
+                                textColor: Colors.white,
+                              );
+                            }
                           }
                         }
-
                       },
-                      child: Container(
-                        width: 200,
-                        height: 40,
-                        padding:
-                            getPadding(left: 9, top: 5, right: 9, bottom: 5),
-                        decoration: AppDecoration.fillBlue600.copyWith(
-                            borderRadius: BorderRadiusStyle.roundedBorder16),
-                        child: Padding(
-                          padding: const EdgeInsets.all(4.0),
-                          child: Center(
-                            child: Text(
-                              'Pay',
-                              style: AppStyle.txtDMSansBoldItalic18,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
+                    )
                   ],
                 ),
               ),
