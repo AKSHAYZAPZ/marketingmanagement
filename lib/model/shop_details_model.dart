@@ -39,6 +39,7 @@ class Data {
   String whatsappNumber;
   String gstNo;
   String createdAt;
+  int balance;
   List<Detail> orderDetails;
   List<Detail> invoiceDetails;
   List<PaymentDetail> paymentDetails;
@@ -50,6 +51,7 @@ class Data {
     required this.whatsappNumber,
     required this.gstNo,
     required this.createdAt,
+    required this.balance,
     required this.orderDetails,
     required this.invoiceDetails,
     required this.paymentDetails,
@@ -62,6 +64,7 @@ class Data {
     whatsappNumber: json["whatsapp_number"],
     gstNo: json["gst_no"],
     createdAt: json["created_at"],
+    balance: json["balance"],
     orderDetails: List<Detail>.from(json["orderDetails"].map((x) => Detail.fromJson(x))),
     invoiceDetails: List<Detail>.from(json["invoiceDetails"].map((x) => Detail.fromJson(x))),
     paymentDetails: List<PaymentDetail>.from(json["paymentDetails"].map((x) => PaymentDetail.fromJson(x))),
@@ -74,6 +77,7 @@ class Data {
     "whatsapp_number": whatsappNumber,
     "gst_no": gstNo,
     "created_at": createdAt,
+    "balance": balance,
     "orderDetails": List<dynamic>.from(orderDetails.map((x) => x.toJson())),
     "invoiceDetails": List<dynamic>.from(invoiceDetails.map((x) => x.toJson())),
     "paymentDetails": List<dynamic>.from(paymentDetails.map((x) => x.toJson())),
@@ -87,6 +91,8 @@ class Detail {
   String orderDate;
   String quantity;
   int price;
+  String createdBy;
+  String? status;
 
   Detail({
     required this.id,
@@ -95,6 +101,8 @@ class Detail {
     required this.orderDate,
     required this.quantity,
     required this.price,
+    required this.createdBy,
+    this.status,
   });
 
   factory Detail.fromJson(Map<String, dynamic> json) => Detail(
@@ -104,6 +112,8 @@ class Detail {
     orderDate: json["order_date"],
     quantity: json["quantity"],
     price: json["price"],
+    createdBy: json["created_by"],
+    status: json["status"],
   );
 
   Map<String, dynamic> toJson() => {
@@ -113,6 +123,8 @@ class Detail {
     "order_date": orderDate,
     "quantity": quantity,
     "price": price,
+    "created_by": createdBy,
+    "status": status,
   };
 }
 
@@ -120,22 +132,26 @@ class PaymentDetail {
   String paidAmount;
   String paymentType;
   String createdAt;
+  String createdBy;
 
   PaymentDetail({
     required this.paidAmount,
     required this.paymentType,
     required this.createdAt,
+    required this.createdBy,
   });
 
   factory PaymentDetail.fromJson(Map<String, dynamic> json) => PaymentDetail(
     paidAmount: json["paid_amount"],
     paymentType: json["payment_type"],
     createdAt: json["created_at"],
+    createdBy: json["created_by"],
   );
 
   Map<String, dynamic> toJson() => {
     "paid_amount": paidAmount,
     "payment_type": paymentType,
     "created_at": createdAt,
+    "created_by": createdBy,
   };
 }

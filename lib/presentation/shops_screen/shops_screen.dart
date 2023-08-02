@@ -1,4 +1,3 @@
-import 'package:jibin_s_application1/presentation/home_dashboard_screen/home_dashboard_screen.dart';
 import 'package:jibin_s_application1/services/service.dart';
 import '../../model/allshops_model.dart';
 import '../../model/routemodel.dart';
@@ -7,9 +6,7 @@ import '../bottom_navigation_page/bottom_navigation.dart';
 import '../shops_screen/widgets/shops_item_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:jibin_s_application1/core/app_export.dart';
-import 'package:jibin_s_application1/widgets/app_bar/appbar_image.dart';
-import 'package:jibin_s_application1/widgets/app_bar/appbar_title.dart';
-import 'package:jibin_s_application1/widgets/app_bar/custom_app_bar.dart';
+
 
 class ShopsScreen extends StatefulWidget {
   ShopsScreen({Key? key}) : super(key: key);
@@ -212,6 +209,7 @@ class _ShopsScreenState extends State<ShopsScreen> {
                                     allshops!.data[index].whatsappNo,
                                     allshops!.data[index].phoneNo,
                                       allshops!.data[index].balance,
+                                      allshops!.data[index].route,
                                     token
                                   );
                                 })

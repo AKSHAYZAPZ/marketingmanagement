@@ -22,7 +22,8 @@ class CustomTextFormField extends StatelessWidget {
       this.prefixConstraints,
       this.suffix,
       this.suffixConstraints,
-      this.validator});
+      this.validator,
+      this.errorColor});
 
   TextFormFieldPadding? padding;
 
@@ -63,18 +64,19 @@ class CustomTextFormField extends StatelessWidget {
   BoxConstraints? suffixConstraints;
 
   FormFieldValidator<String>? validator;
+  Color? errorColor;
 
   @override
   Widget build(BuildContext context) {
     return alignment != null
         ? Align(
             alignment: alignment ?? Alignment.center,
-            child: _buildTextFormFieldWidget(),
+            child: _buildTextFormFieldWidget(errorColor),
           )
-        : _buildTextFormFieldWidget();
+        : _buildTextFormFieldWidget(errorColor);
   }
 
-  _buildTextFormFieldWidget() {
+  _buildTextFormFieldWidget(Color? errorColor) {
     return Container(
       width: width ?? double.maxFinite,
       margin: margin,
@@ -87,13 +89,13 @@ class CustomTextFormField extends StatelessWidget {
         textInputAction: textInputAction,
         keyboardType: textInputType,
         maxLines: maxLines ?? 1,
-        decoration: _buildDecoration(),
+        decoration: _buildDecoration(errorColor),
         validator: validator,
       ),
     );
   }
 
-  _buildDecoration() {
+  _buildDecoration(Color? errorColor) {
     return InputDecoration(
       hintText: hintText ?? "",
       hintStyle: _setFontStyle(),
@@ -108,6 +110,9 @@ class CustomTextFormField extends StatelessWidget {
       filled: _setFilled(),
       isDense: true,
       contentPadding: _setPadding(),
+      errorStyle: TextStyle(
+        color: errorColor
+      )
     );
   }
 

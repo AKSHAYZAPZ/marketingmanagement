@@ -63,7 +63,9 @@ class ShopDetail {
   String phoneNumber;
   String whatsappNumber;
   String createdAt;
+  String route;
   int openingBalance;
+  int balance;
 
   ShopDetail({
     required this.shopid,
@@ -72,7 +74,9 @@ class ShopDetail {
     required this.phoneNumber,
     required this.whatsappNumber,
     required this.createdAt,
+    required this.route,
     required this.openingBalance,
+    required this.balance,
   });
 
   factory ShopDetail.fromJson(Map<String, dynamic> json) => ShopDetail(
@@ -82,7 +86,9 @@ class ShopDetail {
     phoneNumber: json["phoneNumber"],
     whatsappNumber: json["whatsappNumber"],
     createdAt: json["created_at"],
+    route: json["route"],
     openingBalance: json["openingBalance"],
+    balance: json["balance"],
   );
 
   Map<String, dynamic> toJson() => {
@@ -92,6 +98,8 @@ class ShopDetail {
     "phoneNumber": phoneNumber,
     "whatsappNumber": whatsappNumber,
     "created_at": createdAt,
+    "route": route,
     "openingBalance": openingBalance,
+    "balance": balance,
   };
 }

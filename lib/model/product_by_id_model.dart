@@ -4,22 +4,22 @@
 
 import 'dart:convert';
 
-ProuctById prouctByIdFromJson(String str) => ProuctById.fromJson(json.decode(str));
+ProductById productByIdFromJson(String str) => ProductById.fromJson(json.decode(str));
 
-String prouctByIdToJson(ProuctById data) => json.encode(data.toJson());
+String proudctByIdToJson(ProductById data) => json.encode(data.toJson());
 
-class ProuctById {
+class ProductById {
   bool status;
   String message;
   Data data;
 
-  ProuctById({
+  ProductById({
     required this.status,
     required this.message,
     required this.data,
   });
 
-  factory ProuctById.fromJson(Map<String, dynamic> json) => ProuctById(
+  factory ProductById.fromJson(Map<String, dynamic> json) => ProductById(
     status: json["status"],
     message: json["message"],
     data: Data.fromJson(json["data"]),

@@ -6,6 +6,7 @@ import 'package:intl/intl.dart';
 import 'package:jibin_s_application1/model/shop_details_model.dart';
 import 'package:jibin_s_application1/presentation/add_collection_screen/add_collection_screen.dart';
 import 'package:jibin_s_application1/presentation/invoice_details_screen/invoice_details_screen.dart';
+import 'package:jibin_s_application1/presentation/shop_editing_screen/shop_editing_screen.dart';
 import 'package:jibin_s_application1/services/service.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../core/utils/color_constant.dart';
@@ -13,6 +14,7 @@ import '../../core/utils/image_constant.dart';
 import '../../core/utils/size_utils.dart';
 import '../../model/add_comment_model.dart';
 import '../../model/dashboard_model.dart';
+import '../../model/delete_shop_model.dart';
 import '../../model/mark_visit_model.dart';
 import '../../theme/app_decoration.dart';
 import '../../theme/app_style.dart';
@@ -106,6 +108,27 @@ class _ShopDetailsPageState extends State<ShopDetailsPage>
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        actions: [
+          IconButton(
+            icon: Icon(Icons.edit),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => ShopEditingScreen(
+                    token: widget.id,
+                    shopId: widget.shopId,
+                  ),
+                ),
+              );
+            },
+          ),
+          IconButton(
+              onPressed: () {
+                deletePopup();
+              },
+              icon: Icon(Icons.delete))
+        ],
         backgroundColor: ColorConstant.lightBlue700,
         centerTitle: true,
         title: Text('Shop Deatils'),
@@ -312,15 +335,42 @@ class _ShopDetailsPageState extends State<ShopDetailsPage>
                               children: [
                                 Row(
                                   children: [
-                                    Text(
-                                      'GST NO :',
-                                      style:
-                                          AppStyle.txtDMSansRegular18WhiteA700,
-                                    ),
-                                    Text(
-                                      shopDetails!.data.gstNo,
-                                      style:
-                                          AppStyle.txtDMSansRegular18WhiteA700,
+                                    Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.start,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Row(
+                                          children: [
+                                            Text(
+                                              'GST NO : ',
+                                              style: AppStyle
+                                                  .txtDMSansRegular18WhiteA702,
+                                            ),
+                                            Text(
+                                              shopDetails!.data.gstNo,
+                                              style: AppStyle
+                                                  .txtDMSansRegular18WhiteA702,
+                                            ),
+                                          ],
+                                        ),
+                                        Row(
+                                          children: [
+                                            Text(
+                                              'Balance : ',
+                                              style: AppStyle
+                                                  .txtDMSansRegular18WhiteA700,
+                                            ),
+                                            Text(
+                                              shopDetails!.data.balance
+                                                  .toString(),
+                                              style: AppStyle
+                                                  .txtDMSansRegular18WhiteA700,
+                                            ),
+                                          ],
+                                        )
+                                      ],
                                     ),
                                   ],
                                 ),
@@ -333,7 +383,8 @@ class _ShopDetailsPageState extends State<ShopDetailsPage>
                                         MaterialPageRoute(
                                           builder: (context) =>
                                               AddCollectionScreen(
-                                                  id: widget.id),
+                                                  id: widget.id,
+                                                  shopId: widget.shopId),
                                         ),
                                       );
                                     },
@@ -619,532 +670,550 @@ class _ShopDetailsPageState extends State<ShopDetailsPage>
                     controller: tabbarController,
                     children: [
                       //// -----------------------------------tab bars here 1 oder details-----------------
-                      Container(
-                        child: Padding(
-                          padding: const EdgeInsets.all(10.0),
-                          child: Column(
-                            children: [
-                              Container(
-                                child: Column(
-                                  children: [
-                                    Padding(
-                                      padding: const EdgeInsets.all(5),
-                                      child: Table(
-                                        columnWidths: {
-                                          0: FixedColumnWidth(
-                                              MediaQuery.of(context)
-                                                      .size
-                                                      .width *
-                                                  0.25), // Using 10%
-                                          1: FixedColumnWidth(
-                                              MediaQuery.of(context)
-                                                      .size
-                                                      .width *
-                                                  0.32), // Using 30%
-                                          2: FixedColumnWidth(
-                                              MediaQuery.of(context)
-                                                      .size
-                                                      .width *
-                                                  0.2), // Using 20%
-                                          3: FixedColumnWidth(
-                                              MediaQuery.of(context)
-                                                      .size
-                                                      .width *
-                                                  0.16),
-                                        },
+                      Padding(
+                        padding: EdgeInsets.all(8.0),
+                        child: ListView.builder(
+                            itemCount: shopDetails!.data.orderDetails.length,
+                            itemBuilder: (context, index) {
+                              return Padding(
+                                padding:
+                                    const EdgeInsets.only(top: 5, bottom: 5),
+                                child: GestureDetector(
+                                  onTap: () {
+                                    shopDetails!.data.orderDetails[index].status == "Waiting for Invoice" ?
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => OderDetailsScreen(
+                                            oderid: shopDetails!
+                                                .data.orderDetails[index].id
+                                                .toString(),
+                                            token: widget.id),
+                                      ),
+                                    ):
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) =>
+                                            InvoiceDetailsScreen(
+                                                oderid: shopDetails!.data
+                                                    .invoiceDetails[index].id
+                                                    .toString(),
+                                                token: widget.id),
+                                      ),
+                                    );
+                                  },
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(10),
+                                      color: Color(0xFFDEF3FF),
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: Colors.black26,
+                                        )
+                                      ],
+                                    ),
+                                    width: MediaQuery.of(context).size.width,
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: Row(
                                         children: [
-                                          TableRow(
-                                            decoration: BoxDecoration(
-                                              borderRadius:
-                                                  BorderRadius.circular(10),
-                                              color: ColorConstant.gray300,
+                                          Container(
+                                            margin: EdgeInsets.only(right: 7),
+                                            height: MediaQuery.of(context)
+                                                    .size
+                                                    .height *
+                                                0.07,
+                                            width: MediaQuery.of(context)
+                                                    .size
+                                                    .width *
+                                                0.14,
+                                            child: Container(
+                                              child: Icon(
+                                                Icons.shopping_cart,
+                                                color: Colors.white,
+                                                size: 30,
+                                              ),
+                                              decoration: BoxDecoration(
+                                                  color: ColorConstant
+                                                      .lightBlue700,
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                          38)),
                                             ),
-                                            children: [
-                                              Padding(
-                                                padding:
-                                                    const EdgeInsets.all(8.0),
-                                                child: Text('Date'),
-                                              ),
-                                              Padding(
-                                                padding:
-                                                    const EdgeInsets.all(8.0),
-                                                child: Text('Invoice ID'),
-                                              ),
-                                              Padding(
-                                                padding:
-                                                    const EdgeInsets.all(8.0),
-                                                child: Text('Price'),
-                                              ),
-                                              Padding(
-                                                padding:
-                                                    const EdgeInsets.all(8.0),
-                                                child: Text('View'),
-                                              ),
-                                            ],
+                                          ),
+                                          Expanded(
+                                            child: Column(
+                                              children: [
+                                                Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment
+                                                          .spaceBetween,
+                                                  children: [
+                                                    Row(
+                                                      children: [
+                                                        Text('Order ID : '),
+                                                        Text(
+                                                          shopDetails!
+                                                              .data
+                                                              .orderDetails[
+                                                                  index]
+                                                              .invoiceNo,
+                                                          maxLines: 2,
+                                                          overflow: TextOverflow
+                                                              .ellipsis,
+                                                        ),
+                                                      ],
+                                                    ),
+                                                    Row(
+                                                      children: [
+                                                        Container(
+                                                          decoration:
+                                                              BoxDecoration(
+                                                            color:
+                                                                Color.fromARGB(
+                                                                    255,
+                                                                    255,
+                                                                    223,
+                                                                    220),
+                                                            borderRadius:
+                                                                BorderRadius
+                                                                    .circular(
+                                                                        5),
+                                                          ),
+                                                          child: Padding(
+                                                            padding:
+                                                                const EdgeInsets
+                                                                    .all(8.0),
+                                                            child: Text(
+                                                                shopDetails!
+                                                                    .data
+                                                                    .orderDetails[
+                                                                        index]
+                                                                    .status!),
+                                                          ),
+                                                        ),
+                                                        SizedBox(
+                                                          width: 8,
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ],
+                                                ),
+                                                Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment
+                                                          .spaceBetween,
+                                                  children: [
+                                                    Row(
+                                                      children: [
+                                                        Text('Date : '),
+                                                        Text(shopDetails!
+                                                            .data
+                                                            .orderDetails[index]
+                                                            .orderDate),
+                                                      ],
+                                                    ),
+                                                  ],
+                                                ),
+                                                SizedBox(
+                                                  height: 5,
+                                                ),
+                                                Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment
+                                                          .spaceBetween,
+                                                  children: [
+                                                    Row(
+                                                      children: [
+                                                        Text('Created by: '),
+                                                        Text(
+                                                          shopDetails!
+                                                              .data
+                                                              .orderDetails[
+                                                                  index]
+                                                              .createdBy,
+                                                          maxLines: 2,
+                                                          overflow: TextOverflow
+                                                              .ellipsis,
+                                                        ),
+                                                      ],
+                                                    ),
+                                                    Row(
+                                                      children: [
+                                                        Text(
+                                                          '₹',
+                                                          style: TextStyle(
+                                                            fontSize: 18,
+                                                          ),
+                                                        ),
+                                                        Text(
+                                                          shopDetails!
+                                                              .data
+                                                              .orderDetails[
+                                                                  index]
+                                                              .price
+                                                              .toString(),
+                                                          style: TextStyle(
+                                                            fontSize: 18,
+                                                          ),
+                                                        ),
+                                                        SizedBox(
+                                                          width: 20,
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ],
+                                                ),
+                                              ],
+                                            ),
                                           ),
                                         ],
                                       ),
                                     ),
-                                  ],
+                                  ),
                                 ),
-                              ),
-                              Expanded(
-                                child: ListView.builder(
-                                  itemCount:
-                                      shopDetails!.data.orderDetails.length,
-                                  itemBuilder: (context, index) {
-                                    return Padding(
-                                      padding: const EdgeInsets.all(10.0),
-                                      child: Container(
-                                        child: Table(
-                                          columnWidths: {
-                                            0: FixedColumnWidth(
-                                                MediaQuery.of(context)
-                                                        .size
-                                                        .width *
-                                                    0.25), // Using 10%
-                                            1: FixedColumnWidth(
-                                                MediaQuery.of(context)
-                                                        .size
-                                                        .width *
-                                                    0.32), // Using 30%
-                                            2: FixedColumnWidth(
-                                                MediaQuery.of(context)
-                                                        .size
-                                                        .width *
-                                                    0.2), // Using 20%
-                                            3: FixedColumnWidth(
-                                                MediaQuery.of(context)
-                                                        .size
-                                                        .width *
-                                                    0.16),
-                                          },
-                                          children: [
-                                            // Each TableRow represents a row in the Table
-                                            TableRow(
-                                              decoration: BoxDecoration(
-                                                borderRadius:
-                                                    BorderRadius.circular(10),
-                                                color: ColorConstant.gray100,
-                                              ),
-                                              children: [
-                                                Padding(
-                                                  padding:
-                                                      const EdgeInsets.all(8.0),
-                                                  child: Text(
-                                                    shopDetails!
-                                                        .data
-                                                        .orderDetails[index]
-                                                        .orderDate,
-                                                    maxLines: 2,
-                                                    overflow:
-                                                        TextOverflow.ellipsis,
-                                                  ),
-                                                ),
-                                                Padding(
-                                                  padding:
-                                                      const EdgeInsets.all(8.0),
-                                                  child: Text(
-                                                      shopDetails!
-                                                          .data
-                                                          .orderDetails[index]
-                                                          .invoiceNo,
-                                                      maxLines: 2,
-                                                      overflow: TextOverflow
-                                                          .ellipsis),
-                                                ),
-                                                Padding(
-                                                  padding:
-                                                      const EdgeInsets.all(8.0),
-                                                  child: Text(
-                                                      shopDetails!
-                                                          .data
-                                                          .orderDetails[index]
-                                                          .price
-                                                          .toString(),
-                                                      maxLines: 2,
-                                                      overflow: TextOverflow
-                                                          .ellipsis),
-                                                ),
-                                                Padding(
-                                                  padding:
-                                                      const EdgeInsets.all(4.0),
-                                                  child: GestureDetector(
-                                                    onTap: () {
-                                                      int oderId = shopDetails!
-                                                          .data
-                                                          .orderDetails[index]
-                                                          .id;
-                                                      Navigator.push(
-                                                          context,
-                                                          MaterialPageRoute(
-                                                            builder: (context) =>
-                                                                OderDetailsScreen(
-                                                              oderid: oderId
-                                                                  .toString(),
-                                                              token: widget.id,
-                                                            ),
-                                                          ));
-                                                    },
-                                                    child:
-                                                        Icon(Icons.visibility),
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    );
-                                  },
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
+                              );
+                            }),
                       ),
                       //// -----------------------------------tab bars here 2 invoice details-----------------
                       Container(
                         child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Column(
-                            children: [
-                              Container(
-                                child: Column(
-                                  children: [
-                                    Padding(
-                                      padding: const EdgeInsets.all(5),
-                                      child: Table(
-                                        columnWidths: {
-                                          0: FixedColumnWidth(
-                                              MediaQuery.of(context)
-                                                      .size
-                                                      .width *
-                                                  0.25), // Using 10%
-                                          1: FixedColumnWidth(
-                                              MediaQuery.of(context)
-                                                      .size
-                                                      .width *
-                                                  0.32), // Using 30%
-                                          2: FixedColumnWidth(
-                                              MediaQuery.of(context)
-                                                      .size
-                                                      .width *
-                                                  0.2), // Using 20%
-                                          3: FixedColumnWidth(
-                                              MediaQuery.of(context)
-                                                      .size
-                                                      .width *
-                                                  0.16),
-                                        },
-                                        children: [
-                                          TableRow(
-                                            decoration: BoxDecoration(
-                                              borderRadius:
-                                                  BorderRadius.circular(10),
-                                              color: ColorConstant.gray300,
-                                            ),
-                                            children: [
-                                              Padding(
-                                                padding:
-                                                    const EdgeInsets.all(8.0),
-                                                child: Text('Date'),
-                                              ),
-                                              Padding(
-                                                padding:
-                                                    const EdgeInsets.all(8.0),
-                                                child: Text('Invoice ID'),
-                                              ),
-                                              Padding(
-                                                padding:
-                                                    const EdgeInsets.all(8.0),
-                                                child: Text('Price'),
-                                              ),
-                                              Padding(
-                                                padding:
-                                                    const EdgeInsets.all(8.0),
-                                                child: Text('View'),
-                                              ),
-                                            ],
-                                          ),
+                          padding: EdgeInsets.all(8.0),
+                          child: ListView.builder(
+                              itemCount:
+                                  shopDetails!.data.invoiceDetails.length,
+                              itemBuilder: (context, index) {
+                                return Padding(
+                                  padding:
+                                      const EdgeInsets.only(top: 5, bottom: 5),
+                                  child: GestureDetector(
+                                    onTap: () {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) =>
+                                              InvoiceDetailsScreen(
+                                                  oderid: shopDetails!.data
+                                                      .invoiceDetails[index].id
+                                                      .toString(),
+                                                  token: widget.id),
+                                        ),
+                                      );
+                                    },
+                                    child: Container(
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(10),
+                                        color: Color(0xFFDEF3FF),
+                                        boxShadow: [
+                                          BoxShadow(
+                                            color: Colors.black26,
+                                          )
                                         ],
                                       ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              Expanded(
-                                child: ListView.builder(
-                                  itemCount:
-                                      shopDetails!.data.invoiceDetails.length,
-                                  itemBuilder: (context, index) {
-                                    return Padding(
-                                      padding: const EdgeInsets.all(5.0),
-                                      child: Container(
-                                        child: Table(
-                                          columnWidths: {
-                                            0: FixedColumnWidth(
-                                                MediaQuery.of(context)
-                                                        .size
-                                                        .width *
-                                                    0.25), // Using 10%
-                                            1: FixedColumnWidth(
-                                                MediaQuery.of(context)
-                                                        .size
-                                                        .width *
-                                                    0.32), // Using 30%
-                                            2: FixedColumnWidth(
-                                                MediaQuery.of(context)
-                                                        .size
-                                                        .width *
-                                                    0.2), // Using 20%
-                                            3: FixedColumnWidth(
-                                                MediaQuery.of(context)
-                                                        .size
-                                                        .width *
-                                                    0.16),
-                                          },
+                                      width: MediaQuery.of(context).size.width,
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(8.0),
+                                        child: Row(
                                           children: [
-                                            // Each TableRow represents a row in the Table
-                                            TableRow(
-                                              decoration: BoxDecoration(
-                                                borderRadius:
-                                                    BorderRadius.circular(10),
-                                                color: ColorConstant.gray100,
+                                            Container(
+                                              margin: EdgeInsets.only(right: 7),
+                                              height: MediaQuery.of(context)
+                                                      .size
+                                                      .height *
+                                                  0.07,
+                                              width: MediaQuery.of(context)
+                                                      .size
+                                                      .width *
+                                                  0.14,
+                                              child: Container(
+                                                child: Icon(
+                                                  Icons.shopping_cart,
+                                                  color: Colors.white,
+                                                  size: 30,
+                                                ),
+                                                decoration: BoxDecoration(
+                                                    color: ColorConstant
+                                                        .lightBlue700,
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            38)),
                                               ),
-                                              children: [
-                                                Padding(
-                                                  padding:
-                                                      const EdgeInsets.all(8.0),
-                                                  child: Text(
-                                                    shopDetails!
-                                                        .data
-                                                        .invoiceDetails[index]
-                                                        .orderDate,
-                                                    maxLines: 2,
-                                                    overflow:
-                                                        TextOverflow.ellipsis,
+                                            ),
+                                            Expanded(
+                                              child: Column(
+                                                children: [
+                                                  Row(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment
+                                                            .spaceBetween,
+                                                    children: [
+                                                      Row(
+                                                        children: [
+                                                          Text('Invoice ID : '),
+                                                          Text(
+                                                            shopDetails!
+                                                                .data
+                                                                .invoiceDetails[
+                                                                    index]
+                                                                .invoiceNo,
+                                                            maxLines: 2,
+                                                            overflow:
+                                                                TextOverflow
+                                                                    .ellipsis,
+                                                          ),
+                                                        ],
+                                                      ),
+                                                    ],
                                                   ),
-                                                ),
-                                                Padding(
-                                                  padding:
-                                                      const EdgeInsets.all(8.0),
-                                                  child: Text(
-                                                      shopDetails!
-                                                          .data
-                                                          .invoiceDetails[index]
-                                                          .invoiceNo,
-                                                      maxLines: 2,
-                                                      overflow: TextOverflow
-                                                          .ellipsis),
-                                                ),
-                                                Padding(
-                                                  padding:
-                                                      const EdgeInsets.all(8.0),
-                                                  child: Text(
-                                                      shopDetails!
-                                                          .data
-                                                          .invoiceDetails[index]
-                                                          .price
-                                                          .toString(),
-                                                      maxLines: 2,
-                                                      overflow: TextOverflow
-                                                          .ellipsis),
-                                                ),
-                                                Padding(
-                                                  padding:
-                                                      const EdgeInsets.all(4.0),
-                                                  child: GestureDetector(
-                                                    onTap: () {
-                                                      String oderId =
-                                                          shopDetails!
-                                                              .data
-                                                              .invoiceDetails[
-                                                                  index]
-                                                              .id
-                                                              .toString();
-                                                      Navigator.push(
-                                                          context,
-                                                          MaterialPageRoute(
-                                                            builder: (context) =>
-                                                                InvoiceDetailsScreen(
-                                                                    oderid:
-                                                                        oderId,
-                                                                    token: widget
-                                                                        .id),
-                                                          ));
-                                                    },
-                                                    child:
-                                                        Icon(Icons.visibility),
+                                                  SizedBox(
+                                                    height: 7,
                                                   ),
-                                                ),
-                                              ],
+                                                  Row(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment
+                                                            .spaceBetween,
+                                                    children: [
+                                                      Row(
+                                                        children: [
+                                                          Text('Date : '),
+                                                          Text(
+                                                            shopDetails!
+                                                                .data
+                                                                .invoiceDetails[
+                                                                    index]
+                                                                .orderDate,
+                                                            maxLines: 2,
+                                                            overflow:
+                                                                TextOverflow
+                                                                    .ellipsis,
+                                                          ),
+                                                        ],
+                                                      ),
+                                                    ],
+                                                  ),
+                                                  SizedBox(
+                                                    height: 5,
+                                                  ),
+                                                  Row(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment
+                                                            .spaceBetween,
+                                                    children: [
+                                                      Row(
+                                                        children: [
+                                                          Text('Created by :'),
+                                                          Text(
+                                                            shopDetails!
+                                                                .data
+                                                                .invoiceDetails[
+                                                                    index]
+                                                                .createdBy,
+                                                            maxLines: 2,
+                                                            overflow:
+                                                                TextOverflow
+                                                                    .ellipsis,
+                                                          ),
+                                                        ],
+                                                      ),
+                                                      Row(
+                                                        children: [
+                                                          Text(
+                                                            '₹',
+                                                            style: TextStyle(
+                                                              fontSize: 18,
+                                                            ),
+                                                          ),
+                                                          Text(
+                                                            shopDetails!
+                                                                .data
+                                                                .invoiceDetails[
+                                                                    index]
+                                                                .price
+                                                                .toString(),
+                                                            style: TextStyle(
+                                                              fontSize: 18,
+                                                            ),
+                                                          ),
+                                                          SizedBox(
+                                                            width: 20,
+                                                          ),
+                                                        ],
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ],
+                                              ),
                                             ),
                                           ],
                                         ),
                                       ),
-                                    );
-                                  },
-                                ),
-                              ),
-                            ],
-                          ),
+                                    ),
+                                  ),
+                                );
+                              }),
                         ),
                       ),
                       //// -----------------------------------tab bars here 3 payment details-----------------
                       Container(
                         child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Column(
-                            children: [
-                              Container(
-                                child: Column(
-                                  children: [
-                                    Padding(
-                                      padding: const EdgeInsets.all(3),
-                                      child: Table(
-                                        columnWidths: {
-                                          0: FixedColumnWidth(
-                                              MediaQuery.of(context)
-                                                      .size
-                                                      .width *
-                                                  0.26),
-                                          1: FixedColumnWidth(
-                                              MediaQuery.of(context)
-                                                      .size
-                                                      .width *
-                                                  0.33),
-                                          2: FixedColumnWidth(
-                                              MediaQuery.of(context)
-                                                      .size
-                                                      .width *
-                                                  0.36),
-                                        },
+                          padding: EdgeInsets.all(8.0),
+                          child: ListView.builder(
+                              itemCount:
+                                  shopDetails!.data.paymentDetails.length,
+                              itemBuilder: (context, index) {
+                                return Padding(
+                                  padding:
+                                      const EdgeInsets.only(top: 5, bottom: 5),
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(10),
+                                      color: Color(0xFFDEF3FF),
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: Colors.black26,
+                                        )
+                                      ],
+                                    ),
+                                    width: MediaQuery.of(context).size.width,
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: Row(
                                         children: [
-                                          TableRow(
-                                            decoration: BoxDecoration(
-                                              borderRadius:
-                                                  BorderRadius.circular(10),
-                                              color: ColorConstant.gray300,
+                                          Container(
+                                            margin: EdgeInsets.only(right: 7),
+                                            height: MediaQuery.of(context)
+                                                    .size
+                                                    .height *
+                                                0.07,
+                                            width: MediaQuery.of(context)
+                                                    .size
+                                                    .width *
+                                                0.14,
+                                            child: Container(
+                                              child: Icon(
+                                                Icons.shopping_cart,
+                                                color: Colors.white,
+                                                size: 30,
+                                              ),
+                                              decoration: BoxDecoration(
+                                                  color: ColorConstant
+                                                      .lightBlue700,
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                          38)),
                                             ),
-                                            children: [
-                                              Padding(
-                                                padding:
-                                                    const EdgeInsets.all(8.0),
-                                                child: Text('Date'),
-                                              ),
-                                              Padding(
-                                                padding:
-                                                    const EdgeInsets.all(8.0),
-                                                child: Text('Amount'),
-                                              ),
-                                              Padding(
-                                                padding:
-                                                    const EdgeInsets.all(8.0),
-                                                child: Text('Payment Methord'),
-                                              ),
-                                            ],
+                                          ),
+                                          Expanded(
+                                            child: Column(
+                                              children: [
+                                                Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment
+                                                          .spaceBetween,
+                                                  children: [
+                                                    Row(
+                                                      children: [
+                                                        Text('Date : '),
+                                                        Text(
+                                                          shopDetails!
+                                                              .data
+                                                              .paymentDetails[
+                                                                  index]
+                                                              .createdAt,
+                                                          maxLines: 2,
+                                                          overflow: TextOverflow
+                                                              .ellipsis,
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ],
+                                                ),
+                                                SizedBox(
+                                                  height: 7,
+                                                ),
+                                                Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment
+                                                          .spaceBetween,
+                                                  children: [
+                                                    Row(
+                                                      children: [
+                                                        Text('Payment by : '),
+                                                        Text(
+                                                          shopDetails!
+                                                              .data
+                                                              .paymentDetails[
+                                                                  index]
+                                                              .paymentType,
+                                                          maxLines: 2,
+                                                          overflow: TextOverflow
+                                                              .ellipsis,
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ],
+                                                ),
+                                                SizedBox(
+                                                  height: 5,
+                                                ),
+                                                Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment
+                                                          .spaceBetween,
+                                                  children: [
+                                                    Row(
+                                                      children: [
+                                                        Text('Created by :'),
+                                                        Text(
+                                                          shopDetails!
+                                                              .data
+                                                              .paymentDetails[
+                                                                  index]
+                                                              .createdBy,
+                                                          maxLines: 2,
+                                                          overflow: TextOverflow
+                                                              .ellipsis,
+                                                        ),
+                                                      ],
+                                                    ),
+                                                    Row(
+                                                      children: [
+                                                        Text(
+                                                          '₹',
+                                                          style: TextStyle(
+                                                            fontSize: 18,
+                                                          ),
+                                                        ),
+                                                        Text(
+                                                          shopDetails!
+                                                              .data
+                                                              .paymentDetails[
+                                                                  index]
+                                                              .paidAmount
+                                                              .toString(),
+                                                          style: TextStyle(
+                                                            fontSize: 18,
+                                                          ),
+                                                        ),
+                                                        SizedBox(
+                                                          width: 20,
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ],
+                                                ),
+                                              ],
+                                            ),
                                           ),
                                         ],
                                       ),
                                     ),
-                                  ],
-                                ),
-                              ),
-                              Expanded(
-                                child: ListView.builder(
-                                  itemCount:
-                                      shopDetails!.data.paymentDetails.length,
-                                  itemBuilder: (context, index) {
-                                    int count = index + 1;
-                                    return SingleChildScrollView(
-                                      scrollDirection: Axis.horizontal,
-                                      child: Padding(
-                                        padding: const EdgeInsets.all(5.0),
-                                        child: Container(
-                                          child: Table(
-                                            columnWidths: {
-                                              0: FixedColumnWidth(
-                                                  MediaQuery.of(context)
-                                                          .size
-                                                          .width *
-                                                      0.26),
-                                              1: FixedColumnWidth(
-                                                  MediaQuery.of(context)
-                                                          .size
-                                                          .width *
-                                                      0.33),
-                                              2: FixedColumnWidth(
-                                                  MediaQuery.of(context)
-                                                          .size
-                                                          .width *
-                                                      0.36),
-                                            },
-                                            children: [
-                                              // Each TableRow represents a row in the Table
-                                              TableRow(
-                                                decoration: BoxDecoration(
-                                                  borderRadius:
-                                                      BorderRadius.circular(10),
-                                                  color: ColorConstant.gray100,
-                                                ),
-                                                children: [
-                                                  Padding(
-                                                    padding:
-                                                        const EdgeInsets.all(
-                                                            8.0),
-                                                    child: Text(
-                                                      shopDetails!
-                                                          .data
-                                                          .paymentDetails[index]
-                                                          .createdAt,
-                                                      maxLines: 2,
-                                                      overflow:
-                                                          TextOverflow.ellipsis,
-                                                    ),
-                                                  ),
-                                                  Padding(
-                                                    padding:
-                                                        const EdgeInsets.all(
-                                                            8.0),
-                                                    child: Text(
-                                                        shopDetails!
-                                                            .data
-                                                            .paymentDetails[
-                                                                index]
-                                                            .paidAmount,
-                                                        maxLines: 2,
-                                                        overflow: TextOverflow
-                                                            .ellipsis),
-                                                  ),
-                                                  Padding(
-                                                    padding:
-                                                        const EdgeInsets.all(
-                                                            8.0),
-                                                    child: Text(
-                                                        shopDetails!
-                                                            .data
-                                                            .paymentDetails[
-                                                                index]
-                                                            .paymentType,
-                                                        maxLines: 2,
-                                                        overflow: TextOverflow
-                                                            .ellipsis),
-                                                  ),
-                                                ],
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      ),
-                                    );
-                                  },
-                                ),
-                              ),
-                            ],
-                          ),
+                                  ),
+                                );
+                              }),
                         ),
-                      )
+                      ),
                     ],
                   ),
                 )
@@ -1164,9 +1233,11 @@ class _ShopDetailsPageState extends State<ShopDetailsPage>
             decoration: InputDecoration(hintText: 'Type here...'),
           ),
           actions: [
-            TextButton(onPressed: () {
-              Navigator.of(context).pop();
-            }, child: Text('Close')),
+            TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: Text('Close')),
             ElevatedButton(
               onPressed: () async {
                 var comment = _commentController.text;
@@ -1190,5 +1261,51 @@ class _ShopDetailsPageState extends State<ShopDetailsPage>
         );
       },
     );
+  }
+
+  deletePopup() {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text('Are you sure to Delete this Shop?'),
+          actions: [
+            TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: Text('No')),
+            ElevatedButton(
+              onPressed: () {
+                shopDelete();
+              },
+              child: Text('Delete'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  shopDelete() async {
+    DeleteShop deleteShop =
+        await HttpService.deleteShop(widget.id, widget.shopId);
+    if (deleteShop.status == true) {
+      Fluttertoast.showToast(
+        msg: deleteShop!.message,
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.BOTTOM,
+        backgroundColor: Colors.black,
+        textColor: Colors.white,
+      );
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => BottomNavigationScreen(id: widget.id),
+        ),
+      );
+    } else {
+      print('Not deleted');
+    }
   }
 }

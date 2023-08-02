@@ -331,7 +331,7 @@ class _CollectionScreenState extends State<CollectionScreen> {
                                 context,
                                 MaterialPageRoute(
                                   builder: (context) =>
-                                      AddCollectionScreen(id: widget.id),
+                                      AddCollectionScreen(id: widget.id,),
                                 ),
                               );
                             },

@@ -12,6 +12,7 @@ import '../model/cashpayment_model.dart';
 import '../model/checknumber.dart';
 import '../model/collection_model.dart';
 import '../model/dashboard_model.dart';
+import '../model/delete_shop_model.dart';
 import '../model/invoice_details_model.dart';
 import '../model/mark_visit_model.dart';
 import '../model/oder_details_model.dart';
@@ -20,6 +21,8 @@ import '../model/product_by_id_model.dart';
 import '../model/products_model.dart';
 import '../model/routemodel.dart';
 import '../model/shop_details_model.dart';
+import '../model/shop_editing_model.dart';
+import '../model/update_shop_model.dart';
 import '../model/usermodel.dart';
 
 class HttpService {
@@ -48,6 +51,7 @@ class HttpService {
     );
     // print(shoplistResponse.statusCode);
     if (shoplistResponse.statusCode == 200) {
+      // print(shoplistResponse.body);
       return dashboardFromJson(shoplistResponse.body);
     } else {
       // print('shops: ${shoplistResponse.statusCode}');
@@ -258,7 +262,7 @@ class HttpService {
     );
     // print(response.statusCode);
     if (response.statusCode == 200) {
-      return prouctByIdFromJson(response.body);
+      return productByIdFromJson(response.body);
     } else {}
   }
 
@@ -347,4 +351,54 @@ class HttpService {
     }
   }
 
+  static Future getShopDetailseditingData( token, shopId,) async {
+    http.Response response = await http.post(
+      Uri.parse("${baseurl}get_ShopDetails"),
+      body: ({
+        'token': token,
+        'shop_id': shopId,
+      }),
+    );
+    if (response.statusCode == 200) {
+      return shopEditFromJson(response.body);
+    }
+  }
+
+  static Future updateShop(
+      shopname, adress, phone, whatsapp, gst, route, token,balance,shopid) async {
+    http.Response response = await http.post(
+      Uri.parse("${baseurl}updateShop"),
+      body: ({
+        'name': shopname,
+        'address': adress,
+        'phone_number': phone,
+        'whatsapp_number': whatsapp,
+        'gst_no': gst,
+        'route': route,
+        'token': token,
+        'openingBalance': balance,
+        'shop_id':shopid,
+      }),
+    );
+
+    if (response.statusCode == 200) {
+      // print('status code:  ${addShopResponse.statusCode}');
+      return updateShopFromJson(response.body);
+    } else {
+      // print('status code:  ${addShopResponse.statusCode}');
+    }
+  }
+
+  static Future deleteShop( token, shopId) async {
+    http.Response response = await http.post(
+      Uri.parse("${baseurl}deleteShop"),
+      body: ({
+        'token': token,
+        'shop_id': shopId,
+      }),
+    );
+    if (response.statusCode == 200) {
+      return deleteShopFromJson(response.body);
+    }
+  }
 }

@@ -61,6 +61,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         style: AppStyle.txtRobotoMedium24),
                   ),
                   CustomTextFormField(
+                    errorColor: Colors.white,
                       validator: (value) {
                         if (value!.isEmpty) {
                           return 'Please enter Mobile number';
@@ -76,9 +77,10 @@ class _LoginScreenState extends State<LoginScreen> {
                       margin: getMargin(top: 64),
                       variant: TextFormFieldVariant.OutlineWhiteA700,
                       fontStyle: TextFormFieldFontStyle.DMSansRegular19,
-                      textInputType: TextInputType.phone),
+                      textInputType: TextInputType.phone,),
                   SizedBox(height: 10,),
                   CustomTextFormField(
+                    errorColor: Colors.white,
                       suffix: isVisible
                           ? IconButton(
                           onPressed: () {

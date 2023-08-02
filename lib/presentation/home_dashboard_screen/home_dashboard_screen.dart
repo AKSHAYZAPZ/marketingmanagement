@@ -17,7 +17,8 @@ import '../../model/dashboard_model.dart';
 import '../../model/routemodel.dart';
 import '../../services/service.dart';
 import '../../shared_prefrence/shared_preference.dart';
-import '../product_screen/product_screen.dart';
+import '../category_screen/category_screen.dart';
+
 
 class HomeDashboardScreen extends StatefulWidget {
   HomeDashboardScreen({
@@ -103,7 +104,9 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> {
 
   Future<void> _onRefresh() async {
     await Future.delayed(Duration(seconds: 2));
-    setState(() {});
+    setState(() {
+      // initState();
+    });
   }
 
   // Future<bool> _onWillPop() async {
@@ -259,7 +262,7 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> {
                                             alignment: Alignment.topCenter,
                                             child: GestureDetector(
                                               onTap: () {
-                                                Get.to(ProductScreen(
+                                                Get.to(CategoryScreen(
                                                     id: widget.id));
                                               },
                                               child: Container(
@@ -285,7 +288,7 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> {
                                           Container(
                                             child: IconButton(
                                               onPressed: () {
-                                                Get.to(ProductScreen(
+                                                Get.to(CategoryScreen(
                                                     id: widget.id));
                                               },
                                               icon: Icon(
@@ -725,7 +728,7 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> {
                                                                 child: Row(
                                                                   children: [
                                                                     Text(
-                                                                      'Opening Balance : ',
+                                                                      'Balance : ',
                                                                       style: TextStyle(
                                                                           color:
                                                                               Colors.white),
@@ -735,7 +738,7 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> {
                                                                           .data
                                                                           .shopDetails[
                                                                               index]
-                                                                          .openingBalance
+                                                                          .balance
                                                                           .toString(),
                                                                       style: TextStyle(
                                                                           color:
@@ -746,12 +749,7 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> {
                                                               ),
                                                               Row(
                                                                 children: [
-                                                                  Icon(
-                                                                    Icons
-                                                                        .calendar_today_outlined,
-                                                                    color: Colors
-                                                                        .white,
-                                                                  ),
+                                                                Text('Route :',style: TextStyle(color: Colors.white),),
                                                                   SizedBox(
                                                                     width: 5,
                                                                   ),
@@ -760,7 +758,7 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> {
                                                                         .data
                                                                         .shopDetails[
                                                                             index]
-                                                                        .createdAt,
+                                                                        .route,
                                                                     overflow:
                                                                         TextOverflow
                                                                             .ellipsis,
@@ -768,7 +766,7 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> {
                                                                         TextAlign
                                                                             .left,
                                                                     style: AppStyle
-                                                                        .txtDMSansBold14,
+                                                                        .txtDMSansBold16,
                                                                   ),
                                                                 ],
                                                               ),
@@ -912,7 +910,7 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => AddShopScreen(id: widget.id),
+        builder: (context) => AddShopScreen(token: widget.id),
       ),
     );
   }

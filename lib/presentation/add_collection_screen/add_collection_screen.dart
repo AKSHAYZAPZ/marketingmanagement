@@ -25,8 +25,8 @@ class MyShopResult {
 }
 
 class AddCollectionScreen extends StatefulWidget {
-  AddCollectionScreen({Key? key, required this.id}) : super(key: key);
-
+  AddCollectionScreen({Key? key, required this.id, this.shopId}) : super(key: key);
+  String? shopId;
   String id;
 
   @override
@@ -97,6 +97,7 @@ class _AddCollectionScreenState extends State<AddCollectionScreen> {
 
   @override
   Widget build(BuildContext context) {
+    _searchController.text = widget.shopId!;
     return Scaffold(
       appBar: AppBar(
         backgroundColor: ColorConstant.lightBlue700,

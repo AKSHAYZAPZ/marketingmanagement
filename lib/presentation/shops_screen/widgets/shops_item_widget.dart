@@ -14,6 +14,7 @@ class ShopsItemWidget extends StatelessWidget {
      this.whatsappNo,
      this.phoneNo,
      this.balance,
+     this.route,
      this.token
   ) ;
 
@@ -24,6 +25,7 @@ class ShopsItemWidget extends StatelessWidget {
   final String whatsappNo;
   final String phoneNo;
   final int balance;
+   final String route;
   final String token;
 
   String whatsappurl = "https://wa.me/91";
@@ -168,17 +170,15 @@ class ShopsItemWidget extends StatelessWidget {
                     ),
                     Row(
                       children: [
-                        Icon(
-                          Icons
-                              .calendar_today_outlined,
-                          color: Colors
-                              .white,
-                        ),
+                        Text('Route : ',
+                        style: TextStyle(
+                          color: Colors.white
+                        ),),
                         SizedBox(
                           width: 5,
                         ),
                         Text(
-                         createdAt,
+                         route,
                           overflow:
                           TextOverflow
                               .ellipsis,
@@ -186,7 +186,7 @@ class ShopsItemWidget extends StatelessWidget {
                           TextAlign
                               .left,
                           style: AppStyle
-                              .txtDMSansBold14,
+                              .txtDMSansBold16,
                         ),
                       ],
                     ),

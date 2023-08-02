@@ -14,9 +14,9 @@ import '../bottom_navigation_page/bottom_navigation.dart';
 
 // ignore_for_file: must_be_immutable
 class AddShopScreen extends StatefulWidget {
-  AddShopScreen({Key? key, required this.id}) : super(key: key);
+  AddShopScreen({Key? key, required this.token}) : super(key: key);
 
-  final String id;
+  final String token;
 
   @override
   State<AddShopScreen> createState() => _AddShopScreenState();
@@ -50,7 +50,7 @@ class _AddShopScreenState extends State<AddShopScreen> {
   }
 
   findRoute() async {
-    routelist = await HttpService.getRoute(widget.id);
+    routelist = await HttpService.getRoute(widget.token);
     print('this is route: ${routelist}');
     if (routelist != null) {
       setState(() {});
@@ -72,7 +72,7 @@ class _AddShopScreenState extends State<AddShopScreen> {
       onWillPop: () async {
         Navigator.push(context, MaterialPageRoute(
           builder: (context) {
-            return BottomNavigationScreen(id: widget.id);
+            return BottomNavigationScreen(id: widget.token);
           },
         ));
         return true;
@@ -90,7 +90,7 @@ class _AddShopScreenState extends State<AddShopScreen> {
                 Navigator.pushReplacement(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => BottomNavigationScreen(id: widget.id),
+                    builder: (context) => BottomNavigationScreen(id: widget.token),
                   ),
                 );
               },
@@ -312,7 +312,7 @@ class _AddShopScreenState extends State<AddShopScreen> {
                                             whatsappController.text,
                                             gstnumberController.text,
                                             dropdownvalue,
-                                            widget.id,
+                                            widget.token,
                                             balanceController.text,
                                           );
                                           if (addshop.status == true) {

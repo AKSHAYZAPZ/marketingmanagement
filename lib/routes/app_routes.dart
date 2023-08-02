@@ -5,11 +5,12 @@ import 'package:jibin_s_application1/presentation/home_dashboard_screen/home_das
 import 'package:jibin_s_application1/presentation/add_shop_screen/add_shop_screen.dart';
 import 'package:jibin_s_application1/presentation/shops_screen/shops_screen.dart';
 import 'package:jibin_s_application1/presentation/shop_details_tab_container_screen/shop_details_tab_container_screen.dart';
-import 'package:jibin_s_application1/presentation/product_screen/product_screen.dart';
 import 'package:jibin_s_application1/presentation/product_d_screen/product_d_screen.dart';
 import 'package:jibin_s_application1/presentation/collection_screen/collection_screen.dart';
 import 'package:jibin_s_application1/presentation/take_order_screen/take_order_screen.dart';
 import 'package:jibin_s_application1/presentation/app_navigation_screen/app_navigation_screen.dart';
+
+import '../presentation/category_screen/category_screen.dart';
 
 class AppRoutes {
   static const String splashScreen = '/splash_screen';
@@ -43,10 +44,10 @@ class AppRoutes {
     splashScreen: (context) => SplashScreen(),
     loginScreen: (context) => LoginScreen(),
     homeDashboardScreen: (context) => HomeDashboardScreen(id: '',),
-    addShopScreen: (context) => AddShopScreen(id: '',),
+    addShopScreen: (context) => AddShopScreen(token: '',),
     shopsScreen: (context) => ShopsScreen(),
     // shopDetailsTabContainerScreen: (context) => ShopDetailsTabContainerScreen(),
-    productScreen: (context) => ProductScreen(id: '',),
+    productScreen: (context) => CategoryScreen(id: '',),
     productDScreen: (context) => ProductDScreen(),
     collectionScreen: (context) => CollectionScreen(id: '',),
     // takeOrderScreen: (context) => TakeOrderScreen(),

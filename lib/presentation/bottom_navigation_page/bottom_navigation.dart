@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:jibin_s_application1/core/app_export.dart';
-import 'package:jibin_s_application1/presentation/product_screen/product_screen.dart';
+import '../category_screen/category_screen.dart';
 import '../collection_screen/collection_screen.dart';
 import '../home_dashboard_screen/home_dashboard_screen.dart';
 import '../settings_screen/settings_screen.dart';
@@ -71,7 +71,7 @@ class _MainPageState extends State<BottomNavigationScreen > {
           ),
           Offstage(
             offstage: _currentIndex != 2,
-            child: ProductScreen(id: widget.id),
+            child: CategoryScreen(id: widget.id),
           ),
           Offstage(
             offstage: _currentIndex != 3,
