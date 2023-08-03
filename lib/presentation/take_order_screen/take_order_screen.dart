@@ -18,6 +18,7 @@ class MyResult {
   final int quantity;
   final int productId;
   final int categoryId;
+  final int subCategoryId;
 
   MyResult({
     required this.title,
@@ -26,6 +27,7 @@ class MyResult {
     required this.quantity,
     required this.productId,
     required this.categoryId,
+    required this.subCategoryId,
   });
 }
 
@@ -109,6 +111,7 @@ class _TakeOderScreenState extends State<TakeOderScreen> {
             : 0,
         productId: allProductList![index].productId,
         categoryId: allProductList![index].categoryid,
+        subCategoryId: allProductList![index].subcategoryId,
       ),
     );
   }
@@ -120,7 +123,6 @@ class _TakeOderScreenState extends State<TakeOderScreen> {
             result.title.toLowerCase().contains(query.toLowerCase()) ||
             result.subtitle.toLowerCase().contains(query.toLowerCase()))
         .toList();
-
     return filteredResults;
   }
 

@@ -5,7 +5,9 @@ import 'package:jibin_s_application1/model/sendotp_model.dart';
 import '../model/Reset_model.dart';
 import '../model/add_comment_model.dart';
 import '../model/addshopmodel.dart';
+import '../model/all_category_model.dart';
 import '../model/all_products_list_model.dart';
+import '../model/all_sub_category_model.dart';
 import '../model/allshops_model.dart';
 import '../model/attendance_model.dart';
 import '../model/cashpayment_model.dart';
@@ -18,6 +20,7 @@ import '../model/mark_visit_model.dart';
 import '../model/oder_details_model.dart';
 import '../model/payment_type_model.dart';
 import '../model/product_by_id_model.dart';
+import '../model/product_view_model.dart';
 import '../model/products_model.dart';
 import '../model/routemodel.dart';
 import '../model/shop_details_model.dart';
@@ -235,7 +238,7 @@ class HttpService {
     // print(response.statusCode);
     if (response.statusCode == 200) {
       // print("${response.body}");
-      return productsFromJson(response.body);
+      return allProductListsFromJson(response.body);
     }
   }
 
@@ -255,16 +258,16 @@ class HttpService {
     } else {}
   }
 
-  static Future productDetailsByID(productid) async {
-    http.Response response = await http.post(
-      Uri.parse("${baseurl}productDetailsByID"),
-      body: ({'product_id': productid}),
-    );
-    // print(response.statusCode);
-    if (response.statusCode == 200) {
-      return productByIdFromJson(response.body);
-    } else {}
-  }
+  // static Future productDetailsByID(productid) async {
+  //   http.Response response = await http.post(
+  //     Uri.parse("${baseurl}productDetailsByID"),
+  //     body: ({'product_id': productid}),
+  //   );
+  //   // print(response.statusCode);
+  //   if (response.statusCode == 200) {
+  //     return productByIdFromJson(response.body);
+  //   } else {}
+  // }
 
   static Future allProductList(token) async {
     http.Response response = await http.post(
@@ -401,4 +404,61 @@ class HttpService {
       return deleteShopFromJson(response.body);
     }
   }
+
+  static Future allCategorys( token, search) async {
+    http.Response response = await http.post(
+      Uri.parse("${baseurl}allCategoryDetails"),
+      body: ({
+        'token': token,
+        'search_key': search,
+      }),
+    );
+    if (response.statusCode == 200) {
+      return allCategoryFromJson(response.body);
+    }
+  }
+
+  static Future allSubCategorys( token,categoryId, search,) async {
+    http.Response response = await http.post(
+      Uri.parse("${baseurl}allSubCategoryDetails"),
+      body: ({
+        'token': token,
+        'category_id' :categoryId,
+        'search_key': search,
+      }),
+    );
+    if (response.statusCode == 200) {
+      return allSubCategoryFromJson(response.body);
+    }
+  }
+
+
+  static Future allProductbysubcategory( token,subCategoryId, search) async {
+    http.Response response = await http.post(
+      Uri.parse("${baseurl}productList"),
+      body: ({
+        'token': token,
+        'sub_category' :subCategoryId,
+        'search_key': search,
+      }),
+    );
+    if (response.statusCode == 200) {
+      return productListFromJson(response.body);
+    }
+  }
+
+  static Future productViews( token,productId,) async {
+    http.Response response = await http.post(
+      Uri.parse("${baseurl}productView"),
+      body: ({
+        'token': token,
+        'product_id' :productId,
+      }),
+    );
+    if (response.statusCode == 200) {
+      print(response.body);
+      return productViewFromJson(response.body);
+    }
+  }
+
 }

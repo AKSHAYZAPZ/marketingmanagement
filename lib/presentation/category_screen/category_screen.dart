@@ -2,6 +2,7 @@ import 'package:jibin_s_application1/model/products_model.dart';
 import 'package:jibin_s_application1/presentation/sub_categories_screen/sub_categories_screen.dart';
 import 'package:jibin_s_application1/services/service.dart';
 
+import '../../model/all_category_model.dart';
 import '../../model/product_by_id_model.dart';
 import '../bottom_navigation_page/bottom_navigation.dart';
 import '../product_detailed_screen.dart';
@@ -21,8 +22,10 @@ class CategoryScreen extends StatefulWidget {
 }
 
 class _ProductScreenState extends State<CategoryScreen> {
-  Products? products;
-  ProductById? productById;
+  // Products? products;
+  // ProductById? productById;
+
+  AllCategory? allCategory;
 
   var currentIndex = 0;
 
@@ -36,15 +39,15 @@ class _ProductScreenState extends State<CategoryScreen> {
   @override
   void initState() {
     super.initState();
-    productDetails();
+    allCategorys();
   }
 
-  productDetails() async {
-    products = await HttpService.getProducts(widget.id, searchKey);
-    if (products != null) {
-      setState(() {});
-    }
-  }
+  // productDetails() async {
+  //   products = await HttpService.getProducts(widget.id, searchKey);
+  //   if (products != null) {
+  //     setState(() {});
+  //   }
+  // }
 
   int firstIndex = 0;
 
@@ -67,117 +70,137 @@ class _ProductScreenState extends State<CategoryScreen> {
           },
         ),
       ),
-      body:  Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Container(
-              height: 50,
-              width: double.infinity,
-              child: Padding(
-                padding: const EdgeInsets.only(top: 10),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: TextFormField(
-                        controller: searchCntrller,
-                        decoration: InputDecoration(
-                          contentPadding:
-                          EdgeInsets.fromLTRB(
-                              0, 10, 0, 10),
-                          hintStyle: TextStyle(
-                            color: Colors.grey,
+      body: allCategory == null
+          ? Center(
+              child: CircularProgressIndicator(),
+            )
+          : Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Container(
+                    height: 50,
+                    width: double.infinity,
+                    child: Padding(
+                      padding: const EdgeInsets.only(top: 10),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: TextFormField(
+                              controller: searchCntrller,
+                              decoration: InputDecoration(
+                                contentPadding:
+                                    EdgeInsets.fromLTRB(0, 10, 0, 10),
+                                hintStyle: TextStyle(
+                                  color: Colors.grey,
+                                ),
+                                filled: true,
+                                fillColor: Colors.grey[300],
+                                prefixIcon:
+                                    Icon(Icons.search, color: Colors.grey),
+                                hintText: 'Search',
+                                enabledBorder: OutlineInputBorder(
+                                  borderSide:
+                                      BorderSide(color: Colors.transparent),
+                                  borderRadius: BorderRadius.circular(15),
+                                ),
+                                focusedBorder: OutlineInputBorder(
+                                  borderSide:
+                                      BorderSide(color: Colors.transparent),
+                                  borderRadius: BorderRadius.circular(15),
+                                ),
+                              ),
+                            ),
                           ),
-                          filled: true,
-                          fillColor: Colors.grey[300],
-                          prefixIcon: Icon(Icons.search,
-                              color: Colors.grey),
-                          hintText: 'Search',
-                          enabledBorder: OutlineInputBorder(
-                            borderSide: BorderSide(
-                                color: Colors.transparent),
-                            borderRadius:
-                            BorderRadius.circular(15),
+                          SizedBox(
+                            width: 5,
                           ),
-                          focusedBorder: OutlineInputBorder(
-                            borderSide: BorderSide(
-                                color: Colors.transparent),
-                            borderRadius:
-                            BorderRadius.circular(15),
+                          ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.blue,
+                              // Set the background color of the button
+                              padding: EdgeInsets.all(8.0),
+                              // Set the padding of the button
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(
+                                    8.0), // Set the border radius of the button
+                              ),
+                            ),
+                            onPressed: () async {
+                              searchKey = searchCntrller.text;
+                              allCategorys();
+                            },
+                            child: Text('Search'),
                           ),
-                        ),
+                        ],
                       ),
                     ),
-                    SizedBox(
-                      width: 5,
-                    ),
-                    ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.blue,
-                        // Set the background color of the button
-                        padding: EdgeInsets.all(8.0),
-                        // Set the padding of the button
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(
-                              8.0), // Set the border radius of the button
-                        ),
-                      ),
-                      onPressed: () async {
-                        searchKey = searchCntrller.text;
-                        // shops  = await HttpService.shopList(widget.id,searchKey,route);
-                      },
-                      child: Text('Search'),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: GridView.builder(
-               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                 crossAxisCount: 3, // Number of columns
-                 crossAxisSpacing: 0, // Spacing between columns
-                 mainAxisSpacing:0, // Spacing between rows
-               ),
-               itemCount: 15, // Total number of items in the grid
-               itemBuilder: (context, index) {
-                 // Replace this with the widget you want to display at each grid item
-                 return GestureDetector(
-                   onTap: () {
-                    Navigator.push(context, MaterialPageRoute(builder: (context) => SubCategoriesScreen(),));
-                   },
-                   child: Container(
-                     child: Center(
-                       child: Column(
-                         children: [
-                           Container(
-                             height: 90,
-                             width: 90,
-                            decoration: BoxDecoration(
-                              image: DecorationImage(
-                                  fit: BoxFit.fill,
-                                  image: NetworkImage("https://cdn.firstcry.com/education/2022/11/08143105/Green-Vegetables-Names-in-English-for-Kids.jpg")),
-                              borderRadius: BorderRadius.circular(15)
-                            ),
-                           ),
-                            SizedBox(
-                              height: 5,
-                            ),
-                            Text('Vegetable'),
-                         ],
-                       )
-                     ),
-                   ),
-                 );
-               },
                   ),
+                ),
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: allCategory!.data.length > 0
+                        ? GridView.builder(
+                            gridDelegate:
+                                SliverGridDelegateWithFixedCrossAxisCount(
+                              crossAxisCount: 3, // Number of columns
+                              crossAxisSpacing: 0, // Spacing between columns
+                              mainAxisSpacing: 0, // Spacing between rows
+                            ),
+                            itemCount: allCategory!.data.length,
+                            // Total number of items in the grid
+                            itemBuilder: (context, index) {
+                              // Replace this with the widget you want to display at each grid item
+                              return GestureDetector(
+                                onTap: () {
+                                  String CategoryId =
+                                      allCategory!.data[index].id.toString();
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) =>
+                                            SubCategoriesScreen(
+                                                id: widget.id,
+                                                CategoryId: CategoryId),
+                                      ));
+                                },
+                                child: Container(
+                                  child: Center(
+                                      child: Column(
+                                    children: [
+                                      Container(
+                                        height: 90,
+                                        width: 90,
+                                        decoration: BoxDecoration(
+                                            image: DecorationImage(
+                                                fit: BoxFit.cover,
+                                                image: NetworkImage(allCategory!
+                                                    .data[index]
+                                                    .categoryImage)),
+                                            borderRadius:
+                                                BorderRadius.circular(15)),
+                                      ),
+                                      SizedBox(
+                                        height: 5,
+                                      ),
+                                      Text(allCategory!
+                                          .data[index].categoryName),
+                                    ],
+                                  )),
+                                ),
+                              );
+                            },
+                          )
+                        : Container(
+                          child: Center(
+                              child: Text('No Categories'),
+                            ),
+                        ),
+                  ),
+                ),
+              ],
             ),
-          ),
-        ],
-      ),
     );
   }
 
@@ -196,5 +219,12 @@ class _ProductScreenState extends State<CategoryScreen> {
   /// to navigate back to the previous screen.
   onTapArrowleft3(BuildContext context) {
     Navigator.pop(context);
+  }
+
+  allCategorys() async {
+    allCategory = await HttpService.allCategorys(widget.id, searchKey);
+    if (allCategory != null) {
+      setState(() {});
+    }
   }
 }

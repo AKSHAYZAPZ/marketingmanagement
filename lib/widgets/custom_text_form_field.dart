@@ -2,28 +2,30 @@ import 'package:flutter/material.dart';
 import 'package:jibin_s_application1/core/app_export.dart';
 
 class CustomTextFormField extends StatelessWidget {
-  CustomTextFormField(
-      {this.padding,
-      this.shape,
-      this.variant,
-      this.fontStyle,
-      this.alignment,
-      this.width,
-      this.margin,
-      this.controller,
-      this.focusNode,
-      this.autofocus = false,
-      this.isObscureText = false,
-      this.textInputAction = TextInputAction.next,
-      this.textInputType = TextInputType.text,
-      this.maxLines,
-      this.hintText,
-      this.prefix,
-      this.prefixConstraints,
-      this.suffix,
-      this.suffixConstraints,
-      this.validator,
-      this.errorColor});
+  CustomTextFormField({
+    this.padding,
+    this.shape,
+    this.variant,
+    this.fontStyle,
+    this.alignment,
+    this.width,
+    this.margin,
+    this.controller,
+    this.focusNode,
+    this.autofocus = false,
+    this.isObscureText = false,
+    this.textInputAction = TextInputAction.next,
+    this.textInputType = TextInputType.text,
+    this.maxLines,
+    this.hintText,
+    this.prefix,
+    this.prefixConstraints,
+    this.suffix,
+    this.suffixConstraints,
+    this.validator,
+    this.errorColor,
+    this.errorBorderColor,
+  });
 
   TextFormFieldPadding? padding;
 
@@ -65,18 +67,19 @@ class CustomTextFormField extends StatelessWidget {
 
   FormFieldValidator<String>? validator;
   Color? errorColor;
+  Color? errorBorderColor;
 
   @override
   Widget build(BuildContext context) {
     return alignment != null
         ? Align(
             alignment: alignment ?? Alignment.center,
-            child: _buildTextFormFieldWidget(errorColor),
+            child: _buildTextFormFieldWidget(errorColor, errorBorderColor),
           )
-        : _buildTextFormFieldWidget(errorColor);
+        : _buildTextFormFieldWidget(errorColor, errorBorderColor);
   }
 
-  _buildTextFormFieldWidget(Color? errorColor) {
+  _buildTextFormFieldWidget(Color? errorColor, Color? errorBorderColor) {
     return Container(
       width: width ?? double.maxFinite,
       margin: margin,
@@ -89,31 +92,33 @@ class CustomTextFormField extends StatelessWidget {
         textInputAction: textInputAction,
         keyboardType: textInputType,
         maxLines: maxLines ?? 1,
-        decoration: _buildDecoration(errorColor),
+        decoration: _buildDecoration(errorColor, errorBorderColor),
         validator: validator,
       ),
     );
   }
 
-  _buildDecoration(Color? errorColor) {
+  _buildDecoration(Color? errorColor, Color? errorBorderColor) {
     return InputDecoration(
-      hintText: hintText ?? "",
-      hintStyle: _setFontStyle(),
-      border: _setBorderStyle(),
-      enabledBorder: _setBorderStyle(),
-      focusedBorder: _setBorderStyle(),
-      disabledBorder: _setBorderStyle(),
-      prefixIcon: prefix,
-      prefixIconConstraints: prefixConstraints,
-      suffixIcon: suffix,
-      suffixIconConstraints: suffixConstraints,
-      filled: _setFilled(),
-      isDense: true,
-      contentPadding: _setPadding(),
-      errorStyle: TextStyle(
-        color: errorColor
-      )
-    );
+        hintText: hintText ?? "",
+        hintStyle: _setFontStyle(),
+        border: _setBorderStyle(),
+        enabledBorder: _setBorderStyle(),
+        focusedBorder: _setBorderStyle(),
+        disabledBorder: _setBorderStyle(),
+        prefixIcon: prefix,
+        prefixIconConstraints: prefixConstraints,
+        suffixIcon: suffix,
+        suffixIconConstraints: suffixConstraints,
+        filled: _setFilled(),
+        isDense: true,
+        contentPadding: _setPadding(),
+        errorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(20),
+          borderSide: BorderSide(
+              color: errorBorderColor != null ? errorBorderColor : Colors.red),
+        ),
+        errorStyle: TextStyle(color: errorColor));
   }
 
   _setFontStyle() {
@@ -163,7 +168,6 @@ class CustomTextFormField extends StatelessWidget {
           fontFamily: 'Montserrat',
           fontWeight: FontWeight.w500,
         );
-
     }
   }
 
@@ -177,8 +181,6 @@ class CustomTextFormField extends StatelessWidget {
         );
     }
   }
-
-
 
   _setBorderStyle() {
     switch (variant) {
@@ -259,5 +261,4 @@ enum TextFormFieldFontStyle {
   DMSansRegular18,
   DMSansRegular16,
   DMSansRegular19,
-
 }

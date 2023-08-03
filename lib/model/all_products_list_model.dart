@@ -11,6 +11,7 @@ String allProductListsToJson(List<AllProductLists> data) => json.encode(List<dyn
 class AllProductLists {
   int productId;
   int categoryid;
+  int subcategoryId;
   String productName;
   String productCode;
   int sellingPrice;
@@ -18,6 +19,7 @@ class AllProductLists {
   AllProductLists({
     required this.productId,
     required this.categoryid,
+    required this.subcategoryId,
     required this.productName,
     required this.productCode,
     required this.sellingPrice,
@@ -26,6 +28,7 @@ class AllProductLists {
   factory AllProductLists.fromJson(Map<String, dynamic> json) => AllProductLists(
     productId: json["product_id"],
     categoryid: json["categoryid"],
+    subcategoryId: json["subcategory_id"],
     productName: json["product_name"],
     productCode: json["product_code"],
     sellingPrice: json["selling_price"],
@@ -34,6 +37,7 @@ class AllProductLists {
   Map<String, dynamic> toJson() => {
     "product_id": productId,
     "categoryid": categoryid,
+    "subcategory_id": subcategoryId,
     "product_name": productName,
     "product_code": productCode,
     "selling_price": sellingPrice,

@@ -67,12 +67,14 @@ class Data {
 class OrderDetail {
   String productCode;
   String productName;
+  String sellingPrice;
   String quantity;
   int price;
 
   OrderDetail({
     required this.productCode,
     required this.productName,
+    required this.sellingPrice,
     required this.quantity,
     required this.price,
   });
@@ -80,6 +82,7 @@ class OrderDetail {
   factory OrderDetail.fromJson(Map<String, dynamic> json) => OrderDetail(
     productCode: json["product_code"],
     productName: json["product_name"],
+    sellingPrice: json["selling_price"],
     quantity: json["quantity"],
     price: json["price"],
   );
@@ -87,6 +90,7 @@ class OrderDetail {
   Map<String, dynamic> toJson() => {
     "product_code": productCode,
     "product_name": productName,
+    "selling_price": sellingPrice,
     "quantity": quantity,
     "price": price,
   };

@@ -195,22 +195,27 @@ class _InvoiceDetailsScreenState extends State<InvoiceDetailsScreen> {
                             MediaQuery.of(context)
                                 .size
                                 .width *
-                                0.25), // Using 10%
+                                0.18), // Using 10%
                         1: FixedColumnWidth(
                             MediaQuery.of(context)
                                 .size
                                 .width *
-                                0.32), // Using 30%
+                                0.30), // Using 30%
                         2: FixedColumnWidth(
                             MediaQuery.of(context)
                                 .size
                                 .width *
-                                0.2), // Using 20%
+                                0.2),
                         3: FixedColumnWidth(
                             MediaQuery.of(context)
                                 .size
                                 .width *
-                                0.16),
+                                0.14),// Using 20%
+                        4: FixedColumnWidth(
+                            MediaQuery.of(context)
+                                .size
+                                .width *
+                                0.14),
                       },
                       children: [
                         TableRow(
@@ -230,6 +235,10 @@ class _InvoiceDetailsScreenState extends State<InvoiceDetailsScreen> {
                             Padding(
                               padding: const EdgeInsets.all(8.0),
                               child: Text('Qty'),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Text('P/P'),
                             ),
                             Padding(
                               padding: const EdgeInsets.all(8.0),
@@ -259,22 +268,27 @@ class _InvoiceDetailsScreenState extends State<InvoiceDetailsScreen> {
                                     MediaQuery.of(context)
                                         .size
                                         .width *
-                                        0.25), // Using 10%
+                                        0.18), // Using 10%
                                 1: FixedColumnWidth(
                                     MediaQuery.of(context)
                                         .size
                                         .width *
-                                        0.32), // Using 30%
+                                        0.30), // Using 30%
                                 2: FixedColumnWidth(
                                     MediaQuery.of(context)
                                         .size
                                         .width *
-                                        0.2), // Using 20%
+                                        0.2),
                                 3: FixedColumnWidth(
                                     MediaQuery.of(context)
                                         .size
                                         .width *
-                                        0.16),
+                                        0.14),// Using 20%
+                                4: FixedColumnWidth(
+                                    MediaQuery.of(context)
+                                        .size
+                                        .width *
+                                        0.14),
                               },
                               children: [
                                 // Each TableRow represents a row in the Table
@@ -301,6 +315,12 @@ class _InvoiceDetailsScreenState extends State<InvoiceDetailsScreen> {
                                     Padding(
                                       padding: const EdgeInsets.all(8.0),
                                       child: Text(invoiceDetailsModel!.data.orderDetails[index].quantity,
+                                          maxLines: 2,
+                                          overflow: TextOverflow.ellipsis),
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: Text(invoiceDetailsModel!.data.orderDetails[index].sellingPrice.toString(),
                                           maxLines: 2,
                                           overflow: TextOverflow.ellipsis),
                                     ),

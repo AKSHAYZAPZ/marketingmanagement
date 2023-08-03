@@ -2,111 +2,59 @@ import 'package:flutter/material.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
-import 'package:jibin_s_application1/presentation/collection_screen/collection_screen.dart';
-import 'package:jibin_s_application1/services/service.dart';
-
 import '../../core/utils/color_constant.dart';
 import '../../core/utils/size_utils.dart';
-import '../../model/allshops_model.dart';
 import '../../model/cashpayment_model.dart';
 import '../../model/payment_type_model.dart';
-import '../../theme/app_decoration.dart';
-import '../../theme/app_style.dart';
+import '../../services/service.dart';
 import '../../widgets/custom_button.dart';
 
-class MyShopResult {
-  final String shopname;
-  final int shopId;
-
-  MyShopResult({
-    required this.shopname,
-    required this.shopId,
-  });
-}
-
-class AddCollectionScreen extends StatefulWidget {
-  AddCollectionScreen({Key? key, required this.id,}) : super(key: key);
-
+class AddcollectionFromShop extends StatefulWidget {
+  AddcollectionFromShop(
+      {Key? key,
+      required this.id,
+      required this.shopId,
+      required this.shopName})
+      : super(key: key);
 
   String id;
-
+  String shopId;
+  String shopName;
 
   @override
-  State<AddCollectionScreen> createState() => _AddCollectionScreenState();
+  State<AddcollectionFromShop> createState() => _AddcollectionFromShopState();
 }
 
-class _AddCollectionScreenState extends State<AddCollectionScreen> {
+class _AddcollectionFromShopState extends State<AddcollectionFromShop> {
   bool _validatedropdown = false;
-
-  var dropdownvalue;
 
   PaymentType? paymentType;
 
-  GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  var dropdownvalue;
 
   final TextEditingController _amountController = TextEditingController();
-
   final TextEditingController _searchController = TextEditingController();
 
-  Allshops? allshops;
+  String date = DateFormat('dd-MM-yyyy').format(DateTime.now());
 
-  String searchkey = '';
-  String shopid = '';
-  String route = '';
+  GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   @override
   void initState() {
     super.initState();
-    getallshops();
     dropdownvalues();
   }
 
-  dropdownvalues() async {
-    paymentType = await HttpService.paymentTypes();
-    if (paymentType != null) {
-      setState(() {});
-    }
-  }
-
-  getallshops() async {
-    allshops = await HttpService.allShops(widget.id, searchkey, route);
-    if (allshops!.status == true) {
-      setState(() {});
-    }
-  }
-
-  Future<List<MyShopResult>> getSearchResults(String query) async {
-    await Future.delayed(Duration(seconds: 1));
-    return List.generate(
-        allshops!.data.length,
-        (index) => MyShopResult(
-              shopname: allshops!.data[index].shopName,
-              shopId: allshops!.data[index].id,
-            ));
-  }
-
-  Future<List<MyShopResult>> getSuggestions(String query) async {
-    List<MyShopResult> results = await getSearchResults(query);
-    List<MyShopResult> filteredResults = results
-        .where((result) =>
-            result.shopname.toLowerCase().contains(query.toLowerCase()) )
-        .toList();
-
-    return filteredResults;
-  }
-
-  String date = DateFormat('dd-MM-yyyy').format(DateTime.now());
-  String selectedOption = 'Cash Payment';
-
   @override
   Widget build(BuildContext context) {
+    _searchController.text = widget.shopName;
     return Scaffold(
       appBar: AppBar(
         backgroundColor: ColorConstant.lightBlue700,
         title: Text('Add Collcetion'),
         centerTitle: true,
       ),
-      body: allshops == null && paymentType == null
+      body: paymentType == null
           ? Center(
               child: CircularProgressIndicator(),
             )
@@ -119,36 +67,14 @@ class _AddCollectionScreenState extends State<AddCollectionScreen> {
                   children: [
                     Padding(
                       padding: const EdgeInsets.all(8.0),
-                      child: TypeAheadFormField(
-                        validator: (value) {
-                          if (value!.isEmpty) {
-                            return 'Please enter shop name';
-                          } else if (allshops!.data
-                              .where((element) => element.shopName == value)
-                              .isEmpty) {
-                            return 'Entered shop not exist';
-                          } else {
-                            return null;
-                          }
-                        },
-                        textFieldConfiguration: TextFieldConfiguration(
-                          controller: _searchController,
-                          decoration: InputDecoration(
-                            hintText: 'Shop Name',
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(10),
-                            ),
+                      child: TextField(
+                        controller: _searchController,
+                        decoration: InputDecoration(
+                          hintText: 'Shop Name',
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
                           ),
                         ),
-                        onSuggestionSelected: (MyShopResult suggestion) {
-                          _searchController.text = suggestion.shopname;
-                          shopid = suggestion.shopId.toString();
-                        },
-                        itemBuilder:
-                            (BuildContext context, MyShopResult suggession) {
-                          return ListTile(title: Text(suggession.shopname));
-                        },
-                        suggestionsCallback: getSuggestions,
                       ),
                     ),
                     Padding(
@@ -297,20 +223,17 @@ class _AddCollectionScreenState extends State<AddCollectionScreen> {
                               textColor: Colors.white,
                             );
                           } else {
-
                             CashPayment cashPayment =
-                                await HttpService.paymentByCash(paidAmount,
-                                    date, widget.id, shopid, dropdownvalue);
+                                await HttpService.paymentByCash(
+                                    paidAmount,
+                                    date,
+                                    widget.id,
+                                    widget.shopId,
+                                    dropdownvalue);
 
                             if (cashPayment.status == true) {
                               _amountController.text = '';
-                              _searchController.text = '';
-                              Navigator.pushReplacement(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) =>
-                                        CollectionScreen(id: widget.id),
-                                  ));
+                              Navigator.pop(context);
                               Fluttertoast.showToast(
                                 msg: cashPayment.message,
                                 toastLength: Toast.LENGTH_SHORT,
@@ -336,5 +259,12 @@ class _AddCollectionScreenState extends State<AddCollectionScreen> {
               ),
             ),
     );
+  }
+
+  dropdownvalues() async {
+    paymentType = await HttpService.paymentTypes();
+    if (paymentType != null) {
+      setState(() {});
+    }
   }
 }

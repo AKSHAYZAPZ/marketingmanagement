@@ -69,6 +69,7 @@ class OrderDetail {
   String productName;
   String orderDate;
   String quantity;
+  int sellingPrice;
   int price;
 
   OrderDetail({
@@ -76,6 +77,7 @@ class OrderDetail {
     required this.productName,
     required this.orderDate,
     required this.quantity,
+    required this.sellingPrice,
     required this.price,
   });
 
@@ -84,6 +86,7 @@ class OrderDetail {
     productName: json["product_name"],
     orderDate: json["order_date"],
     quantity: json["quantity"],
+    sellingPrice: json["selling_price"],
     price: json["price"],
   );
 
@@ -92,6 +95,7 @@ class OrderDetail {
     "product_name": productName,
     "order_date": orderDate,
     "quantity": quantity,
+    "selling_price": sellingPrice,
     "price": price,
   };
 }
