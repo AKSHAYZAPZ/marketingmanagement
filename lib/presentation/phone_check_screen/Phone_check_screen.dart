@@ -50,6 +50,9 @@ class PhoneCheckScreen extends StatelessWidget {
                       textAlign: TextAlign.center,
                       style: AppStyle.txtDMSansRegular18WhiteA700),
                   CustomTextFormField(
+                      focusBordercolor: Colors.white,
+                      errorBorderColor: Colors.white,
+                      errorColor: Colors.white,
                       validator: (value) {
                         if (value!.isEmpty) {
                           return 'Please enter Mobile number';

@@ -300,15 +300,13 @@ class _TakeOderScreenState extends State<TakeOderScreen> {
                                     });
                                   }
 
-
-
-                                    // selectedProduct.add(_searchController.text);
-                                    // selectedCode.add(productCode);
-                                    // selectedPrice.add(sellingPrice!);
-                                    // selectedQuantity.add(quantity!);
-                                    // selectedPdtId.add(prdtId!);
-                                    // selectedCatgryId.add(catgryId!);
-                                    // print(quantity);
+                                  // selectedProduct.add(_searchController.text);
+                                  // selectedCode.add(productCode);
+                                  // selectedPrice.add(sellingPrice!);
+                                  // selectedQuantity.add(quantity!);
+                                  // selectedPdtId.add(prdtId!);
+                                  // selectedCatgryId.add(catgryId!);
+                                  // print(quantity);
 
                                   // for (Map<String, dynamic> productData in productDataList) {
                                   //   print(
@@ -348,10 +346,17 @@ class _TakeOderScreenState extends State<TakeOderScreen> {
                           padding: const EdgeInsets.all(1),
                           child: Table(
                             columnWidths: {
-                              0: FixedColumnWidth(MediaQuery.of(context).size.width * 0.26), // Using 10%
-                              1: FixedColumnWidth(MediaQuery.of(context).size.width * 0.32), // Using 30%
-                              2: FixedColumnWidth(MediaQuery.of(context).size.width * 0.21), // Using 20%
-                              3: FixedColumnWidth(MediaQuery.of(context).size.width * 0.16),
+                              0: FixedColumnWidth(
+                                  MediaQuery.of(context).size.width *
+                                      0.26), // Using 10%
+                              1: FixedColumnWidth(
+                                  MediaQuery.of(context).size.width *
+                                      0.32), // Using 30%
+                              2: FixedColumnWidth(
+                                  MediaQuery.of(context).size.width *
+                                      0.21), // Using 20%
+                              3: FixedColumnWidth(
+                                  MediaQuery.of(context).size.width * 0.16),
                             },
                             children: [
                               TableRow(
@@ -397,10 +402,17 @@ class _TakeOderScreenState extends State<TakeOderScreen> {
                             child: Container(
                               child: Table(
                                 columnWidths: {
-                                  0: FixedColumnWidth(MediaQuery.of(context).size.width * 0.26), // Using 10%
-                                  1: FixedColumnWidth(MediaQuery.of(context).size.width * 0.32), // Using 30%
-                                  2: FixedColumnWidth(MediaQuery.of(context).size.width * 0.21), // Using 20%
-                                  3: FixedColumnWidth(MediaQuery.of(context).size.width * 0.16),
+                                  0: FixedColumnWidth(
+                                      MediaQuery.of(context).size.width *
+                                          0.26), // Using 10%
+                                  1: FixedColumnWidth(
+                                      MediaQuery.of(context).size.width *
+                                          0.32), // Using 30%
+                                  2: FixedColumnWidth(
+                                      MediaQuery.of(context).size.width *
+                                          0.21), // Using 20%
+                                  3: FixedColumnWidth(
+                                      MediaQuery.of(context).size.width * 0.16),
                                 },
                                 children: [
                                   // Each TableRow represents a row in the Table
@@ -475,27 +487,51 @@ class _TakeOderScreenState extends State<TakeOderScreen> {
           if (orderDetails.isEmpty) {
             return null;
           } else {
-            postOder = await HttpService.postOrders(
-                widget.id, orderdate, createdate, orderDetails, widget.token);
-            if (postOder != null) {
-              setState(() {
-                if (postOder!.status == true) {
-                  Fluttertoast.showToast(
-                    msg: postOder!.message,
-                    toastLength: Toast.LENGTH_SHORT,
-                    gravity: ToastGravity.BOTTOM,
-                    backgroundColor: Colors.black,
-                    textColor: Colors.white,
-                  );
-                }
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) =>
-                          ShopDetailsPage(id: widget.token, shopId: widget.id),
-                    ));
-              });
-            }
+            showDialog(
+              context: context,
+              builder: (context) {
+                return AlertDialog(
+                  title: Text('Are you sure?'),
+                  actions: [
+                    TextButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                      child: Text('No'),
+                    ),
+                    ElevatedButton(
+                      onPressed: () async{
+                        postOder = await HttpService.postOrders(
+                            widget.id, orderdate, createdate, orderDetails, widget.token);
+                        if (postOder != null) {
+                          setState(() {
+                            if (postOder!.status == true) {
+                              Fluttertoast.showToast(
+                                msg: postOder!.message,
+                                toastLength: Toast.LENGTH_SHORT,
+                                gravity: ToastGravity.BOTTOM,
+                                backgroundColor: Colors.black,
+                                textColor: Colors.white,
+                              );
+                            }
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                      ShopDetailsPage(id: widget.token, shopId: widget.id),
+                                ));
+                          });
+                        }
+
+
+                      },
+                      child: Text('Yes'),
+                    ),
+                  ],
+                );
+              },
+            );
+
           }
         },
         label: Text('Take oder'),

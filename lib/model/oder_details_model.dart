@@ -37,6 +37,7 @@ class Data {
   String orderId;
   String orderDate;
   int total;
+  String createdBy;
   List<OrderDetail> orderDetails;
 
   Data({
@@ -44,6 +45,7 @@ class Data {
     required this.orderId,
     required this.orderDate,
     required this.total,
+    required this.createdBy,
     required this.orderDetails,
   });
 
@@ -52,6 +54,7 @@ class Data {
     orderId: json["orderId"],
     orderDate: json["order_date"],
     total: json["total"],
+    createdBy: json["created_by"],
     orderDetails: List<OrderDetail>.from(json["order_details"].map((x) => OrderDetail.fromJson(x))),
   );
 
@@ -60,6 +63,7 @@ class Data {
     "orderId": orderId,
     "order_date": orderDate,
     "total": total,
+    "created_by": createdBy,
     "order_details": List<dynamic>.from(orderDetails.map((x) => x.toJson())),
   };
 }

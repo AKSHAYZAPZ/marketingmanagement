@@ -34,7 +34,7 @@ class _PasswordChangeScreenState extends State<PasswordChangeScreen> {
         extendBody: true,
         extendBodyBehindAppBar: true,
         backgroundColor: ColorConstant.blue600,
-        resizeToAvoidBottomInset: false,
+        resizeToAvoidBottomInset: true,
         body: Container(
           width: size.width,
           height: size.height,
@@ -60,11 +60,12 @@ class _PasswordChangeScreenState extends State<PasswordChangeScreen> {
                         style: AppStyle.txtRobotoMedium24),
                   ),
                   CustomTextFormField(
+                      focusBordercolor: Colors.white,
+                      errorBorderColor: Colors.white,
+                      errorColor: Colors.white,
                       validator: (value) {
                         if (value!.isEmpty) {
                           return 'Please enter Password';
-                        } else if(value!.length < 6){
-                          return 'Password must be at least 6 characters';
                         }else {
                           return null;
                         }
@@ -77,6 +78,9 @@ class _PasswordChangeScreenState extends State<PasswordChangeScreen> {
                       fontStyle: TextFormFieldFontStyle.DMSansRegular19,
                       textInputType: TextInputType.emailAddress),
                   CustomTextFormField(
+                      focusBordercolor: Colors.white,
+                      errorBorderColor: Colors.white,
+                      errorColor: Colors.white,
                       suffix: isVisible
                           ? IconButton(
                               onPressed: () {
@@ -101,8 +105,6 @@ class _PasswordChangeScreenState extends State<PasswordChangeScreen> {
                       validator: (value) {
                         if (value!.isEmpty) {
                           return 'Please enter Password';
-                        }else if(value!.length < 6){
-                          return 'Password must be at least 6 characters';
                         } else {
                           return null;
                         }

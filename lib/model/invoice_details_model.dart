@@ -37,6 +37,7 @@ class Data {
   String invoiceNo;
   String invoiceDate;
   int total;
+  String createdBy;
   List<OrderDetail> orderDetails;
 
   Data({
@@ -44,6 +45,7 @@ class Data {
     required this.invoiceNo,
     required this.invoiceDate,
     required this.total,
+    required this.createdBy,
     required this.orderDetails,
   });
 
@@ -52,6 +54,7 @@ class Data {
     invoiceNo: json["invoice_no"],
     invoiceDate: json["invoice_date"],
     total: json["total"],
+    createdBy: json["created_by"],
     orderDetails: List<OrderDetail>.from(json["order_details"].map((x) => OrderDetail.fromJson(x))),
   );
 
@@ -60,6 +63,7 @@ class Data {
     "invoice_no": invoiceNo,
     "invoice_date": invoiceDate,
     "total": total,
+    "created_by": createdBy,
     "order_details": List<dynamic>.from(orderDetails.map((x) => x.toJson())),
   };
 }

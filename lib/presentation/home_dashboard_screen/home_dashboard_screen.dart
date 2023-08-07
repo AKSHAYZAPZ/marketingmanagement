@@ -9,6 +9,7 @@ import 'package:jibin_s_application1/core/app_export.dart';
 import 'package:jibin_s_application1/model/attendance_model.dart';
 import 'package:jibin_s_application1/presentation/add_shop_screen/add_shop_screen.dart';
 import 'package:jibin_s_application1/presentation/collection_screen/collection_screen.dart';
+import 'package:jibin_s_application1/presentation/oders_screen.dart';
 import 'package:jibin_s_application1/presentation/shop_details_page/shop_details_page.dart';
 import 'package:jibin_s_application1/widgets/app_bar/custom_app_bar.dart';
 import 'package:jibin_s_application1/widgets/custom_icon_button.dart';
@@ -103,9 +104,9 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> {
   }
 
   Future<void> _onRefresh() async {
-    await Future.delayed(Duration(seconds: 2));
+    await Future.delayed(Duration(seconds: 1));
     setState(() {
-      // initState();
+      getList();
     });
   }
 
@@ -264,7 +265,7 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> {
                                               alignment: Alignment.topCenter,
                                               child: GestureDetector(
                                                 onTap: () {
-                                                  Get.to(CategoryScreen(
+                                                  Get.to(OderScreen(
                                                       id: widget.id));
                                                 },
                                                 child: Container(
@@ -277,7 +278,7 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> {
                                                   ),
                                                   child: Center(
                                                     child: Text(
-                                                      'Products',
+                                                      'Orders',
                                                       style: TextStyle(
                                                         color: Colors.white,
                                                         fontSize: 14,
@@ -592,6 +593,7 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> {
                                             context: context,
                                             removeTop: true,
                                             child: ListView.builder(
+
                                               physics: BouncingScrollPhysics(),
                                               shrinkWrap: true,
                                               itemCount: dashboard!
@@ -652,8 +654,8 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> {
                                                                     .end,
                                                             children: [
                                                               CustomIconButton(
-                                                                  height: 32,
-                                                                  width: 32,
+                                                                  height: 42,
+                                                                  width: 42,
                                                                   margin:
                                                                       getMargin(
                                                                           bottom:
@@ -663,10 +665,7 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> {
                                                                   padding:
                                                                       IconButtonPadding
                                                                           .PaddingAll8,
-                                                                  child: CustomImageView(
-                                                                      svgPath:
-                                                                          ImageConstant
-                                                                              .imgArrowdown)),
+                                                                child: Text(dashboard!.data.shopDetails[index].shopName[0].toUpperCase()), ),
                                                               SizedBox(
                                                                 width: 5,
                                                               ),

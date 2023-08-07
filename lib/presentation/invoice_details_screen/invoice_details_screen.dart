@@ -51,7 +51,7 @@ class _InvoiceDetailsScreenState extends State<InvoiceDetailsScreen> {
         child: Column(
           children: [
             Container(
-              height: 120,
+              height: 145,
               width: MediaQuery.of(context).size.width,
               decoration: BoxDecoration(
                 color: ColorConstant.lightBlue700,
@@ -109,6 +109,16 @@ class _InvoiceDetailsScreenState extends State<InvoiceDetailsScreen> {
                           ),
                           Text(
                             'Total Amount :',
+                            style: TextStyle(
+                              fontSize: 16,
+                              color: Colors.white,
+                            ),
+                          ),
+                          SizedBox(
+                            height: 7,
+                          ),
+                          Text(
+                            'Created by :',
                             style: TextStyle(
                               fontSize: 16,
                               color: Colors.white,
@@ -173,6 +183,19 @@ class _InvoiceDetailsScreenState extends State<InvoiceDetailsScreen> {
                                 color: Colors.white,
                               ),
                             ),
+                            SizedBox(
+                              height: 7,
+                            ),
+                            SingleChildScrollView(
+                              scrollDirection: Axis.horizontal,
+                              child: Text(
+                                invoiceDetailsModel!.data.createdBy,
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  color: Colors.white,
+                                ),
+                              ),
+                            ),
                           ],
                         ),
                       ),
@@ -200,22 +223,22 @@ class _InvoiceDetailsScreenState extends State<InvoiceDetailsScreen> {
                             MediaQuery.of(context)
                                 .size
                                 .width *
-                                0.30), // Using 30%
+                                0.28), // Using 30%
                         2: FixedColumnWidth(
                             MediaQuery.of(context)
                                 .size
                                 .width *
-                                0.2),
+                                0.15),
                         3: FixedColumnWidth(
                             MediaQuery.of(context)
                                 .size
                                 .width *
-                                0.14),// Using 20%
+                                0.15),// Using 20%
                         4: FixedColumnWidth(
                             MediaQuery.of(context)
                                 .size
                                 .width *
-                                0.14),
+                                0.20),
                       },
                       children: [
                         TableRow(
@@ -273,22 +296,22 @@ class _InvoiceDetailsScreenState extends State<InvoiceDetailsScreen> {
                                     MediaQuery.of(context)
                                         .size
                                         .width *
-                                        0.30), // Using 30%
+                                        0.28), // Using 30%
                                 2: FixedColumnWidth(
                                     MediaQuery.of(context)
                                         .size
                                         .width *
-                                        0.2),
+                                        0.15),
                                 3: FixedColumnWidth(
                                     MediaQuery.of(context)
                                         .size
                                         .width *
-                                        0.14),// Using 20%
+                                        0.15),// Using 20%
                                 4: FixedColumnWidth(
                                     MediaQuery.of(context)
                                         .size
                                         .width *
-                                        0.14),
+                                        0.20),
                               },
                               children: [
                                 // Each TableRow represents a row in the Table

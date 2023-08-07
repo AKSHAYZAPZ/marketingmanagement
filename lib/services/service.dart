@@ -362,6 +362,7 @@ class HttpService {
         'shop_id': shopId,
       }),
     );
+    print(response.statusCode);
     if (response.statusCode == 200) {
       return shopEditFromJson(response.body);
     }

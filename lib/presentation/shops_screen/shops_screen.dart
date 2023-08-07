@@ -61,164 +61,174 @@ class _ShopsScreenState extends State<ShopsScreen> {
     }
     // print(allshops);
   }
+  Future<void> _onRefresh() async {
+    await Future.delayed(Duration(seconds: 2));
+    setState(() {
+      getShops();
+      getRoutes();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        backgroundColor: ColorConstant.whiteA700,
-        appBar: AppBar(
-          backgroundColor: ColorConstant.lightBlue700,
-          centerTitle: true,
-          title: Text('Shops'),
-          leading: IconButton(
-            icon: Icon(Icons.arrow_back),
-            onPressed: () {
-              // Handle the back button press here
-              Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => BottomNavigationScreen(id: token),
-                ),
-              );
-            },
+    return RefreshIndicator(
+      onRefresh: _onRefresh,
+      child: Scaffold(
+          backgroundColor: ColorConstant.whiteA700,
+          appBar: AppBar(
+            backgroundColor: ColorConstant.lightBlue700,
+            centerTitle: true,
+            title: Text('Shops'),
+            leading: IconButton(
+              icon: Icon(Icons.arrow_back),
+              onPressed: () {
+                // Handle the back button press here
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => BottomNavigationScreen(id: token),
+                  ),
+                );
+              },
+            ),
           ),
-        ),
-        body: allshops == null
-            ? Center(
-                child: CircularProgressIndicator(),
-              )
-            : Padding(
-                padding: const EdgeInsets.only(left: 8, right: 8),
-                child: SizedBox(
-                  width: double.maxFinite,
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.only(
-                            left: 5, right: 5,),
-                        child: Container(
-                          height: 70,
-                          width: double.infinity,
-                          child: Row(
-                            children: [
-                              Expanded(
-                                child: Container(
-                                  height: 40,
-                                  child: TextFormField(
-                                    controller: searchCntrller,
-                                    decoration: InputDecoration(
-                                      contentPadding: EdgeInsets.fromLTRB(0, 10, 0, 10),
-                                      hintStyle: TextStyle(
-                                        color: Colors.grey,
-                                      ),
-                                      filled: true,
-                                      fillColor: Colors.grey[300],
-                                      prefixIcon: Icon(Icons.search,
-                                          color: Colors.grey),
-                                      hintText: 'Search',
-                                      enabledBorder: OutlineInputBorder(
-                                        borderSide: BorderSide(
-                                            color: Colors.transparent),
-                                        borderRadius:
-                                            BorderRadius.circular(15),
-                                      ),
-                                      focusedBorder: OutlineInputBorder(
-                                        borderSide: BorderSide(
-                                            color: Colors.transparent),
-                                        borderRadius:
-                                            BorderRadius.circular(15),
+          body: allshops == null
+              ? Center(
+                  child: CircularProgressIndicator(),
+                )
+              : Padding(
+                  padding: const EdgeInsets.only(left: 8, right: 8),
+                  child: SizedBox(
+                    width: double.maxFinite,
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.only(
+                              left: 5, right: 5,),
+                          child: Container(
+                            height: 70,
+                            width: double.infinity,
+                            child: Row(
+                              children: [
+                                Expanded(
+                                  child: Container(
+                                    height: 40,
+                                    child: TextFormField(
+                                      controller: searchCntrller,
+                                      decoration: InputDecoration(
+                                        contentPadding: EdgeInsets.fromLTRB(0, 10, 0, 10),
+                                        hintStyle: TextStyle(
+                                          color: Colors.grey,
+                                        ),
+                                        filled: true,
+                                        fillColor: Colors.grey[300],
+                                        prefixIcon: Icon(Icons.search,
+                                            color: Colors.grey),
+                                        hintText: 'Search',
+                                        enabledBorder: OutlineInputBorder(
+                                          borderSide: BorderSide(
+                                              color: Colors.transparent),
+                                          borderRadius:
+                                              BorderRadius.circular(15),
+                                        ),
+                                        focusedBorder: OutlineInputBorder(
+                                          borderSide: BorderSide(
+                                              color: Colors.transparent),
+                                          borderRadius:
+                                              BorderRadius.circular(15),
+                                        ),
                                       ),
                                     ),
                                   ),
                                 ),
-                              ),
-                              SizedBox(
-                                width: 12,
-                              ),
-                              ElevatedButton(
-                                onPressed: () async {
-                                  searchKey = searchCntrller.text;
+                                SizedBox(
+                                  width: 12,
+                                ),
+                                ElevatedButton(
+                                  onPressed: () async {
+                                    searchKey = searchCntrller.text;
+                                    setState(() {
+                                      getShops();
+                                    });
+
+                                    // shops  = await HttpService.shopList(widget.id,searchKey,route);
+                                  },
+                                  child: Text('Search'),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(left: 8,right: 8),
+                          child: Row(
+                            mainAxisAlignment:
+                            MainAxisAlignment.spaceBetween,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Text("Shops",
+                                  overflow: TextOverflow.ellipsis,
+                                  textAlign: TextAlign.left,
+                                  style: AppStyle
+                                      .txtDMSansBold20Black900),
+                              DropdownButton(
+                                underline: Container(),
+                                value: route == '' ? null : route,
+                                hint: Text('Select Route'),
+                                items: routelist != null
+                                    ? routelist!.data
+                                    .map<DropdownMenuItem<String>>(
+                                        (e) {
+                                      return DropdownMenuItem<String>(
+                                        value: e.id.toString(),
+                                        child: Text(e.route),
+                                      );
+                                    }).toList()
+                                    : null,
+                                onChanged: (value) {
                                   setState(() {
+                                    route = value.toString();
                                     getShops();
                                   });
-
-                                  // shops  = await HttpService.shopList(widget.id,searchKey,route);
                                 },
-                                child: Text('Search'),
                               ),
                             ],
                           ),
                         ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.only(left: 8,right: 8),
-                        child: Row(
-                          mainAxisAlignment:
-                          MainAxisAlignment.spaceBetween,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Text("Shops",
-                                overflow: TextOverflow.ellipsis,
-                                textAlign: TextAlign.left,
-                                style: AppStyle
-                                    .txtDMSansBold20Black900),
-                            DropdownButton(
-                              underline: Container(),
-                              value: route == '' ? null : route,
-                              hint: Text('Select Route'),
-                              items: routelist != null
-                                  ? routelist!.data
-                                  .map<DropdownMenuItem<String>>(
-                                      (e) {
-                                    return DropdownMenuItem<String>(
-                                      value: e.id.toString(),
-                                      child: Text(e.route),
+                        Expanded(
+                            child: Padding(
+                          padding: getPadding(top: 10, right: 4),
+                          child: allshops!.data.length > 0
+                              ? ListView.separated(
+                                  physics: BouncingScrollPhysics(),
+                                  shrinkWrap: true,
+                                  separatorBuilder: (context, index) {
+                                    return SizedBox(
+                                        height: getVerticalSize(19));
+                                  },
+                                  itemCount: allshops!.data.length,
+                                  itemBuilder: (context, index) {
+                                    return ShopsItemWidget(
+                                      allshops!.data[index].shopName,
+                                      allshops!.data[index].address,
+                                      allshops!.data[index].id,
+                                      allshops!.data[index].createdAt,
+                                      allshops!.data[index].whatsappNo,
+                                      allshops!.data[index].phoneNo,
+                                        allshops!.data[index].balance,
+                                        allshops!.data[index].route,
+                                      token
                                     );
-                                  }).toList()
-                                  : null,
-                              onChanged: (value) {
-                                setState(() {
-                                  route = value.toString();
-                                  getShops();
-                                });
-                              },
-                            ),
-                          ],
-                        ),
-                      ),
-                      Expanded(
-                          child: Padding(
-                        padding: getPadding(top: 10, right: 4),
-                        child: allshops!.data.length > 0
-                            ? ListView.separated(
-                                physics: BouncingScrollPhysics(),
-                                shrinkWrap: true,
-                                separatorBuilder: (context, index) {
-                                  return SizedBox(
-                                      height: getVerticalSize(19));
-                                },
-                                itemCount: allshops!.data.length,
-                                itemBuilder: (context, index) {
-                                  return ShopsItemWidget(
-                                    allshops!.data[index].shopName,
-                                    allshops!.data[index].address,
-                                    allshops!.data[index].id,
-                                    allshops!.data[index].createdAt,
-                                    allshops!.data[index].whatsappNo,
-                                    allshops!.data[index].phoneNo,
-                                      allshops!.data[index].balance,
-                                      allshops!.data[index].route,
-                                    token
-                                  );
-                                })
-                            : Text('No Data'),
-                      )),
-                    ],
+                                  })
+                              : Text('No Data'),
+                        )),
+                      ],
+                    ),
                   ),
-                ),
-              ));
+                )),
+    );
   }
 
   /// Navigates back to the previous screen.

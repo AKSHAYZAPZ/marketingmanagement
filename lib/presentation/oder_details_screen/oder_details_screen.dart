@@ -49,7 +49,7 @@ class _OderDetailsScreenState extends State<OderDetailsScreen> {
         child: Column(
           children: [
             Container(
-              height: 120,
+              height: 145,
               width: MediaQuery.of(context).size.width,
               decoration: BoxDecoration(
                 color: ColorConstant.lightBlue700,
@@ -112,6 +112,16 @@ class _OderDetailsScreenState extends State<OderDetailsScreen> {
                               color: Colors.white,
                             ),
                           ),
+                          SizedBox(
+                            height: 7,
+                          ),
+                          Text(
+                            'Created by :',
+                            style: TextStyle(
+                              fontSize: 16,
+                              color: Colors.white,
+                            ),
+                          ),
                         ],
                       ),
                     ),
@@ -164,11 +174,27 @@ class _OderDetailsScreenState extends State<OderDetailsScreen> {
                             SizedBox(
                               height: 7,
                             ),
-                            Text(
-                              oderDetailsModel!.data.total.toString(),
-                              style: TextStyle(
-                                fontSize: 16,
-                                color: Colors.white,
+                            SingleChildScrollView(
+                              scrollDirection: Axis.horizontal,
+                              child: Text(
+                                oderDetailsModel!.data.total.toString(),
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  color: Colors.white,
+                                ),
+                              ),
+                            ),
+                            SizedBox(
+                              height: 7,
+                            ),
+                            SingleChildScrollView(
+                              scrollDirection: Axis.horizontal,
+                              child: Text(
+                                oderDetailsModel!.data.createdBy,
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  color: Colors.white,
+                                ),
                               ),
                             ),
                           ],
@@ -198,22 +224,22 @@ class _OderDetailsScreenState extends State<OderDetailsScreen> {
                             MediaQuery.of(context)
                                 .size
                                 .width *
-                                0.30), // Using 30%
+                                0.28), // Using 30%
                         2: FixedColumnWidth(
                             MediaQuery.of(context)
                                 .size
                                 .width *
-                                0.2),
+                                0.15),
                         3: FixedColumnWidth(
                             MediaQuery.of(context)
                                 .size
                                 .width *
-                                0.14),// Using 20%
+                                0.15),// Using 20%
                         4: FixedColumnWidth(
                             MediaQuery.of(context)
                                 .size
                                 .width *
-                                0.14),
+                                0.20),
                       },
                       children: [
                         TableRow(
@@ -272,22 +298,22 @@ class _OderDetailsScreenState extends State<OderDetailsScreen> {
                                     MediaQuery.of(context)
                                         .size
                                         .width *
-                                        0.30), // Using 30%
+                                        0.28), // Using 30%
                                 2: FixedColumnWidth(
                                     MediaQuery.of(context)
                                         .size
                                         .width *
-                                        0.2),
+                                        0.15),
                                 3: FixedColumnWidth(
                                     MediaQuery.of(context)
                                         .size
                                         .width *
-                                        0.14),// Using 20%
+                                        0.15),// Using 20%
                                 4: FixedColumnWidth(
                                     MediaQuery.of(context)
                                         .size
                                         .width *
-                                        0.14),
+                                        0.20),
                               },
                               children: [
                                 // Each TableRow represents a row in the Table

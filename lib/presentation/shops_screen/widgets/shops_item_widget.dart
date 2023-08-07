@@ -83,8 +83,8 @@ class ShopsItemWidget extends StatelessWidget {
                     .end,
                 children: [
                   CustomIconButton(
-                      height: 32,
-                      width: 32,
+                      height: 40,
+                      width: 40,
                       margin:
                       getMargin(
                           bottom:
@@ -94,10 +94,7 @@ class ShopsItemWidget extends StatelessWidget {
                       padding:
                       IconButtonPadding
                           .PaddingAll8,
-                      child: CustomImageView(
-                          svgPath:
-                          ImageConstant
-                              .imgArrowdown)),
+                      child: Text(shopName[0].toUpperCase())),
                   SizedBox(
                     width: 5,
                   ),

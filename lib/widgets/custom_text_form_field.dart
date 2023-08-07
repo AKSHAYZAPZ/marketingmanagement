@@ -25,6 +25,8 @@ class CustomTextFormField extends StatelessWidget {
     this.validator,
     this.errorColor,
     this.errorBorderColor,
+    this.focusBordercolor,
+    this.textCapitalization = TextCapitalization.words,
   });
 
   TextFormFieldPadding? padding;
@@ -68,18 +70,20 @@ class CustomTextFormField extends StatelessWidget {
   FormFieldValidator<String>? validator;
   Color? errorColor;
   Color? errorBorderColor;
+  Color? focusBordercolor;
+  TextCapitalization? textCapitalization;
 
   @override
   Widget build(BuildContext context) {
     return alignment != null
         ? Align(
             alignment: alignment ?? Alignment.center,
-            child: _buildTextFormFieldWidget(errorColor, errorBorderColor),
+            child: _buildTextFormFieldWidget(errorColor, errorBorderColor,focusBordercolor),
           )
-        : _buildTextFormFieldWidget(errorColor, errorBorderColor);
+        : _buildTextFormFieldWidget(errorColor, errorBorderColor,focusBordercolor);
   }
 
-  _buildTextFormFieldWidget(Color? errorColor, Color? errorBorderColor) {
+  _buildTextFormFieldWidget(Color? errorColor, Color? errorBorderColor,Color? focusBordercolor) {
     return Container(
       width: width ?? double.maxFinite,
       margin: margin,
@@ -92,13 +96,14 @@ class CustomTextFormField extends StatelessWidget {
         textInputAction: textInputAction,
         keyboardType: textInputType,
         maxLines: maxLines ?? 1,
-        decoration: _buildDecoration(errorColor, errorBorderColor),
+        decoration: _buildDecoration(errorColor, errorBorderColor,focusBordercolor),
         validator: validator,
+        textCapitalization: textCapitalization!,
       ),
     );
   }
 
-  _buildDecoration(Color? errorColor, Color? errorBorderColor) {
+  _buildDecoration(Color? errorColor, Color? errorBorderColor,Color?  focusBordercolor) {
     return InputDecoration(
         hintText: hintText ?? "",
         hintStyle: _setFontStyle(),
@@ -118,7 +123,12 @@ class CustomTextFormField extends StatelessWidget {
           borderSide: BorderSide(
               color: errorBorderColor != null ? errorBorderColor : Colors.red),
         ),
-        errorStyle: TextStyle(color: errorColor));
+        focusedErrorBorder:OutlineInputBorder(
+          borderRadius: BorderRadius.circular(20),
+          borderSide: BorderSide(
+            color: focusBordercolor != null ? focusBordercolor : Colors.red),
+          ),
+         errorStyle: TextStyle(color: errorColor));
   }
 
   _setFontStyle() {

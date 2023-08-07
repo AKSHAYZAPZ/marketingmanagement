@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
+import 'package:jibin_s_application1/presentation/shop_details_page/shop_details_page.dart';
 import '../../core/utils/color_constant.dart';
 import '../../core/utils/size_utils.dart';
 import '../../model/cashpayment_model.dart';
@@ -233,7 +234,13 @@ class _AddcollectionFromShopState extends State<AddcollectionFromShop> {
 
                             if (cashPayment.status == true) {
                               _amountController.text = '';
-                              Navigator.pop(context);
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => ShopDetailsPage(
+                                      id: widget.id, shopId: widget.shopId),
+                                ),
+                              );
                               Fluttertoast.showToast(
                                 msg: cashPayment.message,
                                 toastLength: Toast.LENGTH_SHORT,

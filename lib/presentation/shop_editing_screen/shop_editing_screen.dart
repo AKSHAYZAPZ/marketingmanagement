@@ -24,6 +24,8 @@ class ShopEditingScreen extends StatefulWidget {
 }
 
 class _ShopEditingScreenState extends State<ShopEditingScreen> {
+  bool isLoading = true;
+
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   TextEditingController shopnameController = TextEditingController();
@@ -60,244 +62,268 @@ class _ShopEditingScreenState extends State<ShopEditingScreen> {
         centerTitle: true,
         title: Text('Edit Shop'),
       ),
-      body: routelist != null && shopEdit != null
-          ? SingleChildScrollView(
-              child: SizedBox(
-                width: double.maxFinite,
-                child: Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      Stack(
-                        alignment: Alignment.center,
+      body: isLoading == true
+          ? Center(
+              child: CircularProgressIndicator(),
+            )
+          : routelist != null && shopEdit != null
+              ? SingleChildScrollView(
+                  child: SizedBox(
+                    width: double.maxFinite,
+                    child: Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
                         children: [
-                          Column(
-                            mainAxisSize: MainAxisSize.min,
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [],
-                          ),
-                        ],
-                      ),
-                      Container(
-                        padding: getPadding(top: 6, bottom: 6),
-                        child: Form(
-                          key: _formKey,
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.start,
+                          Stack(
+                            alignment: Alignment.center,
                             children: [
-                              Align(
-                                  alignment: Alignment.centerLeft,
-                                  child: Padding(
-                                      padding: getPadding(left: 39, top: 30),
-                                      child: Text("Shop Name",
-                                          overflow: TextOverflow.ellipsis,
-                                          textAlign: TextAlign.left,
-                                          style: AppStyle
-                                              .txtMontserratRegular14))),
-                              CustomTextFormField(
-                                  validator: (value) {
-                                    if (value!.isEmpty) {
-                                      return 'Please enter Shopname';
-                                    }
-                                  },
-                                  controller: shopnameController,
-                                  margin:
-                                      getMargin(left: 39, top: 14, right: 42)),
-                              Align(
-                                  alignment: Alignment.centerLeft,
-                                  child: Padding(
-                                      padding: getPadding(left: 39, top: 17),
-                                      child: Text("Address",
-                                          overflow: TextOverflow.ellipsis,
-                                          textAlign: TextAlign.left,
-                                          style: AppStyle
-                                              .txtMontserratRegular14))),
-                              CustomTextFormField(
-                                  validator: (value) {
-                                    if (value!.isEmpty) {
-                                      return 'Please enter Adress';
-                                    }
-                                  },
-                                  controller: addressController,
-                                  margin:
-                                      getMargin(left: 39, top: 15, right: 42)),
-                              Align(
-                                alignment: Alignment.centerLeft,
-                                child: Padding(
-                                  padding: getPadding(left: 39, top: 17),
-                                  child: Text("Phone",
-                                      overflow: TextOverflow.ellipsis,
-                                      textAlign: TextAlign.left,
-                                      style: AppStyle.txtMontserratRegular14),
-                                ),
-                              ),
-                              CustomTextFormField(
-                                textInputType: TextInputType.phone,
-                                validator: (value) {
-                                  if (value!.isEmpty) {
-                                    return 'Please enter mobile number';
-                                  } else if (value.length != 10) {
-                                    return 'Please enter valid Mobilenumber';
-                                  } else {
-                                    return null;
-                                  }
-                                },
-                                controller: mobilenoController,
-                                margin: getMargin(left: 39, top: 14, right: 42),
-                              ),
-                              Align(
-                                  alignment: Alignment.centerLeft,
-                                  child: Container(
-                                      width: getHorizontalSize(73),
-                                      margin: getMargin(left: 39, top: 17),
-                                      child: Text("Whatsapp Number",
-                                          maxLines: null,
-                                          textAlign: TextAlign.left,
-                                          style: AppStyle
-                                              .txtMontserratRegular14))),
-                              CustomTextFormField(
-                                  validator: (value) {
-                                    if (value!.isEmpty) {
-                                      return 'Please enter whatsapp number';
-                                    } else if (value.length != 10) {
-                                      return 'Please enter valid Mobilenumber';
-                                    } else {
-                                      return null;
-                                    }
-                                  },
-                                  textInputType: TextInputType.phone,
-                                  controller: whatsappController,
-                                  margin: getMargin(left: 39, right: 42)),
-                              Align(
-                                alignment: Alignment.centerLeft,
-                                child: Container(
-                                  width: getHorizontalSize(59),
-                                  margin: getMargin(left: 39, top: 17),
-                                  child: Text("GST Number",
-                                      maxLines: null,
-                                      textAlign: TextAlign.left,
-                                      style: AppStyle.txtMontserratRegular14),
-                                ),
-                              ),
-                              CustomTextFormField(
-                                  validator: (value) {
-                                    if (value!.length > 15) {
-                                      return 'Please enter valid GST number';
-                                    }
-                                  },
-                                  controller: gstnumberController,
-                                  margin: getMargin(left: 39, right: 42),
-                                  textInputAction: TextInputAction.done),
-                              Align(
-                                alignment: Alignment.centerLeft,
-                                child: Padding(
-                                  padding: getPadding(left: 39, top: 17),
-                                  child: Text("Opening Balance",
-                                      overflow: TextOverflow.ellipsis,
-                                      textAlign: TextAlign.left,
-                                      style: AppStyle.txtMontserratRegular14),
-                                ),
-                              ),
-                              CustomTextFormField(
-                                textInputType: TextInputType.phone,
-                                // validator: (value) {
-                                //   if (value!.isEmpty) {
-                                //     return 'Please enter mobile number';
-                                //   } else if (value.length != 10) {
-                                //     return 'Please enter valid Mobilenumber';
-                                //   } else {
-                                //     return null;
-                                //   }
-                                // },
-                                controller: balanceController,
-                                margin: getMargin(left: 39, top: 14, right: 42),
-                              ),
-                              SizedBox(
-                                height: 15,
-                              ),
-                              Padding(
-                                padding:
-                                    const EdgeInsets.only(left: 35, right: 35),
-                                child: Container(
-                                  width: double.infinity,
-                                  child: DropdownButton(
-                                    value: dropdownvalue,
-                                    hint: Text('Select Route'),
-                                    onChanged: (selecteditem) {
-                                      setState(() {
-                                        dropdownvalue = selecteditem;
-                                        _validatedropdown = true;
-                                      });
-                                    },
-                                    items: routelist!.data.length > 0
-                                        ? routelist!.data
-                                            .map<DropdownMenuItem<String>>((e) {
-                                            return DropdownMenuItem<String>(
-                                              value: e.id.toString(),
-                                              child: Text(e.route),
-                                            );
-                                          }).toList()
-                                        : null,
-                                  ),
-                                ),
-                              ),
-                              CustomButton(
-                                text: "Submit",
-                                margin: getMargin(left: 15, top: 10, right: 15),
-                                shape: ButtonShape.RoundedBorder24,
-                                fontStyle:
-                                    ButtonFontStyle.DMSansMedium20WhiteA700,
-                                onTap: () async {
-
-                                  UpdateShop updateShop =
-                                      await HttpService.updateShop(
-                                    shopnameController.text,
-                                    addressController.text,
-                                    mobilenoController.text,
-                                    whatsappController.text,
-                                    gstnumberController.text,
-                                    dropdownvalue,
-                                    widget.token,
-                                    balanceController.text,
-                                    widget.shopId,
-                                  );
-                                  if (updateShop.status == true) {
-                                    Fluttertoast.showToast(
-                                      msg: updateShop.message,
-                                      toastLength: Toast.LENGTH_SHORT,
-                                      gravity: ToastGravity.BOTTOM,
-                                      backgroundColor: Colors.black,
-                                      textColor: Colors.white,
-                                    );
-                                    Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (context) => ShopDetailsPage(
-                                            id: widget.token,
-                                            shopId: widget.shopId,
-                                          ),
-                                        ));
-                                  } else {
-                                    print('notupdated');
-                                  }
-                                },
+                              Column(
+                                mainAxisSize: MainAxisSize.min,
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [],
                               ),
                             ],
                           ),
-                        ),
-                      ),
-                    ]),
-              ),
-            )
-          : Center(
-              child: CircularProgressIndicator(),
-            ),
+                          Container(
+                            padding: getPadding(top: 6, bottom: 6),
+                            child: Form(
+                              key: _formKey,
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: [
+                                  Align(
+                                      alignment: Alignment.centerLeft,
+                                      child: Padding(
+                                          padding:
+                                              getPadding(left: 39, top: 30),
+                                          child: Text("Shop Name",
+                                              overflow: TextOverflow.ellipsis,
+                                              textAlign: TextAlign.left,
+                                              style: AppStyle
+                                                  .txtMontserratRegular14))),
+                                  CustomTextFormField(
+                                      validator: (value) {
+                                        if (value!.isEmpty) {
+                                          return 'Please enter Shopname';
+                                        }
+                                      },
+                                      controller: shopnameController,
+                                      margin: getMargin(
+                                          left: 39, top: 14, right: 42)),
+                                  Align(
+                                      alignment: Alignment.centerLeft,
+                                      child: Padding(
+                                          padding:
+                                              getPadding(left: 39, top: 17),
+                                          child: Text("Address",
+                                              overflow: TextOverflow.ellipsis,
+                                              textAlign: TextAlign.left,
+                                              style: AppStyle
+                                                  .txtMontserratRegular14))),
+                                  CustomTextFormField(
+                                      validator: (value) {
+                                        if (value!.isEmpty) {
+                                          return 'Please enter Adress';
+                                        }
+                                      },
+                                      controller: addressController,
+                                      margin: getMargin(
+                                          left: 39, top: 15, right: 42)),
+                                  Align(
+                                    alignment: Alignment.centerLeft,
+                                    child: Padding(
+                                      padding: getPadding(left: 39, top: 17),
+                                      child: Text("Phone",
+                                          overflow: TextOverflow.ellipsis,
+                                          textAlign: TextAlign.left,
+                                          style:
+                                              AppStyle.txtMontserratRegular14),
+                                    ),
+                                  ),
+                                  CustomTextFormField(
+                                    textInputType: TextInputType.phone,
+                                    validator: (value) {
+                                      if (value!.isEmpty) {
+                                        return 'Please enter mobile number';
+                                      } else if (value.length != 10) {
+                                        return 'Please enter valid Mobilenumber';
+                                      } else {
+                                        return null;
+                                      }
+                                    },
+                                    controller: mobilenoController,
+                                    margin:
+                                        getMargin(left: 39, top: 14, right: 42),
+                                  ),
+                                  Align(
+                                      alignment: Alignment.centerLeft,
+                                      child: Container(
+                                          width: getHorizontalSize(73),
+                                          margin: getMargin(left: 39, top: 17),
+                                          child: Text("Whatsapp Number",
+                                              maxLines: null,
+                                              textAlign: TextAlign.left,
+                                              style: AppStyle
+                                                  .txtMontserratRegular14))),
+                                  CustomTextFormField(
+                                      validator: (value) {
+                                        if (value!.isEmpty) {
+                                          return 'Please enter whatsapp number';
+                                        } else if (value.length != 10) {
+                                          return 'Please enter valid Mobilenumber';
+                                        } else {
+                                          return null;
+                                        }
+                                      },
+                                      textInputType: TextInputType.phone,
+                                      controller: whatsappController,
+                                      margin: getMargin(left: 39, right: 42)),
+                                  Align(
+                                    alignment: Alignment.centerLeft,
+                                    child: Container(
+                                      width: getHorizontalSize(59),
+                                      margin: getMargin(left: 39, top: 17),
+                                      child: Text("GST Number",
+                                          maxLines: null,
+                                          textAlign: TextAlign.left,
+                                          style:
+                                              AppStyle.txtMontserratRegular14),
+                                    ),
+                                  ),
+                                  CustomTextFormField(
+                                      validator: (value) {
+                                        if (value!.length > 15) {
+                                          return 'Please enter valid GST number';
+                                        }
+                                      },
+                                      controller: gstnumberController,
+                                      margin: getMargin(left: 39, right: 42),
+                                      textInputAction: TextInputAction.done),
+                                  Align(
+                                    alignment: Alignment.centerLeft,
+                                    child: Padding(
+                                      padding: getPadding(left: 39, top: 17),
+                                      child: Text("Opening Balance",
+                                          overflow: TextOverflow.ellipsis,
+                                          textAlign: TextAlign.left,
+                                          style:
+                                              AppStyle.txtMontserratRegular14),
+                                    ),
+                                  ),
+                                  CustomTextFormField(
+                                    textInputType: TextInputType.phone,
+                                    // validator: (value) {
+                                    //   if (value!.isEmpty) {
+                                    //     return 'Please enter mobile number';
+                                    //   } else if (value.length != 10) {
+                                    //     return 'Please enter valid Mobilenumber';
+                                    //   } else {
+                                    //     return null;
+                                    //   }
+                                    // },
+                                    controller: balanceController,
+                                    margin:
+                                        getMargin(left: 39, top: 14, right: 42),
+                                  ),
+                                  SizedBox(
+                                    height: 15,
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.only(
+                                        left: 35, right: 35),
+                                    child: Container(
+                                      width: double.infinity,
+                                      child: DropdownButton(
+                                        value: dropdownvalue,
+                                        hint: Text('Select Route'),
+                                        onChanged: (selecteditem) {
+                                          setState(() {
+                                            dropdownvalue = selecteditem;
+                                            _validatedropdown = true;
+                                          });
+                                        },
+                                        items: routelist!.data.length > 0
+                                            ? routelist!.data
+                                                .map<DropdownMenuItem<String>>(
+                                                    (e) {
+                                                return DropdownMenuItem<String>(
+                                                  value: e.id.toString(),
+                                                  child: Text(e.route),
+                                                );
+                                              }).toList()
+                                            : null,
+                                      ),
+                                    ),
+                                  ),
+                                  CustomButton(
+                                    text: "Submit",
+                                    margin:
+                                        getMargin(left: 15, top: 10, right: 15),
+                                    shape: ButtonShape.RoundedBorder24,
+                                    fontStyle:
+                                        ButtonFontStyle.DMSansMedium20WhiteA700,
+                                    onTap: () async {
+                                      UpdateShop updateShop =
+                                          await HttpService.updateShop(
+                                        shopnameController.text,
+                                        addressController.text,
+                                        mobilenoController.text,
+                                        whatsappController.text,
+                                        gstnumberController.text,
+                                        dropdownvalue,
+                                        widget.token,
+                                        balanceController.text,
+                                        widget.shopId,
+                                      );
+                                      if (updateShop.status == true) {
+                                        Fluttertoast.showToast(
+                                          msg: updateShop.message,
+                                          toastLength: Toast.LENGTH_SHORT,
+                                          gravity: ToastGravity.BOTTOM,
+                                          backgroundColor: Colors.black,
+                                          textColor: Colors.white,
+                                        );
+                                        Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (context) =>
+                                                  ShopDetailsPage(
+                                                id: widget.token,
+                                                shopId: widget.shopId,
+                                              ),
+                                            ));
+                                      } else {
+                                        print('notupdated');
+                                      }
+                                    },
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ]),
+                  ),
+                )
+              : Center(
+                  child: AlertDialog(
+                  content: Text("You Can't edit this Shop "),
+                  actions: [
+                    ElevatedButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                      child: Text('Back'),
+                    ),
+                  ],
+                )),
     );
   }
 
   findRoute() async {
     routelist = await HttpService.getRoute(widget.token);
     if (routelist != null) {
-      setState(() {});
+      setState(() {
+        isLoading = false;
+      });
     }
   }
 
