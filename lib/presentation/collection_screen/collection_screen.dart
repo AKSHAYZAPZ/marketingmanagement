@@ -1,17 +1,10 @@
 import 'package:intl/intl.dart';
 import 'package:jibin_s_application1/presentation/add_collection_screen/add_collection_screen.dart';
 import 'package:jibin_s_application1/services/service.dart';
-
 import '../../model/collection_model.dart';
 import '../bottom_navigation_page/bottom_navigation.dart';
-import '../collection_screen/widgets/collection_item_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:jibin_s_application1/core/app_export.dart';
-import 'package:jibin_s_application1/widgets/app_bar/appbar_image.dart';
-import 'package:jibin_s_application1/widgets/app_bar/appbar_title.dart';
-import 'package:jibin_s_application1/widgets/app_bar/custom_app_bar.dart';
-
-import '../home_dashboard_screen/home_dashboard_screen.dart';
 
 class CollectionScreen extends StatefulWidget {
   CollectionScreen({Key? key, required this.id}) : super(key: key);
@@ -140,62 +133,62 @@ class _CollectionScreenState extends State<CollectionScreen> {
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceBetween,
                                 children: [
-                                  Container(
-                                    width: 150,
-                                    height: 40,
-                                    decoration: BoxDecoration(
-                                      boxShadow: [
-                                        BoxShadow(
-                                          color: ColorConstant.black9003f,
-                                          spreadRadius: getHorizontalSize(
-                                            1,
+                                  GestureDetector(
+                                    onTap: ()async {
+                                      final selctedDatetimetemp =
+                                          await showDatePicker(
+                                        context: context,
+                                        initialDate: DateTime.now(),
+                                        firstDate: DateTime(2000),
+                                        lastDate: DateTime(2100),
+                                      );
+                                      if (selctedDatetimetemp == null) {
+                                        return;
+                                      } else {
+                                        setState(() {
+                                          fromselectDate = DateFormat(
+                                              'dd-MM-yyyy')
+                                              .format(
+                                              selctedDatetimetemp);
+                                          fdate = fromselectDate!;
+                                          collectionReport();
+                                        });
+                                      }
+                                    },
+                                    child: Container(
+                                      width: 150,
+                                      height: 40,
+                                      decoration: BoxDecoration(
+                                        boxShadow: [
+                                          BoxShadow(
+                                            color: ColorConstant.black9003f,
+                                            spreadRadius: getHorizontalSize(
+                                              1,
+                                            ),
+                                            blurRadius: getHorizontalSize(
+                                              1,
+                                            ),
+                                            offset: Offset(
+                                              0,
+                                              2,
+                                            ),
                                           ),
-                                          blurRadius: getHorizontalSize(
-                                            1,
+                                        ],
+                                        borderRadius: BorderRadius.circular(10),
+                                        color: ColorConstant.gray50,
+                                      ),
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Padding(
+                                            padding:
+                                                const EdgeInsets.only(left: 10),
+                                            child: Text(
+                                              fdate,
+                                            ),
                                           ),
-                                          offset: Offset(
-                                            0,
-                                            2,
-                                          ),
-                                        ),
-                                      ],
-                                      borderRadius: BorderRadius.circular(10),
-                                      color: ColorConstant.gray50,
-                                    ),
-                                    child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        Padding(
-                                          padding:
-                                              const EdgeInsets.only(left: 10),
-                                          child: Text(
-                                            fdate,
-                                          ),
-                                        ),
-                                        GestureDetector(
-                                          onTap: () async {
-                                            final selctedDatetimetemp =
-                                                await showDatePicker(
-                                              context: context,
-                                              initialDate: DateTime.now(),
-                                              firstDate: DateTime(2000),
-                                              lastDate: DateTime(2100),
-                                            );
-                                            if (selctedDatetimetemp == null) {
-                                              return;
-                                            } else {
-                                              setState(() {
-                                                fromselectDate = DateFormat(
-                                                        'dd-MM-yyyy')
-                                                    .format(
-                                                        selctedDatetimetemp);
-                                                fdate = fromselectDate!;
-                                                collectionReport();
-                                              });
-                                            }
-                                          },
-                                          child: Container(
+                                          Container(
                                             child: Icon(
                                               Icons.calendar_month,
                                               color: Colors.white,
@@ -207,68 +200,68 @@ class _CollectionScreenState extends State<CollectionScreen> {
                                                   BorderRadius.circular(10),
                                               color: ColorConstant.lightBlue700,
                                             ),
-                                          ),
-                                        )
-                                      ],
+                                          )
+                                        ],
+                                      ),
                                     ),
                                   ),
-                                  Container(
-                                    width: 150,
-                                    height: 40,
-                                    decoration: BoxDecoration(
-                                      boxShadow: [
-                                        BoxShadow(
-                                          color: ColorConstant.black9003f,
-                                          spreadRadius: getHorizontalSize(
-                                            1,
+                                  GestureDetector(
+                                    onTap: ()async {
+                                      final toDateselectTemp =
+                                          await showDatePicker(
+                                        context: context,
+                                        initialDate: DateTime.now(),
+                                        firstDate: DateTime(2000),
+                                        lastDate: DateTime(2100),
+                                      );
+                                      if (toDateselectTemp == null) {
+                                        return;
+                                      } else {
+                                        setState(() {
+                                          toselectDate = DateFormat(
+                                              'dd-MM-yyyy')
+                                              .format(toDateselectTemp);
+                                          tdate = toselectDate!;
+                                          // print('==============$fdate');
+                                          // print('++++++++++++++++ $tdate');
+                                          collectionReport();
+                                        });
+                                      }
+                                    },
+                                    child: Container(
+                                      width: 150,
+                                      height: 40,
+                                      decoration: BoxDecoration(
+                                        boxShadow: [
+                                          BoxShadow(
+                                            color: ColorConstant.black9003f,
+                                            spreadRadius: getHorizontalSize(
+                                              1,
+                                            ),
+                                            blurRadius: getHorizontalSize(
+                                              1,
+                                            ),
+                                            offset: Offset(
+                                              0,
+                                              2,
+                                            ),
                                           ),
-                                          blurRadius: getHorizontalSize(
-                                            1,
+                                        ],
+                                        borderRadius: BorderRadius.circular(10),
+                                        color: ColorConstant.gray50,
+                                      ),
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Padding(
+                                            padding:
+                                                const EdgeInsets.only(left: 10),
+                                            child: Text(
+                                              tdate,
+                                            ),
                                           ),
-                                          offset: Offset(
-                                            0,
-                                            2,
-                                          ),
-                                        ),
-                                      ],
-                                      borderRadius: BorderRadius.circular(10),
-                                      color: ColorConstant.gray50,
-                                    ),
-                                    child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        Padding(
-                                          padding:
-                                              const EdgeInsets.only(left: 10),
-                                          child: Text(
-                                            tdate,
-                                          ),
-                                        ),
-                                        GestureDetector(
-                                          onTap: () async {
-                                            final toDateselectTemp =
-                                                await showDatePicker(
-                                              context: context,
-                                              initialDate: DateTime.now(),
-                                              firstDate: DateTime(2000),
-                                              lastDate: DateTime(2100),
-                                            );
-                                            if (toDateselectTemp == null) {
-                                              return;
-                                            } else {
-                                              setState(() {
-                                                toselectDate = DateFormat(
-                                                        'dd-MM-yyyy')
-                                                    .format(toDateselectTemp);
-                                                tdate = toselectDate!;
-                                                // print('==============$fdate');
-                                                // print('++++++++++++++++ $tdate');
-                                                collectionReport();
-                                              });
-                                            }
-                                          },
-                                          child: Container(
+                                          Container(
                                             child: Icon(
                                               Icons.calendar_month,
                                               color: Colors.white,
@@ -280,9 +273,9 @@ class _CollectionScreenState extends State<CollectionScreen> {
                                                   BorderRadius.circular(10),
                                               color: ColorConstant.lightBlue700,
                                             ),
-                                          ),
-                                        )
-                                      ],
+                                          )
+                                        ],
+                                      ),
                                     ),
                                   ),
                                 ],
@@ -596,21 +589,20 @@ class _CollectionScreenState extends State<CollectionScreen> {
                               child: Table(
                                 columnWidths: {
                                   0: FixedColumnWidth(
-                                      MediaQuery.of(context).size.width * 0.30),
-                                  // Width of Column 3
+                                      MediaQuery.of(context).size.width * 0.24),
                                   1: FixedColumnWidth(
-                                      MediaQuery.of(context).size.width * 0.36),
-                                  // Width of Column 4
+                                      MediaQuery.of(context).size.width * 0.39),
                                   2: FixedColumnWidth(
-                                      MediaQuery.of(context).size.width * 0.30),
-                                  // Width of Column 5
+                                      MediaQuery.of(context).size.width * 0.27),
+                                  3: FixedColumnWidth(
+                                      MediaQuery.of(context).size.width * 0.06),
                                 },
                                 children: [
                                   TableRow(
                                     decoration: BoxDecoration(
                                       borderRadius: BorderRadius.circular(10),
-                                      color: ColorConstant.gray300,
-                                    ),
+                                      color: ColorConstant.bluelite100,
+                                     ),
                                     children: [
                                       Padding(
                                         padding: const EdgeInsets.all(8.0),
@@ -623,6 +615,10 @@ class _CollectionScreenState extends State<CollectionScreen> {
                                       Padding(
                                         padding: const EdgeInsets.all(10.0),
                                         child: Text('Amount'),
+                                      ),
+                                      Padding(
+                                        padding: const EdgeInsets.all(10.0),
+                                        child: Text(''),
                                       ),
                                     ],
                                   ),
@@ -646,18 +642,18 @@ class _CollectionScreenState extends State<CollectionScreen> {
                                   child: Container(
                                     child: Table(
                                       columnWidths: {
-                                        // Width of Column 1// Width of Column 2
                                         0: FixedColumnWidth(
                                             MediaQuery.of(context).size.width *
-                                                0.30),
-                                        // Width of Column 3
+                                                0.24),
                                         1: FixedColumnWidth(
                                             MediaQuery.of(context).size.width *
-                                                0.36),
-                                        // Width of Column 4
+                                                0.39),
                                         2: FixedColumnWidth(
                                             MediaQuery.of(context).size.width *
-                                                0.30),
+                                                0.27),
+                                        3: FixedColumnWidth(
+                                            MediaQuery.of(context).size.width *
+                                                0.06),
                                       },
                                       children: [
                                         // Each TableRow represents a row in the Table
@@ -665,7 +661,7 @@ class _CollectionScreenState extends State<CollectionScreen> {
                                           decoration: BoxDecoration(
                                             borderRadius:
                                                 BorderRadius.circular(10),
-                                            color: ColorConstant.gray100,
+                                            color: ColorConstant.bluelite,
                                           ),
                                           children: [
                                             Padding(
@@ -691,6 +687,31 @@ class _CollectionScreenState extends State<CollectionScreen> {
                                                   .collectionReport[index]
                                                   .paidAmount
                                                   .toString()),
+                                            ),
+                                            Padding(
+                                              padding:
+                                                  const EdgeInsets.all(8.0),
+                                              child: collection!
+                                                          .data
+                                                          .collectionReport[
+                                                              index]
+                                                          .paymentMethod ==
+                                                      "online"
+                                                  ? Center(
+                                                      child: Container(
+                                                        height: 14,
+                                                        width: 14,
+                                                        decoration:
+                                                            BoxDecoration(
+                                                          image:
+                                                              DecorationImage(
+                                                            image: NetworkImage(
+                                                                "https://cdn.pixabay.com/photo/2012/04/01/18/44/circle-23965_960_720.png"),
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    )
+                                                  : SizedBox(),
                                             ),
                                           ],
                                         ),

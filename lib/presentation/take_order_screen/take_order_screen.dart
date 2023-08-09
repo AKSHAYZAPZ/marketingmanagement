@@ -256,6 +256,7 @@ class _TakeOderScreenState extends State<TakeOderScreen> {
                                   keyboardType: TextInputType.number,
                                   controller: quantityController,
                                   decoration: InputDecoration(
+                                    border: InputBorder.none,
                                     contentPadding:
                                         EdgeInsets.fromLTRB(15, 10, 0, 10),
                                     hintText: 'Quantity',
@@ -343,7 +344,7 @@ class _TakeOderScreenState extends State<TakeOderScreen> {
                     child: Column(
                       children: [
                         Padding(
-                          padding: const EdgeInsets.all(1),
+                          padding: const EdgeInsets.all(5),
                           child: Table(
                             columnWidths: {
                               0: FixedColumnWidth(
@@ -354,7 +355,7 @@ class _TakeOderScreenState extends State<TakeOderScreen> {
                                       0.32), // Using 30%
                               2: FixedColumnWidth(
                                   MediaQuery.of(context).size.width *
-                                      0.21), // Using 20%
+                                      0.23), // Using 20%
                               3: FixedColumnWidth(
                                   MediaQuery.of(context).size.width * 0.16),
                             },
@@ -362,7 +363,7 @@ class _TakeOderScreenState extends State<TakeOderScreen> {
                               TableRow(
                                 decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(10),
-                                  color: ColorConstant.gray300,
+                                  color: ColorConstant.bluelite100,
                                 ),
                                 children: [
                                   Padding(
@@ -398,7 +399,7 @@ class _TakeOderScreenState extends State<TakeOderScreen> {
                         return SingleChildScrollView(
                           scrollDirection: Axis.horizontal,
                           child: Padding(
-                            padding: const EdgeInsets.all(5.0),
+                            padding: const EdgeInsets.all(5),
                             child: Container(
                               child: Table(
                                 columnWidths: {
@@ -410,7 +411,7 @@ class _TakeOderScreenState extends State<TakeOderScreen> {
                                           0.32), // Using 30%
                                   2: FixedColumnWidth(
                                       MediaQuery.of(context).size.width *
-                                          0.21), // Using 20%
+                                          0.23), // Using 20%
                                   3: FixedColumnWidth(
                                       MediaQuery.of(context).size.width * 0.16),
                                 },
@@ -419,7 +420,7 @@ class _TakeOderScreenState extends State<TakeOderScreen> {
                                   TableRow(
                                     decoration: BoxDecoration(
                                       borderRadius: BorderRadius.circular(10),
-                                      color: ColorConstant.gray100,
+                                      color: ColorConstant.bluelite,
                                     ),
                                     children: [
                                       Padding(

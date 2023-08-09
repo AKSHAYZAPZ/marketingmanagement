@@ -107,6 +107,7 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> {
     await Future.delayed(Duration(seconds: 1));
     setState(() {
       getList();
+      getRoutes();
     });
   }
 
@@ -119,9 +120,8 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> {
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () async {
-        // Close the app when the back button is pressed on the home page
-        SystemNavigator.pop();
-        return false; // Return false to prevent popping the route
+
+        return true; // Return false to prevent popping the route
       },
       child: Scaffold(
           backgroundColor: ColorConstant.whiteA700,
@@ -265,8 +265,12 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> {
                                               alignment: Alignment.topCenter,
                                               child: GestureDetector(
                                                 onTap: () {
-                                                  Get.to(OderScreen(
-                                                      id: widget.id));
+                                                  Navigator.push(
+                                                    context,
+                                                    MaterialPageRoute(
+                                                      builder: (context) => AddShopScreen(token: widget.id),
+                                                    ),
+                                                  );
                                                 },
                                                 child: Container(
                                                   height: 90,
@@ -278,7 +282,7 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> {
                                                   ),
                                                   child: Center(
                                                     child: Text(
-                                                      'Orders',
+                                                      'Add Shop',
                                                       style: TextStyle(
                                                         color: Colors.white,
                                                         fontSize: 14,
@@ -339,13 +343,13 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> {
                                               alignment: Alignment.topCenter,
                                               child: GestureDetector(
                                                 onTap: () {
-                                                  Get.to(CollectionScreen(
+                                                  Get.to(OderScreen(
                                                       id: widget.id));
                                                 },
                                                 child: Container(
                                                   child: Center(
                                                     child: Text(
-                                                      'Collection',
+                                                      'Orders',
                                                       style: TextStyle(
                                                         color: Colors.white,
                                                         fontSize: 14,
@@ -418,7 +422,7 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> {
                                                 child: Container(
                                                   child: Center(
                                                     child: Text(
-                                                      'Add Shop',
+                                                      'Collection',
                                                       style: TextStyle(
                                                         color: Colors.white,
                                                         fontSize: 14,
@@ -577,7 +581,9 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> {
                                             : null,
                                         onChanged: (value) {
                                           setState(() {
+
                                             routes = value.toString();
+                                            // print('route ---- $ro');
                                             getList();
                                           });
                                         },
@@ -909,12 +915,8 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> {
   }
 
   onTapImgAddtobasketone(BuildContext context) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => AddShopScreen(token: widget.id),
-      ),
-    );
+    Get.to(CollectionScreen(
+        id: widget.id));
   }
 
   attendanceMarking() async {

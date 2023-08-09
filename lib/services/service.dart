@@ -15,9 +15,11 @@ import '../model/checknumber.dart';
 import '../model/collection_model.dart';
 import '../model/dashboard_model.dart';
 import '../model/delete_shop_model.dart';
+import '../model/executiveslist_model.dart';
 import '../model/invoice_details_model.dart';
 import '../model/mark_visit_model.dart';
 import '../model/oder_details_model.dart';
+import '../model/oderlist_model.dart';
 import '../model/payment_type_model.dart';
 import '../model/product_by_id_model.dart';
 import '../model/product_view_model.dart';
@@ -461,5 +463,35 @@ class HttpService {
       return productViewFromJson(response.body);
     }
   }
+
+  static Future executiveLists(token) async {
+    http.Response response = await http.post(
+        Uri.parse("${baseurl}executiveLists"),
+        body: ({'token': token}));
+    print(response.statusCode);
+    if (response.statusCode == 200) {
+      // print(response.body);
+      return executiveListsFromJson(response.body);
+    }
+  }
+  static Future orderLists(token,fdate,tdate,searchkey,route,statusbar,salesexecutive) async {
+    http.Response response = await http.post(
+      Uri.parse("${baseurl}orderLists"),
+      body: ({
+        'token': token,
+        'fdate' :fdate,
+        'tdate': tdate,
+        'searchkey':searchkey,
+        'route':route,
+        'status':statusbar,
+        'salesexecutive':salesexecutive,
+      }),
+    );
+    print(response.statusCode );
+    if (response.statusCode == 200) {
+      return oderlistsFromJson(response.body);
+    }
+  }
+
 
 }

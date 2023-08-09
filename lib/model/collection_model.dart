@@ -63,23 +63,27 @@ class Data {
 class CollectionReport {
   String shopName;
   int paidAmount;
+  String paymentMethod;
   String date;
 
   CollectionReport({
     required this.shopName,
     required this.paidAmount,
+    required this.paymentMethod,
     required this.date,
   });
 
   factory CollectionReport.fromJson(Map<String, dynamic> json) => CollectionReport(
     shopName: json["shop_name"],
     paidAmount: json["paidAmount"],
+    paymentMethod: json["PaymentMethod"],
     date: json["date"],
   );
 
   Map<String, dynamic> toJson() => {
     "shop_name": shopName,
     "paidAmount": paidAmount,
+    "PaymentMethod": paymentMethod,
     "date": date,
   };
 }
