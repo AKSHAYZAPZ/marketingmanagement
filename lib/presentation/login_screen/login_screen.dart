@@ -54,7 +54,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           textAlign: TextAlign.center,
                           style: AppStyle.txtDMSansMedium40),),
                   Padding(
-                    padding: getPadding(top: 61),
+                    padding: getPadding(top: 55),
                     child: Text("Login to your account",
                         overflow: TextOverflow.ellipsis,
                         textAlign: TextAlign.left,
@@ -80,7 +80,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       variant: TextFormFieldVariant.OutlineWhiteA700,
                       fontStyle: TextFormFieldFontStyle.DMSansRegular19,
                       textInputType: TextInputType.phone,),
-                  SizedBox(height: 10,),
+                  SizedBox(height: 3,),
                   CustomTextFormField(
                     focusBordercolor: Colors.white,
                       errorBorderColor: Colors.white,
@@ -125,7 +125,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   CustomButton(
                       height: getVerticalSize(59),
                       text: "Login",
-                      margin: getMargin(top: 47),
+                      margin: getMargin(top: 25),
                       variant: ButtonVariant.FillWhiteA700,
                       shape: ButtonShape.RoundedBorder24,
                       fontStyle: ButtonFontStyle.DMSansMedium20,
@@ -208,7 +208,7 @@ class _LoginScreenState extends State<LoginScreen> {
   /// When the action is triggered, this function uses the `Navigator` widget
   /// to push the named route for the homeDashboardScreen.
   onTapLogin(BuildContext context) {
-    Navigator.push(
+    Navigator.pushReplacement(
       context,
       MaterialPageRoute(builder: (context) => BottomNavigationScreen(id: key)),
     );

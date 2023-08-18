@@ -4,9 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
+import 'package:jibin_s_application1/presentation/oder_details_screen/oder_details_screen.dart';
 import 'package:jibin_s_application1/presentation/shop_details_page/shop_details_page.dart';
 import '../../core/utils/color_constant.dart';
 import '../../core/utils/size_utils.dart';
+import '../../model/add_neww_data_order_model.dart';
 import '../../model/all_products_list_model.dart';
 import '../../model/post_oder_model.dart';
 import '../../services/service.dart';
@@ -32,16 +34,26 @@ class MyResult {
 }
 
 class TakeOderScreen extends StatefulWidget {
-  TakeOderScreen({Key? key, required this.id, required this.token})
-      : super(key: key);
-  String id;
+  TakeOderScreen({
+    Key? key,
+    required this.shopid,
+    required this.token,
+    this.id,
+    this.masterId,
+  }) : super(key: key);
+
+  String shopid;
   String token;
+  String? id;
+  String? masterId;
 
   @override
   State<TakeOderScreen> createState() => _TakeOderScreenState();
 }
 
 class _TakeOderScreenState extends State<TakeOderScreen> {
+
+  String search = '';
   GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   PostOder? postOder;
 
@@ -91,30 +103,29 @@ class _TakeOderScreenState extends State<TakeOderScreen> {
   }
 
   allProducts() async {
-    allProductList = await HttpService.allProductList(widget.token);
-
+    allProductList = await HttpService.allProductList(widget.token,search);
     if (allProductList != null) {
       setState(() {});
     }
   }
 
   Future<List<MyResult>> getSearchResults(String query) async {
-    await Future.delayed(Duration(seconds: 1));
-    return List.generate(
-      allProductList!.length,
-      (index) => MyResult(
-        title: allProductList![index].productName,
-        subtitle: allProductList![index].productCode,
-        sellingPrice: allProductList![index].sellingPrice,
-        quantity: quantityController.text != ''
-            ? int.parse(quantityController.text)
-            : 0,
-        productId: allProductList![index].productId,
-        categoryId: allProductList![index].categoryid,
-        subCategoryId: allProductList![index].subcategoryId,
-      ),
-    );
+      return List.generate(
+        allProductList!.length,
+        (index) => MyResult(
+          title: allProductList![index].productName,
+          subtitle: allProductList![index].productCode,
+          sellingPrice: allProductList![index].sellingPrice,
+          quantity: quantityController.text != ''
+              ? int.parse(quantityController.text)
+              : 0,
+          productId: allProductList![index].productId,
+          categoryId: allProductList![index].categoryid,
+          subCategoryId: allProductList![index].subcategoryId,
+        ),
+      );
   }
+
 
   Future<List<MyResult>> getSuggestions(String query) async {
     List<MyResult> results = await getSearchResults(query);
@@ -133,9 +144,11 @@ class _TakeOderScreenState extends State<TakeOderScreen> {
         centerTitle: true,
         title: Text('Take Oder'),
       ),
-      body: allProductList == null
+      body:
+      allProductList == null
           ? Center(child: CircularProgressIndicator())
-          : Form(
+          :
+      Form(
               key: _formKey,
               child: Container(
                 child: Column(children: [
@@ -190,13 +203,21 @@ class _TakeOderScreenState extends State<TakeOderScreen> {
                                   },
                                   noItemsFoundBuilder: (context) {
                                     return SizedBox(
-                                      child: Center(
-                                        child: Text("No item found"),
-                                      ),
+                                      child:allProductList == null ?
+                                          Center(
+                                            child: CircularProgressIndicator(),
+                                          )
+                                    : Center(
+                                    child: Text("No Items Found"),
+                                    ),
                                     );
                                   },
                                   textFieldConfiguration:
                                       TextFieldConfiguration(
+                                        onChanged: (value) {
+                                        search = _searchController.text;
+                                            allProducts();
+                                        },
                                     controller: _searchController,
                                     decoration: InputDecoration(
                                         border: InputBorder.none,
@@ -204,7 +225,7 @@ class _TakeOderScreenState extends State<TakeOderScreen> {
                                         hintStyle: TextStyle(fontSize: 12),
                                         hintText: 'Product Name or code'),
                                   ),
-                                  suggestionsCallback: getSuggestions,
+                                  suggestionsCallback: getSuggestions ,
                                   itemBuilder: (context, MyResult suggestion) {
                                     return ListTile(
                                       title: Text(suggestion.title),
@@ -501,30 +522,76 @@ class _TakeOderScreenState extends State<TakeOderScreen> {
                       child: Text('No'),
                     ),
                     ElevatedButton(
-                      onPressed: () async{
-                        postOder = await HttpService.postOrders(
-                            widget.id, orderdate, createdate, orderDetails, widget.token);
-                        if (postOder != null) {
+                      onPressed: () async {
+                        if (widget.masterId != null) {
+                          AddNewDataInOrder addNewDataInOrder =
+                              await HttpService.addNewOrderByOrderId(
+                                  widget.token,
+                                  orderDetails,
+                                  widget.masterId,
+                                  orderdate,
+                                  widget.shopid);
                           setState(() {
-                            if (postOder!.status == true) {
+                            if (addNewDataInOrder.status == true) {
                               Fluttertoast.showToast(
-                                msg: postOder!.message,
+                                msg: addNewDataInOrder.message,
                                 toastLength: Toast.LENGTH_SHORT,
                                 gravity: ToastGravity.BOTTOM,
                                 backgroundColor: Colors.black,
                                 textColor: Colors.white,
                               );
-                            }
-                            Navigator.push(
+                              Navigator.pushReplacement(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) =>
-                                      ShopDetailsPage(id: widget.token, shopId: widget.id),
-                                ));
+                                  builder: (context) => OderDetailsScreen(
+                                      oderid: widget.id!, token: widget.token),
+                                ),
+                              );
+                            } else {
+                              Fluttertoast.showToast(
+                                msg: addNewDataInOrder.message,
+                                toastLength: Toast.LENGTH_SHORT,
+                                gravity: ToastGravity.BOTTOM,
+                                backgroundColor: Colors.black,
+                                textColor: Colors.white,
+                              );
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => ShopDetailsPage(
+                                        id: widget.token,
+                                        shopId: widget.shopid),
+                                  ));
+                            }
                           });
+                        } else {
+                          postOder = await HttpService.postOrders(
+                              widget.shopid,
+                              orderdate,
+                              createdate,
+                              orderDetails,
+                              widget.token);
+                          if (postOder != null) {
+                            setState(() {
+                              if (postOder!.status == true) {
+                                Fluttertoast.showToast(
+                                  msg: postOder!.message,
+                                  toastLength: Toast.LENGTH_SHORT,
+                                  gravity: ToastGravity.BOTTOM,
+                                  backgroundColor: Colors.black,
+                                  textColor: Colors.white,
+                                );
+                              }
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => ShopDetailsPage(
+                                        id: widget.token,
+                                        shopId: widget.shopid),
+                                  ));
+                            });
+                          }
                         }
-
-
                       },
                       child: Text('Yes'),
                     ),
@@ -532,7 +599,6 @@ class _TakeOderScreenState extends State<TakeOderScreen> {
                 );
               },
             );
-
           }
         },
         label: Text('Take oder'),

@@ -1,3 +1,4 @@
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:jibin_s_application1/core/app_export.dart';
 import '../category_screen/category_screen.dart';
@@ -16,6 +17,14 @@ class BottomNavigationScreen  extends StatefulWidget {
 
 class _MainPageState extends State<BottomNavigationScreen > {
 
+  bool  dataConnection = false;
+
+  @override
+  void initState() {
+    super.initState();
+    checkConnectiVity();
+  }
+
   int _currentIndex = 0;
   // final List<Widget> _pages = [
   //   HomeDashboardScreen(id: '',),
@@ -32,6 +41,7 @@ class _MainPageState extends State<BottomNavigationScreen > {
         currentIndex: _currentIndex,
         onTap: (int index) {
           setState(() {
+            checkConnectiVity();
             _currentIndex = index;
           });
         },
@@ -67,7 +77,7 @@ class _MainPageState extends State<BottomNavigationScreen > {
           ),
           Offstage(
             offstage: _currentIndex != 1,
-            child: ShopsScreen(),
+            child: ShopsScreen(id: widget.id),
           ),
           Offstage(
             offstage: _currentIndex != 2,
@@ -85,5 +95,55 @@ class _MainPageState extends State<BottomNavigationScreen > {
         ],
       ),
     );
+  }
+  checkConnectiVity()async{
+    final connectivityResult = await (Connectivity().checkConnectivity());
+    if (connectivityResult == ConnectivityResult.mobile || connectivityResult == ConnectivityResult.wifi) {
+      dataConnection =true;
+      if(dataConnection==true){
+        setState(() {
+
+        });
+      } else{
+        setState(() {
+
+        });
+      }
+    } else{
+      dataConnection =false;
+      showDialog(context: context, builder: (context) {
+        return AlertDialog(
+          content:Container(
+            height: 200,
+            width: 200,
+            child: Column(
+              children: [
+                Text('No data Connection'),
+                SizedBox(
+                  height: 15,
+                ),
+                Container(
+                  height: 150,
+                  width: 150,
+                  decoration: BoxDecoration(
+                    image: DecorationImage(image: AssetImage(ImageConstant.network),),
+                  ),
+                )
+              ],
+            ),
+
+          ),
+          actions: [
+            TextButton(onPressed: () {
+              setState(() {
+                checkConnectiVity();
+                Navigator.pop(context);
+              });
+
+            }, child: Text('Retry'))
+          ],
+        );
+      },);
+    }
   }
 }

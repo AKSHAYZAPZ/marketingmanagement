@@ -1,11 +1,13 @@
 import 'package:custom_switch_widget/custom_switch_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:intl/intl.dart';
 import 'package:jibin_s_application1/model/shop_details_model.dart';
 import 'package:jibin_s_application1/presentation/add_collection_screen/add_collection_from_shop.dart';
 import 'package:jibin_s_application1/presentation/invoice_details_screen/invoice_details_screen.dart';
+import 'package:jibin_s_application1/presentation/payment_editing_screen/payment_editing_screen.dart';
 import 'package:jibin_s_application1/presentation/shop_editing_screen/shop_editing_screen.dart';
 import 'package:jibin_s_application1/services/service.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -13,6 +15,8 @@ import '../../core/utils/color_constant.dart';
 import '../../core/utils/image_constant.dart';
 import '../../core/utils/size_utils.dart';
 import '../../model/add_comment_model.dart';
+import '../../model/delete_order_model.dart';
+import '../../model/delete_payment_model.dart';
 import '../../model/delete_shop_model.dart';
 import '../../model/mark_visit_model.dart';
 import '../../theme/app_decoration.dart';
@@ -34,10 +38,12 @@ class ShopDetailsPage extends StatefulWidget {
 
 class _ShopDetailsPageState extends State<ShopDetailsPage>
     with SingleTickerProviderStateMixin {
+  bool isLoading = false;
   MarkVisit? markVisit;
   String whatsappurl = "https://wa.me/91";
 
-  var tabbarController;
+  var tabbarController ;
+
   ShopDetails? shopDetails;
 
   String fdate = DateFormat('dd-MM-yyyy').format(DateTime.now());
@@ -49,35 +55,64 @@ class _ShopDetailsPageState extends State<ShopDetailsPage>
       CustomSwitchController(initialValue: false);
 
   void _enable() async {
-    _switchcontroller.enable();
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          content: Text('Are you sure?'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              child: Text('Close'),
+            ),
+            ElevatedButton(
+                onPressed: () async {
+                  LocationPermission permission =
+                      await Geolocator.checkPermission();
+                  if (permission == LocationPermission.denied) {
+                    permission = await Geolocator.requestPermission();
+                  } else {}
+                  Position position = await Geolocator.getCurrentPosition(
+                    desiredAccuracy: LocationAccuracy.high,
+                  );
+                  isLoading = true;
+                  if (isLoading == true) {
+                    AlertDialog(
+                      content: Center(
+                        child: CircularProgressIndicator(),
+                      ),
+                    );
+                  }
+                  double latitudes = position.latitude;
+                  double longitudes = position.longitude;
 
-    LocationPermission permission = await Geolocator.checkPermission();
-    if (permission == LocationPermission.denied) {
-      permission = await Geolocator.requestPermission();
-    } else {}
-    Position position = await Geolocator.getCurrentPosition(
-      desiredAccuracy: LocationAccuracy.high,
+                  var latitude = latitudes.toString();
+                  var longitude = longitudes.toString();
+                  print(latitude);
+                  print(longitude);
+
+                  markVisit = await HttpService.markVisit(
+                      widget.shopId, latitude, longitude, widget.id);
+                  if (markVisit!.status == true) {
+                    isLoading = false;
+                    _switchcontroller.enable();
+                    Fluttertoast.showToast(
+                      msg: markVisit!.message,
+                      toastLength: Toast.LENGTH_SHORT,
+                      gravity: ToastGravity.BOTTOM,
+                      backgroundColor: Colors.black,
+                      textColor: Colors.white,
+                    );
+                    Navigator.pop(context);
+                  } else {}
+                },
+                child: Text("Yes I'am here"))
+          ],
+        );
+      },
     );
-
-    double latitudes = position.latitude;
-    double longitudes = position.longitude;
-
-    var latitude = latitudes.toString();
-    var longitude = longitudes.toString();
-    print(latitude);
-    print(longitude);
-
-    markVisit = await HttpService.markVisit(
-        widget.shopId, latitude, longitude, widget.id);
-    if (markVisit!.status == true) {
-      Fluttertoast.showToast(
-        msg: markVisit!.message,
-        toastLength: Toast.LENGTH_SHORT,
-        gravity: ToastGravity.BOTTOM,
-        backgroundColor: Colors.black,
-        textColor: Colors.white,
-      );
-    } else {}
   }
 
   void _disable() async {
@@ -98,6 +133,7 @@ class _ShopDetailsPageState extends State<ShopDetailsPage>
     // print('fdate ---- ${tdate}');
     shopDetails =
         await HttpService.shopDetails(widget.shopId, widget.id, fdate, tdate);
+    print(shopDetails!.data);
     if (shopDetails != null) {
       setState(() {});
     }
@@ -197,7 +233,7 @@ class _ShopDetailsPageState extends State<ShopDetailsPage>
                           ],
                         ),
                         Padding(
-                          padding: const EdgeInsets.all(12.0),
+                          padding: const EdgeInsets.all(8.0),
                           child: Container(
                             width: double.infinity,
                             decoration: BoxDecoration(
@@ -541,7 +577,7 @@ class _ShopDetailsPageState extends State<ShopDetailsPage>
                                                   MaterialPageRoute(
                                                     builder: (context) =>
                                                         TakeOderScreen(
-                                                      id: widget.shopId,
+                                                      shopid: widget.shopId,
                                                       token: widget.id,
                                                     ),
                                                   ));
@@ -741,7 +777,7 @@ class _ShopDetailsPageState extends State<ShopDetailsPage>
                           child: TabBarView(
                             controller: tabbarController,
                             children: [
-                              //// -----------------------------------tab bars here 1 oder details-----------------
+                              //// -----------------------------------tab bars here 1 order details-----------------
                               SingleChildScrollView(
                                 child: Column(
                                   children: [
@@ -752,7 +788,8 @@ class _ShopDetailsPageState extends State<ShopDetailsPage>
                                         child: Row(
                                           children: [
                                             Text('Total Oder Amount : '),
-                                            Text(''),
+                                            Text(shopDetails!.data.orderTotal
+                                                .toString()),
                                           ],
                                         ),
                                       ),
@@ -768,253 +805,288 @@ class _ShopDetailsPageState extends State<ShopDetailsPage>
                                             return Padding(
                                               padding: const EdgeInsets.only(
                                                   top: 5, bottom: 5),
-                                              child: GestureDetector(
-                                                onTap: () {
-                                                  shopDetails!
-                                                              .data
-                                                              .orderDetails[
-                                                                  index]
-                                                              .status ==
-                                                          "Pending Confirmation"
-                                                      ? Navigator.push(
-                                                          context,
-                                                          MaterialPageRoute(
-                                                            builder: (context) =>
-                                                                OderDetailsScreen(
-                                                                    oderid: shopDetails!
-                                                                        .data
-                                                                        .orderDetails[
-                                                                            index]
-                                                                        .id
-                                                                        .toString(),
-                                                                    token: widget
-                                                                        .id),
-                                                          ),
-                                                        )
-                                                      : Navigator.push(
-                                                          context,
-                                                          MaterialPageRoute(
-                                                            builder: (context) =>
-                                                                InvoiceDetailsScreen(
-                                                                    oderid: shopDetails!
-                                                                        .data
-                                                                        .orderDetails[
-                                                                            index]
-                                                                        .id
-                                                                        .toString(),
-                                                                    token: widget
-                                                                        .id),
-                                                          ),
-                                                        );
-                                                },
-                                                child: Container(
-                                                  decoration: BoxDecoration(
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            10),
-                                                    color: Color(0xFFDEF3FF),
-                                                    boxShadow: [
-                                                      BoxShadow(
-                                                        color: Colors.black26,
-                                                      )
-                                                    ],
-                                                  ),
-                                                  width: MediaQuery.of(context)
-                                                      .size
-                                                      .width,
-                                                  child: Padding(
-                                                    padding:
-                                                        const EdgeInsets.all(
-                                                            8.0),
-                                                    child: Row(
-                                                      children: [
-                                                        Container(
-                                                          margin:
-                                                              EdgeInsets.only(
-                                                                  right: 7),
-                                                          height: MediaQuery.of(
-                                                                      context)
-                                                                  .size
-                                                                  .height *
-                                                              0.07,
-                                                          width: MediaQuery.of(
-                                                                      context)
-                                                                  .size
-                                                                  .width *
-                                                              0.14,
-                                                          child: Container(
-                                                            child: Icon(
-                                                              Icons
-                                                                  .shopping_cart,
-                                                              color:
-                                                                  Colors.white,
-                                                              size: 30,
+                                              child: Slidable(
+                                                key: const ValueKey(0),
+                                                startActionPane: ActionPane(
+                                                    motion: DrawerMotion(),
+                                                    children: [
+                                                      SlidableAction(
+                                                        onPressed: (context) {
+                                                          if(shopDetails!.data.orderDetails[index].isEdit == true){
+                                                            deleteorderData(
+                                                                index);
+                                                          }else{
+                                                            showDialog(
+                                                              context:
+                                                              context,
+                                                              builder:
+                                                                  (context) {
+                                                                return AlertDialog(
+                                                                  content: Text(
+                                                                      'Cannot delete this Order'),
+                                                                  actions: [
+                                                                    TextButton(
+                                                                      onPressed:
+                                                                          () {
+                                                                        Navigator.pop(
+                                                                            context);
+                                                                      },
+                                                                      child: Text(
+                                                                          'Close'),
+                                                                    ),
+                                                                  ],
+                                                                );
+                                                              },
+                                                            );
+                                                          }
+                                                        },
+                                                        backgroundColor:
+                                                            Color(0xFFFE4A49),
+                                                        foregroundColor:
+                                                            Colors.white,
+                                                        icon: Icons.delete,
+                                                        label: 'Delete',
+                                                      ),
+                                                    ]),
+                                                child: GestureDetector(
+                                                  onTap: () {
+                                                    shopDetails!
+                                                                .data
+                                                                .orderDetails[
+                                                                    index]
+                                                                .status ==
+                                                            "Order Pending"
+                                                        ? Navigator.push(
+                                                            context,
+                                                            MaterialPageRoute(
+                                                              builder: (context) => OderDetailsScreen(
+                                                                  oderid: shopDetails!
+                                                                      .data
+                                                                      .orderDetails[
+                                                                          index]
+                                                                      .id
+                                                                      .toString(),
+                                                                  token: widget
+                                                                      .id,),
                                                             ),
-                                                            decoration: BoxDecoration(
-                                                                color: ColorConstant
-                                                                    .lightBlue700,
-                                                                borderRadius:
-                                                                    BorderRadius
-                                                                        .circular(
-                                                                            38)),
+                                                          )
+                                                        : Navigator.push(
+                                                            context,
+                                                            MaterialPageRoute(
+                                                              builder: (context) => InvoiceDetailsScreen(
+                                                                  oderid: shopDetails!
+                                                                      .data
+                                                                      .orderDetails[
+                                                                          index]
+                                                                      .id
+                                                                      .toString(),
+                                                                  token: widget
+                                                                      .id),
+                                                            ),
+                                                          );
+                                                  },
+                                                  child: Container(
+                                                    decoration: BoxDecoration(
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              10),
+                                                      color: Color(0xFFDEF3FF),
+                                                      boxShadow: [
+                                                        BoxShadow(
+                                                          color: Colors.black26,
+                                                        )
+                                                      ],
+                                                    ),
+                                                    width:
+                                                        MediaQuery.of(context)
+                                                            .size
+                                                            .width,
+                                                    child: Padding(
+                                                      padding:
+                                                          const EdgeInsets.all(
+                                                              8.0),
+                                                      child: Row(
+                                                        children: [
+                                                          Container(
+                                                            margin:
+                                                                EdgeInsets.only(
+                                                                    right: 7),
+                                                            height: MediaQuery.of(
+                                                                        context)
+                                                                    .size
+                                                                    .height *
+                                                                0.07,
+                                                            width: MediaQuery.of(
+                                                                        context)
+                                                                    .size
+                                                                    .width *
+                                                                0.14,
+                                                            child: Container(
+                                                              child: Icon(
+                                                                Icons
+                                                                    .shopping_cart,
+                                                                color: Colors
+                                                                    .white,
+                                                                size: 30,
+                                                              ),
+                                                              decoration: BoxDecoration(
+                                                                  color: ColorConstant
+                                                                      .lightBlue700,
+                                                                  borderRadius:
+                                                                      BorderRadius
+                                                                          .circular(
+                                                                              38)),
+                                                            ),
                                                           ),
-                                                        ),
-                                                        Expanded(
-                                                          child: Column(
-                                                            children: [
-                                                              Row(
-                                                                mainAxisAlignment:
-                                                                    MainAxisAlignment
-                                                                        .spaceBetween,
-                                                                children: [
-                                                                  Container(
-                                                                    width: MediaQuery.of(context)
-                                                                            .size
-                                                                            .width *
-                                                                        0.36,
-                                                                    child:
-                                                                        SingleChildScrollView(
-                                                                      scrollDirection:
-                                                                          Axis.horizontal,
+                                                          Expanded(
+                                                            child: Column(
+                                                              children: [
+                                                                Row(
+                                                                  mainAxisAlignment:
+                                                                      MainAxisAlignment
+                                                                          .spaceBetween,
+                                                                  children: [
+                                                                    Container(
+                                                                      width: MediaQuery.of(context)
+                                                                              .size
+                                                                              .width *
+                                                                          0.36,
                                                                       child:
-                                                                          Row(
-                                                                        children: [
-                                                                          Text(
-                                                                            'Order ID: ',
-                                                                          ),
                                                                           SingleChildScrollView(
-                                                                            scrollDirection:
-                                                                                Axis.horizontal,
+                                                                        scrollDirection:
+                                                                            Axis.horizontal,
+                                                                        child:
+                                                                            Row(
+                                                                          children: [
+                                                                            Text(
+                                                                              'Order ID: ',
+                                                                            ),
+                                                                            SingleChildScrollView(
+                                                                              scrollDirection: Axis.horizontal,
+                                                                              child: Text(
+                                                                                shopDetails!.data.orderDetails[index].invoiceNo,
+                                                                                maxLines: 2,
+                                                                                overflow: TextOverflow.ellipsis,
+                                                                              ),
+                                                                            ),
+                                                                          ],
+                                                                        ),
+                                                                      ),
+                                                                    ),
+                                                                    Row(
+                                                                      children: [
+                                                                        Container(
+                                                                          decoration:
+                                                                              BoxDecoration(
+                                                                            color: Color.fromARGB(
+                                                                                255,
+                                                                                255,
+                                                                                223,
+                                                                                220),
+                                                                            borderRadius:
+                                                                                BorderRadius.circular(5),
+                                                                          ),
+                                                                          child:
+                                                                              Padding(
+                                                                            padding:
+                                                                                const EdgeInsets.all(6.0),
                                                                             child:
-                                                                                Text(
-                                                                              shopDetails!.data.orderDetails[index].invoiceNo,
+                                                                                SingleChildScrollView(
+                                                                              scrollDirection: Axis.horizontal,
+                                                                              child: Text(shopDetails!.data.orderDetails[index].status!),
+                                                                            ),
+                                                                          ),
+                                                                        ),
+                                                                        SizedBox(
+                                                                          width:
+                                                                              3,
+                                                                        ),
+                                                                      ],
+                                                                    ),
+                                                                  ],
+                                                                ),
+                                                                Row(
+                                                                  mainAxisAlignment:
+                                                                      MainAxisAlignment
+                                                                          .spaceBetween,
+                                                                  children: [
+                                                                    Row(
+                                                                      children: [
+                                                                        Text(
+                                                                            'Date : '),
+                                                                        Text(shopDetails!
+                                                                            .data
+                                                                            .orderDetails[index]
+                                                                            .orderDate),
+                                                                      ],
+                                                                    ),
+                                                                  ],
+                                                                ),
+                                                                SizedBox(
+                                                                  height: 5,
+                                                                ),
+                                                                Row(
+                                                                  mainAxisAlignment:
+                                                                      MainAxisAlignment
+                                                                          .spaceBetween,
+                                                                  children: [
+                                                                    Container(
+                                                                      width: MediaQuery.of(context)
+                                                                              .size
+                                                                              .width *
+                                                                          0.36,
+                                                                      child:
+                                                                          SingleChildScrollView(
+                                                                        scrollDirection:
+                                                                            Axis.horizontal,
+                                                                        child:
+                                                                            Row(
+                                                                          children: [
+                                                                            Text('Created by: '),
+                                                                            Text(
+                                                                              shopDetails!.data.orderDetails[index].createdBy,
                                                                               maxLines: 2,
                                                                               overflow: TextOverflow.ellipsis,
                                                                             ),
-                                                                          ),
-                                                                        ],
+                                                                          ],
+                                                                        ),
                                                                       ),
                                                                     ),
-                                                                  ),
-                                                                  Row(
-                                                                    children: [
-                                                                      Container(
-                                                                        decoration:
-                                                                            BoxDecoration(
-                                                                          color: Color.fromARGB(
-                                                                              255,
-                                                                              255,
-                                                                              223,
-                                                                              220),
-                                                                          borderRadius:
-                                                                              BorderRadius.circular(5),
-                                                                        ),
-                                                                        child:
-                                                                            Padding(
-                                                                          padding:
-                                                                              const EdgeInsets.all(6.0),
-                                                                          child:
-                                                                              SingleChildScrollView(
-                                                                            scrollDirection:
-                                                                                Axis.horizontal,
-                                                                            child:
-                                                                                Text(shopDetails!.data.orderDetails[index].status!),
+                                                                    Row(
+                                                                      children: [
+                                                                        Text(
+                                                                          '₹',
+                                                                          style:
+                                                                              TextStyle(
+                                                                            fontSize:
+                                                                                18,
                                                                           ),
                                                                         ),
-                                                                      ),
-                                                                      SizedBox(
-                                                                        width:
-                                                                            8,
-                                                                      ),
-                                                                    ],
-                                                                  ),
-                                                                ],
-                                                              ),
-                                                              Row(
-                                                                mainAxisAlignment:
-                                                                    MainAxisAlignment
-                                                                        .spaceBetween,
-                                                                children: [
-                                                                  Row(
-                                                                    children: [
-                                                                      Text(
-                                                                          'Date : '),
-                                                                      Text(shopDetails!
-                                                                          .data
-                                                                          .orderDetails[
-                                                                              index]
-                                                                          .orderDate),
-                                                                    ],
-                                                                  ),
-                                                                ],
-                                                              ),
-                                                              SizedBox(
-                                                                height: 5,
-                                                              ),
-                                                              Row(
-                                                                mainAxisAlignment:
-                                                                    MainAxisAlignment
-                                                                        .spaceBetween,
-                                                                children: [
-                                                                  Container(
-                                                                    width: MediaQuery.of(context)
-                                                                            .size
-                                                                            .width *
-                                                                        0.36,
-                                                                    child:
-                                                                        SingleChildScrollView(
-                                                                      scrollDirection:
-                                                                          Axis.horizontal,
-                                                                      child:
-                                                                          Row(
-                                                                        children: [
-                                                                          Text(
-                                                                              'Created by: '),
-                                                                          Text(
-                                                                            shopDetails!.data.orderDetails[index].createdBy,
-                                                                            maxLines:
-                                                                                2,
-                                                                            overflow:
-                                                                                TextOverflow.ellipsis,
+                                                                        Text(
+                                                                          shopDetails!
+                                                                              .data
+                                                                              .orderDetails[index]
+                                                                              .price
+                                                                              .toString(),
+                                                                          style:
+                                                                              TextStyle(
+                                                                            fontSize:
+                                                                                18,
                                                                           ),
-                                                                        ],
-                                                                      ),
+                                                                        ),
+                                                                        SizedBox(
+                                                                          width:
+                                                                              20,
+                                                                        ),
+                                                                      ],
                                                                     ),
-                                                                  ),
-                                                                  Row(
-                                                                    children: [
-                                                                      Text(
-                                                                        '₹',
-                                                                        style:
-                                                                            TextStyle(
-                                                                          fontSize:
-                                                                              18,
-                                                                        ),
-                                                                      ),
-                                                                      Text(
-                                                                        shopDetails!
-                                                                            .data
-                                                                            .orderDetails[index]
-                                                                            .price
-                                                                            .toString(),
-                                                                        style:
-                                                                            TextStyle(
-                                                                          fontSize:
-                                                                              18,
-                                                                        ),
-                                                                      ),
-                                                                      SizedBox(
-                                                                        width:
-                                                                            20,
-                                                                      ),
-                                                                    ],
-                                                                  ),
-                                                                ],
-                                                              ),
-                                                            ],
+                                                                  ],
+                                                                ),
+                                                              ],
+                                                            ),
                                                           ),
-                                                        ),
-                                                      ],
+                                                        ],
+                                                      ),
                                                     ),
                                                   ),
                                                 ),
@@ -1036,7 +1108,8 @@ class _ShopDetailsPageState extends State<ShopDetailsPage>
                                         child: Row(
                                           children: [
                                             Text('Total Oder Amount : '),
-                                            Text(''),
+                                            Text(shopDetails!.data.invoiceTotal
+                                                .toString()),
                                           ],
                                         ),
                                       ),
@@ -1255,8 +1328,11 @@ class _ShopDetailsPageState extends State<ShopDetailsPage>
                                       child: Container(
                                         child: Row(
                                           children: [
-                                            Text('Total Oder Amount : '),
-                                            Text(''),
+                                            Text('Total Payment Amount : '),
+                                            Text(
+                                              shopDetails!.data.paymentTotal
+                                                  .toString(),
+                                            ),
                                           ],
                                         ),
                                       ),
@@ -1273,168 +1349,270 @@ class _ShopDetailsPageState extends State<ShopDetailsPage>
                                               return Padding(
                                                 padding: const EdgeInsets.only(
                                                     top: 5, bottom: 5),
-                                                child: Container(
-                                                  decoration: BoxDecoration(
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            10),
-                                                    color: Color(0xFFDEF3FF),
-                                                    boxShadow: [
-                                                      BoxShadow(
-                                                        color: Colors.black26,
-                                                      )
-                                                    ],
-                                                  ),
-                                                  width: MediaQuery.of(context)
-                                                      .size
-                                                      .width,
-                                                  child: Padding(
-                                                    padding:
-                                                        const EdgeInsets.all(
-                                                            8.0),
-                                                    child: Row(
+                                                child: Slidable(
+                                                  key: const ValueKey(0),
+                                                  startActionPane: ActionPane(
+                                                      motion: DrawerMotion(),
                                                       children: [
-                                                        Container(
-                                                          margin:
-                                                              EdgeInsets.only(
-                                                                  right: 7),
-                                                          height: MediaQuery.of(
-                                                                      context)
-                                                                  .size
-                                                                  .height *
-                                                              0.07,
-                                                          width: MediaQuery.of(
-                                                                      context)
-                                                                  .size
-                                                                  .width *
-                                                              0.14,
-                                                          child: Container(
-                                                            child: Icon(
-                                                              Icons
-                                                                  .shopping_cart,
-                                                              color:
-                                                                  Colors.white,
-                                                              size: 30,
-                                                            ),
-                                                            decoration: BoxDecoration(
-                                                                color: ColorConstant
-                                                                    .lightBlue700,
-                                                                borderRadius:
-                                                                    BorderRadius
-                                                                        .circular(
-                                                                            38)),
-                                                          ),
+                                                        SlidableAction(
+                                                          onPressed: (context) {
+                                                            if (shopDetails!
+                                                                    .data
+                                                                    .paymentDetails[
+                                                                        index]
+                                                                    .isEdit ==
+                                                                true) {
+                                                              onDelete(index);
+                                                            } else {
+                                                              showDialog(
+                                                                context:
+                                                                    context,
+                                                                builder:
+                                                                    (context) {
+                                                                  return AlertDialog(
+                                                                    content: Text(
+                                                                        'Cannot delete this Payment'),
+                                                                    actions: [
+                                                                      TextButton(
+                                                                        onPressed:
+                                                                            () {
+                                                                          Navigator.pop(
+                                                                              context);
+                                                                        },
+                                                                        child: Text(
+                                                                            'Close'),
+                                                                      ),
+                                                                    ],
+                                                                  );
+                                                                },
+                                                              );
+                                                            }
+                                                          },
+                                                          backgroundColor:
+                                                              Color(0xFFFE4A49),
+                                                          foregroundColor:
+                                                              Colors.white,
+                                                          icon: Icons.delete,
+                                                          label: 'Delete',
                                                         ),
-                                                        Expanded(
-                                                          child: Column(
-                                                            children: [
-                                                              Row(
-                                                                mainAxisAlignment:
-                                                                    MainAxisAlignment
-                                                                        .spaceBetween,
-                                                                children: [
-                                                                  Row(
-                                                                    children: [
-                                                                      Text(
-                                                                          'Date : '),
-                                                                      Text(
-                                                                        shopDetails!
+                                                        SlidableAction(
+                                                          onPressed: (context) {
+                                                            shopDetails!
+                                                                        .data
+                                                                        .paymentDetails[
+                                                                            index]
+                                                                        .isEdit ==
+                                                                    true
+                                                                ? Navigator
+                                                                    .push(
+                                                                    context,
+                                                                    MaterialPageRoute(
+                                                                      builder:
+                                                                          (context) =>
+                                                                              PaymentEditingScreen(
+                                                                        id: widget
+                                                                            .id,
+                                                                        paymentId: shopDetails!
                                                                             .data
                                                                             .paymentDetails[index]
-                                                                            .createdAt,
-                                                                        maxLines:
-                                                                            2,
-                                                                        overflow:
-                                                                            TextOverflow.ellipsis,
+                                                                            .paymentId,
                                                                       ),
-                                                                    ],
-                                                                  ),
-                                                                ],
-                                                              ),
-                                                              SizedBox(
-                                                                height: 7,
-                                                              ),
-                                                              Row(
-                                                                mainAxisAlignment:
-                                                                    MainAxisAlignment
-                                                                        .spaceBetween,
-                                                                children: [
-                                                                  Row(
-                                                                    children: [
-                                                                      Text(
-                                                                          'Payment by : '),
-                                                                      Text(
-                                                                        shopDetails!
-                                                                            .data
-                                                                            .paymentDetails[index]
-                                                                            .paymentType,
-                                                                        maxLines:
-                                                                            2,
-                                                                        overflow:
-                                                                            TextOverflow.ellipsis,
-                                                                      ),
-                                                                    ],
-                                                                  ),
-                                                                ],
-                                                              ),
-                                                              SizedBox(
-                                                                height: 5,
-                                                              ),
-                                                              Row(
-                                                                mainAxisAlignment:
-                                                                    MainAxisAlignment
-                                                                        .spaceBetween,
-                                                                children: [
-                                                                  Row(
-                                                                    children: [
-                                                                      Text(
-                                                                          'Created by :'),
-                                                                      Text(
-                                                                        shopDetails!
-                                                                            .data
-                                                                            .paymentDetails[index]
-                                                                            .createdBy,
-                                                                        maxLines:
-                                                                            2,
-                                                                        overflow:
-                                                                            TextOverflow.ellipsis,
-                                                                      ),
-                                                                    ],
-                                                                  ),
-                                                                  Row(
-                                                                    children: [
-                                                                      Text(
-                                                                        '₹',
-                                                                        style:
-                                                                            TextStyle(
-                                                                          fontSize:
-                                                                              18,
-                                                                        ),
-                                                                      ),
-                                                                      Text(
-                                                                        shopDetails!
-                                                                            .data
-                                                                            .paymentDetails[index]
-                                                                            .paidAmount
-                                                                            .toString(),
-                                                                        style:
-                                                                            TextStyle(
-                                                                          fontSize:
-                                                                              18,
-                                                                        ),
-                                                                      ),
-                                                                      SizedBox(
-                                                                        width:
-                                                                            20,
-                                                                      ),
-                                                                    ],
-                                                                  ),
-                                                                ],
-                                                              ),
-                                                            ],
-                                                          ),
+                                                                    ),
+                                                                  )
+                                                                : showDialog(
+                                                                    context:
+                                                                        context,
+                                                                    builder:
+                                                                        (context) {
+                                                                      return AlertDialog(
+                                                                        content:
+                                                                            Text('Cannot Edit this Payment'),
+                                                                        actions: [
+                                                                          TextButton(
+                                                                            onPressed:
+                                                                                () {
+                                                                              Navigator.pop(context);
+                                                                            },
+                                                                            child:
+                                                                                Text('Close'),
+                                                                          ),
+                                                                        ],
+                                                                      );
+                                                                    },
+                                                                  );
+                                                          },
+                                                          backgroundColor:
+                                                              Color(0xFF21B7CA),
+                                                          foregroundColor:
+                                                              Colors.white,
+                                                          icon: Icons.edit,
+                                                          label: 'Edit',
                                                         ),
+                                                      ]),
+                                                  child: Container(
+                                                    decoration: BoxDecoration(
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              10),
+                                                      color: Color(0xFFDEF3FF),
+                                                      boxShadow: [
+                                                        BoxShadow(
+                                                          color: Colors.black26,
+                                                        )
                                                       ],
+                                                    ),
+                                                    width:
+                                                        MediaQuery.of(context)
+                                                            .size
+                                                            .width,
+                                                    child: Padding(
+                                                      padding:
+                                                          const EdgeInsets.all(
+                                                              8.0),
+                                                      child: Row(
+                                                        children: [
+                                                          Container(
+                                                            margin:
+                                                                EdgeInsets.only(
+                                                                    right: 7),
+                                                            height: MediaQuery.of(
+                                                                        context)
+                                                                    .size
+                                                                    .height *
+                                                                0.07,
+                                                            width: MediaQuery.of(
+                                                                        context)
+                                                                    .size
+                                                                    .width *
+                                                                0.14,
+                                                            child: Container(
+                                                              child: Icon(
+                                                                Icons
+                                                                    .shopping_cart,
+                                                                color: Colors
+                                                                    .white,
+                                                                size: 30,
+                                                              ),
+                                                              decoration: BoxDecoration(
+                                                                  color: ColorConstant
+                                                                      .lightBlue700,
+                                                                  borderRadius:
+                                                                      BorderRadius
+                                                                          .circular(
+                                                                              38)),
+                                                            ),
+                                                          ),
+                                                          Expanded(
+                                                            child: Column(
+                                                              children: [
+                                                                Row(
+                                                                  mainAxisAlignment:
+                                                                      MainAxisAlignment
+                                                                          .spaceBetween,
+                                                                  children: [
+                                                                    Row(
+                                                                      children: [
+                                                                        Text(
+                                                                            'Date : '),
+                                                                        Text(
+                                                                          shopDetails!
+                                                                              .data
+                                                                              .paymentDetails[index]
+                                                                              .createdAt,
+                                                                          maxLines:
+                                                                              2,
+                                                                          overflow:
+                                                                              TextOverflow.ellipsis,
+                                                                        ),
+                                                                      ],
+                                                                    ),
+                                                                  ],
+                                                                ),
+                                                                SizedBox(
+                                                                  height: 7,
+                                                                ),
+                                                                Row(
+                                                                  mainAxisAlignment:
+                                                                      MainAxisAlignment
+                                                                          .spaceBetween,
+                                                                  children: [
+                                                                    Row(
+                                                                      children: [
+                                                                        Text(
+                                                                            'Payment by : '),
+                                                                        Text(
+                                                                          shopDetails!
+                                                                              .data
+                                                                              .paymentDetails[index]
+                                                                              .paymentType,
+                                                                          maxLines:
+                                                                              2,
+                                                                          overflow:
+                                                                              TextOverflow.ellipsis,
+                                                                        ),
+                                                                      ],
+                                                                    ),
+                                                                  ],
+                                                                ),
+                                                                SizedBox(
+                                                                  height: 5,
+                                                                ),
+                                                                Row(
+                                                                  mainAxisAlignment:
+                                                                      MainAxisAlignment
+                                                                          .spaceBetween,
+                                                                  children: [
+                                                                    Row(
+                                                                      children: [
+                                                                        Text(
+                                                                            'Created by :'),
+                                                                        Text(
+                                                                          shopDetails!
+                                                                              .data
+                                                                              .paymentDetails[index]
+                                                                              .createdBy,
+                                                                          maxLines:
+                                                                              2,
+                                                                          overflow:
+                                                                              TextOverflow.ellipsis,
+                                                                        ),
+                                                                      ],
+                                                                    ),
+                                                                    Row(
+                                                                      children: [
+                                                                        Text(
+                                                                          '₹',
+                                                                          style:
+                                                                              TextStyle(
+                                                                            fontSize:
+                                                                                18,
+                                                                          ),
+                                                                        ),
+                                                                        Text(
+                                                                          shopDetails!
+                                                                              .data
+                                                                              .paymentDetails[index]
+                                                                              .paidAmount
+                                                                              .toString(),
+                                                                          style:
+                                                                              TextStyle(
+                                                                            fontSize:
+                                                                                18,
+                                                                          ),
+                                                                        ),
+                                                                        SizedBox(
+                                                                          width:
+                                                                              20,
+                                                                        ),
+                                                                      ],
+                                                                    ),
+                                                                  ],
+                                                                ),
+                                                              ],
+                                                            ),
+                                                          ),
+                                                        ],
+                                                      ),
                                                     ),
                                                   ),
                                                 ),
@@ -1516,6 +1694,93 @@ class _ShopDetailsPageState extends State<ShopDetailsPage>
               },
               child: Text('Delete'),
             ),
+          ],
+        );
+      },
+    );
+  }
+
+  onDelete(index) async {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          scrollable: true,
+          content: Text('Are you Sure to Delete?'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              child: Text('No'),
+            ),
+            ElevatedButton(
+                onPressed: () async {
+                  DeletePayment deletePayment = await HttpService.deletePayment(
+                      widget.id,
+                      shopDetails!.data.paymentDetails[index].paymentId);
+                  setState(() {
+                    if (deletePayment.status == true) {
+                      Fluttertoast.showToast(
+                        msg: deletePayment.message,
+                        toastLength: Toast.LENGTH_SHORT,
+                        gravity: ToastGravity.BOTTOM,
+                        backgroundColor: Colors.black,
+                        textColor: Colors.white,
+                      );
+                      Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => ShopDetailsPage(
+                                id: widget.id, shopId: widget.shopId),
+                          ));
+                    }
+                  });
+                },
+                child: Text('Yes Delete'))
+          ],
+        );
+      },
+    );
+  }
+
+  deleteorderData(index) async {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          scrollable: true,
+          content: Text('Are you Sure to Delete?'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              child: Text('No'),
+            ),
+            ElevatedButton(
+                onPressed: () async {
+                  DeleteOrder deleteOrder = await HttpService.deleteOrder(
+                      widget.id, shopDetails!.data.orderDetails[index].id.toString());
+                  setState(() {
+                    if (deleteOrder.status == true) {
+                      Fluttertoast.showToast(
+                        msg: deleteOrder.message,
+                        toastLength: Toast.LENGTH_SHORT,
+                        gravity: ToastGravity.BOTTOM,
+                        backgroundColor: Colors.black,
+                        textColor: Colors.white,
+                      );
+                      Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => ShopDetailsPage(
+                                id: widget.id, shopId: widget.shopId),
+                          ));
+                    }
+                  });
+                },
+                child: Text('Yes Delete'))
           ],
         );
       },

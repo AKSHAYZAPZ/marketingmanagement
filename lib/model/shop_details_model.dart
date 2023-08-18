@@ -43,6 +43,9 @@ class Data {
   List<Detail> orderDetails;
   List<Detail> invoiceDetails;
   List<PaymentDetail> paymentDetails;
+  int orderTotal;
+  int paymentTotal;
+  int invoiceTotal;
 
   Data({
     required this.shopName,
@@ -55,6 +58,9 @@ class Data {
     required this.orderDetails,
     required this.invoiceDetails,
     required this.paymentDetails,
+    required this.orderTotal,
+    required this.paymentTotal,
+    required this.invoiceTotal,
   });
 
   factory Data.fromJson(Map<String, dynamic> json) => Data(
@@ -68,6 +74,9 @@ class Data {
     orderDetails: List<Detail>.from(json["orderDetails"].map((x) => Detail.fromJson(x))),
     invoiceDetails: List<Detail>.from(json["invoiceDetails"].map((x) => Detail.fromJson(x))),
     paymentDetails: List<PaymentDetail>.from(json["paymentDetails"].map((x) => PaymentDetail.fromJson(x))),
+    orderTotal: json["order_total"],
+    paymentTotal: json["payment_total"],
+    invoiceTotal: json["invoice_total"],
   );
 
   Map<String, dynamic> toJson() => {
@@ -81,6 +90,9 @@ class Data {
     "orderDetails": List<dynamic>.from(orderDetails.map((x) => x.toJson())),
     "invoiceDetails": List<dynamic>.from(invoiceDetails.map((x) => x.toJson())),
     "paymentDetails": List<dynamic>.from(paymentDetails.map((x) => x.toJson())),
+    "order_total": orderTotal,
+    "payment_total": paymentTotal,
+    "invoice_total": invoiceTotal,
   };
 }
 
@@ -92,6 +104,7 @@ class Detail {
   String quantity;
   int price;
   String createdBy;
+  bool isEdit;
   String? status;
 
   Detail({
@@ -102,6 +115,7 @@ class Detail {
     required this.quantity,
     required this.price,
     required this.createdBy,
+    required this.isEdit,
     this.status,
   });
 
@@ -113,6 +127,7 @@ class Detail {
     quantity: json["quantity"],
     price: json["price"],
     createdBy: json["created_by"],
+    isEdit: json["is_edit"],
     status: json["status"],
   );
 
@@ -124,34 +139,43 @@ class Detail {
     "quantity": quantity,
     "price": price,
     "created_by": createdBy,
+    "is_edit": isEdit,
     "status": status,
   };
 }
 
 class PaymentDetail {
   String paidAmount;
+  String paymentId;
   String paymentType;
   String createdAt;
   String createdBy;
+  bool isEdit;
 
   PaymentDetail({
     required this.paidAmount,
+    required this.paymentId,
     required this.paymentType,
     required this.createdAt,
     required this.createdBy,
+    required this.isEdit,
   });
 
   factory PaymentDetail.fromJson(Map<String, dynamic> json) => PaymentDetail(
     paidAmount: json["paid_amount"],
+    paymentId: json["payment_id"],
     paymentType: json["payment_type"],
     createdAt: json["created_at"],
     createdBy: json["created_by"],
+    isEdit: json["is_edit"],
   );
 
   Map<String, dynamic> toJson() => {
     "paid_amount": paidAmount,
+    "payment_id": paymentId,
     "payment_type": paymentType,
     "created_at": createdAt,
     "created_by": createdBy,
+    "is_edit": isEdit,
   };
 }

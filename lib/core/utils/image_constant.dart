@@ -34,6 +34,8 @@ class ImageConstant {
 
   static String imgCrm232 = 'assets/images/img_crm232.png';
 
+  static String network = 'assets/images/no.wifi_.png';
+
   static String imgRectangle19x19 = 'assets/images/img_rectangle_19x19.png';
 
   static String imgOverlay4 = 'assets/images/img_overlay_4.png';

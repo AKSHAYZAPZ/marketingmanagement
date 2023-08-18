@@ -1,9 +1,9 @@
 import 'dart:async';
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:jibin_s_application1/core/app_export.dart';
 import 'package:jibin_s_application1/presentation/bottom_navigation_page/bottom_navigation.dart';
-import 'package:jibin_s_application1/presentation/home_dashboard_screen/home_dashboard_screen.dart';
+import 'package:jibin_s_application1/presentation/connectivity_screen/connectivity_screen.dart';
 import 'package:jibin_s_application1/shared_prefrence/shared_preference.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -19,9 +19,11 @@ class SplashScreen extends StatefulWidget {
 class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
-    splashOn();
+    checkConnectiVity();
     super.initState();
   }
+
+  bool dataConnection = false;
 
   @override
   Widget build(BuildContext context) {
@@ -64,4 +66,18 @@ class _SplashScreenState extends State<SplashScreen> {
       }
     });
   }
+
+  checkConnectiVity()async{
+    final connectivityResult = await (Connectivity().checkConnectivity());
+    if (connectivityResult == ConnectivityResult.mobile || connectivityResult == ConnectivityResult.wifi) {
+      dataConnection =true;
+      if(dataConnection==true){
+        splashOn();
+      }
+    } else{
+      dataConnection =false;
+     Navigator.push(context, MaterialPageRoute(builder: (context) => ConnectivityScreen(),));
+    }
+  }
+
 }

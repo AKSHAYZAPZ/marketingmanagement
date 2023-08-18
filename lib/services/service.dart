@@ -2,8 +2,10 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:jibin_s_application1/model/post_oder_model.dart';
 import 'package:jibin_s_application1/model/sendotp_model.dart';
+import '../model/DeleteOderDetailId_model.dart';
 import '../model/Reset_model.dart';
 import '../model/add_comment_model.dart';
+import '../model/add_neww_data_order_model.dart';
 import '../model/addshopmodel.dart';
 import '../model/all_category_model.dart';
 import '../model/all_products_list_model.dart';
@@ -14,19 +16,24 @@ import '../model/cashpayment_model.dart';
 import '../model/checknumber.dart';
 import '../model/collection_model.dart';
 import '../model/dashboard_model.dart';
+import '../model/delete_order_model.dart';
+import '../model/delete_payment_model.dart';
 import '../model/delete_shop_model.dart';
 import '../model/executiveslist_model.dart';
+import '../model/getupdateoderdetail_data_model.dart';
 import '../model/invoice_details_model.dart';
 import '../model/mark_visit_model.dart';
 import '../model/oder_details_model.dart';
 import '../model/oderlist_model.dart';
+import '../model/payment_editing_model.dart';
 import '../model/payment_type_model.dart';
-import '../model/product_by_id_model.dart';
 import '../model/product_view_model.dart';
 import '../model/products_model.dart';
 import '../model/routemodel.dart';
 import '../model/shop_details_model.dart';
 import '../model/shop_editing_model.dart';
+import '../model/update_oder_detail_model.dart';
+import '../model/update_payment_model.dart';
 import '../model/update_shop_model.dart';
 import '../model/usermodel.dart';
 
@@ -224,6 +231,7 @@ class HttpService {
               'fdate': fdate,
               'tdate': tdate,
             }));
+    print('Status code ${response.statusCode}');
     if (response.statusCode == 200) {
       return shopDetailsFromJson(response.body);
     }
@@ -271,10 +279,10 @@ class HttpService {
   //   } else {}
   // }
 
-  static Future allProductList(token) async {
+  static Future allProductList(token,searchKey) async {
     http.Response response = await http.post(
         Uri.parse("${baseurl}allProductDetails"),
-        body: ({'token': token}));
+        body: ({'token': token,'search_key':searchKey}));
     if (response.statusCode == 200) {
       // print(response.body);
       return allProductListsFromJson(response.body);
@@ -283,6 +291,7 @@ class HttpService {
 
   static Future postOrders(
       shopid, orderdate, createdat, orderDetails, token) async {
+    print(orderDetails);
     http.Response response = await http.post(
       Uri.parse("${baseurl}postOrders"),
       body: ({
@@ -474,6 +483,8 @@ class HttpService {
       return executiveListsFromJson(response.body);
     }
   }
+
+
   static Future orderLists(token,fdate,tdate,searchkey,route,statusbar,salesexecutive) async {
     http.Response response = await http.post(
       Uri.parse("${baseurl}orderLists"),
@@ -494,4 +505,141 @@ class HttpService {
   }
 
 
+  static Future editPaymentDetails( token,paymentId,) async {
+    http.Response response = await http.post(
+      Uri.parse("${baseurl}editPaymentDetails"),
+      body: ({
+        'token': token,
+        'payment_id' :paymentId,
+      }),
+    );
+    if (response.statusCode == 200) {
+      print(response.body);
+      return editPaymentFromJson(response.body);
+    }
+  }
+
+  static Future updatePayment(token,paymentId,payAmount,paymentMethodId,shopId,date) async {
+    http.Response response = await http.post(
+      Uri.parse("${baseurl}updatePayment"),
+      body: ({
+        'token': token,
+        'payment_id' :paymentId,
+        'pay_amount': payAmount,
+        'payment_method_id':paymentMethodId,
+        'shop_id':shopId,
+        'created_at': date,
+      }),
+    );
+    print(response.statusCode );
+    if (response.statusCode == 200) {
+      return updatePaymentFromJson(response.body);
+    }
+  }
+
+
+  static Future deletePayment( token,paymentId,) async {
+    http.Response response = await http.post(
+      Uri.parse("${baseurl}deletePayment"),
+      body: ({
+        'token': token,
+        'payment_id' :paymentId,
+      }),
+    );
+    if (response.statusCode == 200) {
+      print(response.body);
+      return deletePaymentFromJson(response.body);
+    }
+  }
+
+  static Future deleteOrder( token,orderId,) async {
+    http.Response response = await http.post(
+      Uri.parse("${baseurl}deleteOrder"),
+      body: ({
+        'token': token,
+        'order_id' :orderId,
+      }),
+    );
+    print(response.statusCode);
+    if (response.statusCode == 200) {
+      print(response.body);
+      return deleteOrderFromJson(response.body);
+    }
+  }
+
+
+  static Future deleteorderDetailsById( token,orderDetailId,masterId) async {
+    print(orderDetailId);
+    print(masterId);
+    http.Response response = await http.post(
+      Uri.parse("${baseurl}delete_orderDetailsById"),
+      body: ({
+        'token': token,
+        'order_details_id' :orderDetailId,
+        'order_master_id' : masterId,
+      }),
+    );
+    // print(' -2-2-2-2-2${response.statusCode}');
+    if (response.statusCode == 200) {
+      return deleteOderDetailIdFromJson(response.body);
+    }
+  }
+
+  static Future editOrderDetailsById( token,orderId,oderDetailsId,categoryId,productId,quantity,amount) async {
+    http.Response response = await http.post(
+      Uri.parse("${baseurl}editOrderDetailsById"),
+      body: ({
+        'token': token,
+        'order_id' :orderId,
+        'order_details_id':oderDetailsId,
+        'category_id' :categoryId ,
+        'product_id':productId,
+        'quantity': quantity,
+        'amount': amount,
+      }),
+    );
+    print(response.statusCode);
+    if (response.statusCode == 200) {
+      print(response.body);
+      return updateOderdetailFromJson(response.body);
+    }
+  }
+
+  static Future getingorderDetailsById( token,orderDetailId,masterId) async {
+    http.Response response = await http.post(
+      Uri.parse("${baseurl}get_orderDetailsById"),
+      body: ({
+        'token': token,
+        'order_details_id' :orderDetailId,
+        'order_master_id' : masterId,
+      }),
+    );
+    print(response.statusCode);
+    if (response.statusCode == 200) {
+      print(response.body);
+      return getupdateOderDetailFromJson(response.body);
+    }
+  }
+
+  static Future addNewOrderByOrderId(
+      token, orderDetails,masterId,orderdate,shopid,) async {
+    print(token);
+    print(orderDetails);
+    print(masterId);
+    print(orderdate);
+    print(shopid);
+    http.Response response = await http.post(
+      Uri.parse("${baseurl}addNewOrderByOrderId"),
+      body: ({
+        'token': token,
+        'order_details': jsonEncode(orderDetails),
+        'order_master_id': masterId,
+        'order_date': orderdate,
+        'shop_id': shopid,
+      }),
+    );
+    if (response.statusCode == 200) {
+      return addNewDataInOrderFromJson(response.body);
+    } else {}
+  }
 }

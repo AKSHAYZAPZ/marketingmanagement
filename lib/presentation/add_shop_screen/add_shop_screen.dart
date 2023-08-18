@@ -2,11 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:jibin_s_application1/core/app_export.dart';
 import 'package:jibin_s_application1/model/addshopmodel.dart';
-import 'package:jibin_s_application1/presentation/home_dashboard_screen/home_dashboard_screen.dart';
 import 'package:jibin_s_application1/services/service.dart';
-import 'package:jibin_s_application1/widgets/app_bar/appbar_image.dart';
-import 'package:jibin_s_application1/widgets/app_bar/appbar_title.dart';
-import 'package:jibin_s_application1/widgets/app_bar/custom_app_bar.dart';
 import 'package:jibin_s_application1/widgets/custom_button.dart';
 import 'package:jibin_s_application1/widgets/custom_text_form_field.dart';
 import '../../model/routemodel.dart';
@@ -82,7 +78,7 @@ class _AddShopScreenState extends State<AddShopScreen> {
           appBar: AppBar(
             backgroundColor: ColorConstant.lightBlue700,
             centerTitle: true,
-            title: Text('Shops'),
+            title: Text('Add new shop'),
             leading: IconButton(
               icon: Icon(Icons.arrow_back),
               onPressed: () {
@@ -90,7 +86,8 @@ class _AddShopScreenState extends State<AddShopScreen> {
                 Navigator.pushReplacement(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => BottomNavigationScreen(id: widget.token),
+                    builder: (context) =>
+                        BottomNavigationScreen(id: widget.token),
                   ),
                 );
               },
@@ -131,6 +128,8 @@ class _AddShopScreenState extends State<AddShopScreen> {
                                               style: AppStyle
                                                   .txtMontserratRegular14))),
                                   CustomTextFormField(
+                                      variant:
+                                          TextFormFieldVariant.OutlineBlackA700,
                                       validator: (value) {
                                         if (value!.isEmpty) {
                                           return 'Please enter Shopname';
@@ -150,6 +149,8 @@ class _AddShopScreenState extends State<AddShopScreen> {
                                               style: AppStyle
                                                   .txtMontserratRegular14))),
                                   CustomTextFormField(
+                                      variant:
+                                          TextFormFieldVariant.OutlineBlackA700,
                                       validator: (value) {
                                         if (value!.isEmpty) {
                                           return 'Please enter Adress';
@@ -170,6 +171,8 @@ class _AddShopScreenState extends State<AddShopScreen> {
                                     ),
                                   ),
                                   CustomTextFormField(
+                                    variant:
+                                        TextFormFieldVariant.OutlineBlackA700,
                                     textInputType: TextInputType.phone,
                                     validator: (value) {
                                       if (value!.isEmpty) {
@@ -185,16 +188,23 @@ class _AddShopScreenState extends State<AddShopScreen> {
                                         getMargin(left: 39, top: 14, right: 42),
                                   ),
                                   Align(
-                                      alignment: Alignment.centerLeft,
-                                      child: Container(
-                                          width: getHorizontalSize(73),
-                                          margin: getMargin(left: 39, top: 17),
-                                          child: Text("Whatsapp Number",
-                                              maxLines: null,
-                                              textAlign: TextAlign.left,
-                                              style: AppStyle
-                                                  .txtMontserratRegular14))),
+                                    alignment: Alignment.centerLeft,
+                                    child: Container(
+                                      width: getHorizontalSize(170),
+                                      margin: getMargin(left: 39, top: 17),
+                                      child: Text("Whatsapp Number",
+                                          maxLines: null,
+                                          textAlign: TextAlign.left,
+                                          style:
+                                              AppStyle.txtMontserratRegular14),
+                                    ),
+                                  ),
+                                  SizedBox(
+                                    height: 12,
+                                  ),
                                   CustomTextFormField(
+                                      variant:
+                                          TextFormFieldVariant.OutlineBlackA700,
                                       validator: (value) {
                                         if (value!.isEmpty) {
                                           return 'Please enter whatsapp number';
@@ -210,7 +220,7 @@ class _AddShopScreenState extends State<AddShopScreen> {
                                   Align(
                                     alignment: Alignment.centerLeft,
                                     child: Container(
-                                      width: getHorizontalSize(59),
+                                      width: getHorizontalSize(100),
                                       margin: getMargin(left: 39, top: 17),
                                       child: Text("GST Number",
                                           maxLines: null,
@@ -219,12 +229,17 @@ class _AddShopScreenState extends State<AddShopScreen> {
                                               AppStyle.txtMontserratRegular14),
                                     ),
                                   ),
+                                  SizedBox(
+                                    height: 12,
+                                  ),
                                   CustomTextFormField(
-                                    validator: (value) {
-                                      if(value!.length >15){
-                                        return 'Please enter valid GST number';
-                                      }
-                                    },
+                                      variant:
+                                          TextFormFieldVariant.OutlineBlackA700,
+                                      validator: (value) {
+                                        if (value!.length > 15) {
+                                          return 'Please enter valid GST number';
+                                        }
+                                      },
                                       controller: gstnumberController,
                                       margin: getMargin(left: 39, right: 42),
                                       textInputAction: TextInputAction.done),
@@ -236,10 +251,12 @@ class _AddShopScreenState extends State<AddShopScreen> {
                                           overflow: TextOverflow.ellipsis,
                                           textAlign: TextAlign.left,
                                           style:
-                                          AppStyle.txtMontserratRegular14),
+                                              AppStyle.txtMontserratRegular14),
                                     ),
                                   ),
                                   CustomTextFormField(
+                                    variant:
+                                        TextFormFieldVariant.OutlineBlackA700,
                                     textInputType: TextInputType.phone,
                                     // validator: (value) {
                                     //   if (value!.isEmpty) {
@@ -252,7 +269,7 @@ class _AddShopScreenState extends State<AddShopScreen> {
                                     // },
                                     controller: balanceController,
                                     margin:
-                                    getMargin(left: 39, top: 14, right: 42),
+                                        getMargin(left: 39, top: 14, right: 42),
                                   ),
                                   SizedBox(
                                     height: 15,
@@ -262,32 +279,50 @@ class _AddShopScreenState extends State<AddShopScreen> {
                                         left: 35, right: 35),
                                     child: Container(
                                       width: double.infinity,
-                                      child: DropdownButton(
-                                        value: dropdownvalue,
-                                        hint: Text('Select Route'),
-                                        onChanged: (selecteditem) {
-                                          setState(() {
-                                            dropdownvalue = selecteditem;
-                                            _validatedropdown = true;
-                                          });
-                                        },
-                                        items: routelist!.data.length > 0
-                                            ? routelist!.data
-                                                .map<DropdownMenuItem<String>>(
-                                                    (e) {
-                                                return DropdownMenuItem<String>(
-                                                  value: e.id.toString(),
-                                                  child: Text(e.route),
-                                                );
-                                              }).toList()
-                                            : null,
+                                      decoration: BoxDecoration(
+                                          border: Border.all(
+                                            color: ColorConstant.gray300,
+                                            width: 3.0,
+                                          ),
+                                          borderRadius:
+                                              BorderRadius.circular(25)),
+                                      child: Padding(
+                                        padding: const EdgeInsets.only(
+                                            left: 8, right: 8),
+                                        child: DropdownButton(
+                                          underline: Container(),
+                                          value: dropdownvalue,
+                                          hint: Text('Select Route',
+                                              style: AppStyle
+                                                  .txtMontserratRegular14),
+                                          onChanged: (selecteditem) {
+                                            setState(() {
+                                              dropdownvalue = selecteditem;
+                                              _validatedropdown = true;
+                                            });
+                                          },
+                                          items: routelist!.data.length > 0
+                                              ? routelist!.data.map<
+                                                      DropdownMenuItem<String>>(
+                                                  (e) {
+                                                  return DropdownMenuItem<
+                                                      String>(
+                                                    value: e.id.toString(),
+                                                    child: Text(e.route),
+                                                  );
+                                                }).toList()
+                                              : null,
+                                        ),
                                       ),
                                     ),
+                                  ),
+                                  SizedBox(
+                                    height: 15,
                                   ),
                                   CustomButton(
                                     text: "Submit",
                                     margin:
-                                        getMargin(left: 15, top: 10, right: 15),
+                                        getMargin(left: 35, top: 10, right: 35),
                                     shape: ButtonShape.RoundedBorder24,
                                     fontStyle:
                                         ButtonFontStyle.DMSansMedium20WhiteA700,
@@ -305,7 +340,7 @@ class _AddShopScreenState extends State<AddShopScreen> {
                                           );
                                         } else {
                                           Addshop addshop =
-                                          await HttpService.addShop(
+                                              await HttpService.addShop(
                                             shopnameController.text,
                                             addressController.text,
                                             mobilenoController.text,
@@ -372,6 +407,10 @@ class _AddShopScreenState extends State<AddShopScreen> {
   /// When the action is triggered, this function uses the `Navigator` widget
   /// to push the named route for the shopsScreen.
   onTapSubmit(BuildContext context) {
-    Navigator.pushNamed(context, AppRoutes.shopsScreen);
+    Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => BottomNavigationScreen(id: widget.token),
+        ));
   }
 }

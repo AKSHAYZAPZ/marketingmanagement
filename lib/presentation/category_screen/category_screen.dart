@@ -1,3 +1,4 @@
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:jibin_s_application1/model/products_model.dart';
 import 'package:jibin_s_application1/presentation/sub_categories_screen/sub_categories_screen.dart';
 import 'package:jibin_s_application1/services/service.dart';
@@ -24,7 +25,7 @@ class CategoryScreen extends StatefulWidget {
 class _ProductScreenState extends State<CategoryScreen> {
   // Products? products;
   // ProductById? productById;
-
+  bool dataConnection =false;
   AllCategory? allCategory;
 
   var currentIndex = 0;
@@ -38,8 +39,7 @@ class _ProductScreenState extends State<CategoryScreen> {
 
   @override
   void initState() {
-    super.initState();
-    allCategorys();
+    checkConnectiVity();
   }
   Future<void> _onRefresh() async {
     await Future.delayed(Duration(seconds: 2));
@@ -180,6 +180,7 @@ class _ProductScreenState extends State<CategoryScreen> {
                                           height: 90,
                                           width: 90,
                                           decoration: BoxDecoration(
+                                            color: Colors.grey[100],
                                               image: DecorationImage(
                                                   fit: BoxFit.cover,
                                                   image: NetworkImage(allCategory!
@@ -210,6 +211,50 @@ class _ProductScreenState extends State<CategoryScreen> {
               ),
           ),
     );
+  }
+
+  checkConnectiVity()async{
+    final connectivityResult = await (Connectivity().checkConnectivity());
+    if (connectivityResult == ConnectivityResult.mobile || connectivityResult == ConnectivityResult.wifi) {
+      dataConnection =true;
+      if(dataConnection==true){
+        allCategorys();
+      }
+    } else{
+      dataConnection =false;
+      showDialog(context: context, builder: (context) {
+        return AlertDialog(
+          content:Container(
+            height: 200,
+            child: Column(
+              children: [
+                Text('No data Connection'),
+                SizedBox(
+                  height: 15,
+                ),
+                Container(
+                  height: 150,
+                  width: 150,
+                  decoration: BoxDecoration(
+                    image: DecorationImage(image: AssetImage(ImageConstant.network),),
+                  ),
+                )
+              ],
+            ),
+
+          ),
+          actions: [
+            TextButton(onPressed: () {
+              setState(() {
+                checkConnectiVity();
+                Navigator.pop(context);
+              });
+
+            }, child: Text('Retry'))
+          ],
+        );
+      },);
+    }
   }
 
   /// Navigates to the productDScreen when the action is triggered.

@@ -1,9 +1,11 @@
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:jibin_s_application1/model/all_sub_category_model.dart';
 import 'package:jibin_s_application1/presentation/product_list_screen/product_list_screen.dart';
 import 'package:jibin_s_application1/services/service.dart';
 
 import '../../core/utils/color_constant.dart';
+import '../../core/utils/image_constant.dart';
 import '../product_detailed_screen.dart';
 
 class SubCategoriesScreen extends StatefulWidget {
@@ -21,13 +23,13 @@ class _SubCategoriesScreenState extends State<SubCategoriesScreen> {
   TextEditingController searchCntrller = TextEditingController();
 
   var searchkey = '';
-
+  bool dataConnection =false;
   AllSubCategory? allSubCategory;
 
   @override
   void initState() {
     super.initState();
-    allSubCategoys();
+   checkConnectiVity();
   }
   Future<void> _onRefresh() async {
     await Future.delayed(Duration(seconds: 2));
@@ -174,7 +176,7 @@ class _SubCategoriesScreenState extends State<SubCategoriesScreen> {
                                                             .data
                                                             .subcategory[index]
                                                             .subcategoryImage)),
-                                                color: Colors.yellow,
+                                                color: Colors.grey[100],
                                               ),
                                             ),
                                           ),
@@ -266,6 +268,52 @@ class _SubCategoriesScreenState extends State<SubCategoriesScreen> {
         widget.id, widget.CategoryId, searchkey);
     if (allSubCategory != null) {
       setState(() {});
+    }
+  }
+
+  checkConnectiVity()async{
+    final connectivityResult = await (Connectivity().checkConnectivity());
+    if (connectivityResult == ConnectivityResult.mobile || connectivityResult == ConnectivityResult.wifi) {
+      dataConnection =true;
+      if(dataConnection==true){
+        setState(() {
+          allSubCategoys();
+        });
+      }
+    } else{
+      dataConnection =false;
+      showDialog(context: context, builder: (context) {
+        return AlertDialog(
+          content:Container(
+            height: 200,
+            child: Column(
+              children: [
+                Text('No data Connection'),
+                SizedBox(
+                  height: 15,
+                ),
+                Container(
+                  height: 150,
+                  width: 150,
+                  decoration: BoxDecoration(
+                    image: DecorationImage(image: AssetImage(ImageConstant.network),),
+                  ),
+                )
+              ],
+            ),
+
+          ),
+          actions: [
+            TextButton(onPressed: () {
+              setState(() {
+                checkConnectiVity();
+                Navigator.pop(context);
+              });
+
+            }, child: Text('Retry'))
+          ],
+        );
+      },);
     }
   }
 }

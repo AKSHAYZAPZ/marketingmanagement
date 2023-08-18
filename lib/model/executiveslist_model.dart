@@ -33,7 +33,7 @@ class ExecutiveLists {
 }
 
 class Datum {
-  int id;
+  String id;
   String name;
 
   Datum({

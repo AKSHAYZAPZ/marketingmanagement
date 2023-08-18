@@ -33,7 +33,7 @@ class Routelist {
 }
 
 class Datum {
-  int id;
+  String id;
   String route;
 
   Datum({

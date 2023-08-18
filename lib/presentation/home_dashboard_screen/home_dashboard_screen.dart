@@ -1,3 +1,4 @@
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:custom_switch_widget/custom_switch_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -11,7 +12,6 @@ import 'package:jibin_s_application1/presentation/add_shop_screen/add_shop_scree
 import 'package:jibin_s_application1/presentation/collection_screen/collection_screen.dart';
 import 'package:jibin_s_application1/presentation/oders_screen.dart';
 import 'package:jibin_s_application1/presentation/shop_details_page/shop_details_page.dart';
-import 'package:jibin_s_application1/widgets/app_bar/custom_app_bar.dart';
 import 'package:jibin_s_application1/widgets/custom_icon_button.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../model/dashboard_model.dart';
@@ -19,7 +19,6 @@ import '../../model/routemodel.dart';
 import '../../services/service.dart';
 import '../../shared_prefrence/shared_preference.dart';
 import '../category_screen/category_screen.dart';
-
 
 class HomeDashboardScreen extends StatefulWidget {
   HomeDashboardScreen({
@@ -38,6 +37,7 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> {
 
   TextEditingController searchCntrller = TextEditingController();
   Routelist? routelist;
+  bool dataConnection =false;
 
   String date = DateFormat('dd-MM-yyyy').format(DateTime.now());
 
@@ -66,9 +66,7 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> {
   @override
   void initState() {
     super.initState();
-    getname();
-    getList();
-    getRoutes();
+    checkConnectiVity();
   }
 
   String whatsappurl = "https://wa.me/91";
@@ -120,7 +118,27 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> {
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () async {
-
+        showDialog(
+          context: context,
+          builder: (context) {
+            return AlertDialog(
+              content: Text('Exit App?'),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  child: Text('No'),
+                ),
+                ElevatedButton(
+                    onPressed: () {
+                      SystemNavigator.pop();
+                    },
+                    child: Text('Yes'))
+              ],
+            );
+          },
+        );
         return true; // Return false to prevent popping the route
       },
       child: Scaffold(
@@ -130,8 +148,8 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> {
                   child: CircularProgressIndicator(),
                 )
               : SafeArea(
-                 top: false,
-                child: RefreshIndicator(
+                  top: false,
+                  child: RefreshIndicator(
                     onRefresh: _onRefresh,
                     child: SingleChildScrollView(
                       physics: BouncingScrollPhysics(),
@@ -168,8 +186,8 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> {
                                       width: 10,
                                     ),
                                     Container(
-                                      width:
-                                          MediaQuery.of(context).size.width * 0.5,
+                                      width: MediaQuery.of(context).size.width *
+                                          0.5,
                                       // color: Colors.red,
                                       child: Column(
                                         mainAxisAlignment:
@@ -188,7 +206,8 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> {
                                           ),
                                           Text(
                                             date,
-                                            style: TextStyle(color: Colors.white),
+                                            style:
+                                                TextStyle(color: Colors.white),
                                           ),
                                         ],
                                       ),
@@ -268,7 +287,9 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> {
                                                   Navigator.push(
                                                     context,
                                                     MaterialPageRoute(
-                                                      builder: (context) => AddShopScreen(token: widget.id),
+                                                      builder: (context) =>
+                                                          AddShopScreen(
+                                                              token: widget.id),
                                                     ),
                                                   );
                                                 },
@@ -276,9 +297,11 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> {
                                                   height: 90,
                                                   width: 90,
                                                   decoration: BoxDecoration(
-                                                    color: ColorConstant.blue600,
+                                                    color:
+                                                        ColorConstant.blue600,
                                                     borderRadius:
-                                                        BorderRadius.circular(15),
+                                                        BorderRadius.circular(
+                                                            15),
                                                   ),
                                                   child: Center(
                                                     child: Text(
@@ -295,14 +318,20 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> {
                                             Container(
                                               child: IconButton(
                                                 onPressed: () {
-                                                  Get.to(CategoryScreen(
-                                                      id: widget.id));
+                                                  Navigator.push(
+                                                    context,
+                                                    MaterialPageRoute(
+                                                      builder: (context) =>
+                                                          AddShopScreen(
+                                                              token: widget.id),
+                                                    ),
+                                                  );
                                                 },
                                                 icon: Icon(
                                                   Icons
                                                       .arrow_forward_ios_outlined,
-                                                  color:
-                                                      ColorConstant.lightBlue700,
+                                                  color: ColorConstant
+                                                      .lightBlue700,
                                                 ),
                                               ),
                                               width: 40,
@@ -328,7 +357,8 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> {
                                                   ],
                                                   borderRadius:
                                                       BorderRadius.circular(30),
-                                                  color: ColorConstant.whiteA700),
+                                                  color:
+                                                      ColorConstant.whiteA700),
                                             )
                                           ],
                                         ),
@@ -359,9 +389,11 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> {
                                                   height: 90,
                                                   width: 90,
                                                   decoration: BoxDecoration(
-                                                    color: ColorConstant.blue600,
+                                                    color:
+                                                        ColorConstant.blue600,
                                                     borderRadius:
-                                                        BorderRadius.circular(15),
+                                                        BorderRadius.circular(
+                                                            15),
                                                   ),
                                                 ),
                                               ),
@@ -369,14 +401,14 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> {
                                             Container(
                                               child: IconButton(
                                                 onPressed: () {
-                                                  Get.to(CollectionScreen(
+                                                  Get.to(OderScreen(
                                                       id: widget.id));
                                                 },
                                                 icon: Icon(
                                                   Icons
                                                       .arrow_forward_ios_outlined,
-                                                  color:
-                                                      ColorConstant.lightBlue700,
+                                                  color: ColorConstant
+                                                      .lightBlue700,
                                                 ),
                                               ),
                                               width: 40,
@@ -402,7 +434,8 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> {
                                                   ],
                                                   borderRadius:
                                                       BorderRadius.circular(30),
-                                                  color: ColorConstant.whiteA700),
+                                                  color:
+                                                      ColorConstant.whiteA700),
                                             )
                                           ],
                                         ),
@@ -417,7 +450,8 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> {
                                               alignment: Alignment.topCenter,
                                               child: GestureDetector(
                                                 onTap: () {
-                                                  onTapImgAddtobasketone(context);
+                                                  onTapImgAddtobasketone(
+                                                      context);
                                                 },
                                                 child: Container(
                                                   child: Center(
@@ -432,9 +466,11 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> {
                                                   height: 90,
                                                   width: 90,
                                                   decoration: BoxDecoration(
-                                                    color: ColorConstant.blue600,
+                                                    color:
+                                                        ColorConstant.blue600,
                                                     borderRadius:
-                                                        BorderRadius.circular(15),
+                                                        BorderRadius.circular(
+                                                            15),
                                                   ),
                                                 ),
                                               ),
@@ -442,13 +478,14 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> {
                                             Container(
                                               child: IconButton(
                                                 onPressed: () {
-                                                  onTapImgAddtobasketone(context);
+                                                  onTapImgAddtobasketone(
+                                                      context);
                                                 },
                                                 icon: Icon(
                                                   Icons
                                                       .arrow_forward_ios_outlined,
-                                                  color:
-                                                      ColorConstant.lightBlue700,
+                                                  color: ColorConstant
+                                                      .lightBlue700,
                                                 ),
                                               ),
                                               width: 40,
@@ -474,7 +511,8 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> {
                                                   ],
                                                   borderRadius:
                                                       BorderRadius.circular(30),
-                                                  color: ColorConstant.whiteA700),
+                                                  color:
+                                                      ColorConstant.whiteA700),
                                             )
                                           ],
                                         ),
@@ -509,15 +547,19 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> {
                                                 prefixIcon: Icon(Icons.search,
                                                     color: Colors.grey),
                                                 hintText: 'Search',
-                                                enabledBorder: OutlineInputBorder(
+                                                enabledBorder:
+                                                    OutlineInputBorder(
                                                   borderSide: BorderSide(
-                                                      color: Colors.transparent),
+                                                      color:
+                                                          Colors.transparent),
                                                   borderRadius:
                                                       BorderRadius.circular(15),
                                                 ),
-                                                focusedBorder: OutlineInputBorder(
+                                                focusedBorder:
+                                                    OutlineInputBorder(
                                                   borderSide: BorderSide(
-                                                      color: Colors.transparent),
+                                                      color:
+                                                          Colors.transparent),
                                                   borderRadius:
                                                       BorderRadius.circular(15),
                                                 ),
@@ -556,7 +598,8 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> {
                                   child: Row(
                                     mainAxisAlignment:
                                         MainAxisAlignment.spaceBetween,
-                                    crossAxisAlignment: CrossAxisAlignment.center,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
                                     children: [
                                       Padding(
                                           padding: getPadding(top: 8),
@@ -581,7 +624,6 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> {
                                             : null,
                                         onChanged: (value) {
                                           setState(() {
-
                                             routes = value.toString();
                                             // print('route ---- $ro');
                                             getList();
@@ -594,311 +636,299 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> {
                                 Padding(
                                     padding: const EdgeInsets.only(
                                         left: 8, right: 8, top: 0.0),
-                                    child: dashboard!.data.shopDetails.length > 0
-                                        ? MediaQuery.removePadding(
-                                            context: context,
-                                            removeTop: true,
-                                            child: ListView.builder(
-
-                                              physics: BouncingScrollPhysics(),
-                                              shrinkWrap: true,
-                                              itemCount: dashboard!
-                                                  .data.shopDetails.length,
-                                              itemBuilder: (context, index) {
-                                                return GestureDetector(
-                                                  onTap: () async {
-                                                    var shopsId = await dashboard!
-                                                        .data
-                                                        .shopDetails[index]
-                                                        .shopid
-                                                        .toString();
-                                                    // print('Clicked');
-                                                    Navigator.push(
-                                                      context,
-                                                      MaterialPageRoute(
-                                                        builder: (context) =>
-                                                            ShopDetailsPage(
-                                                          id: widget.id,
-                                                          shopId: shopsId,
+                                    child:
+                                        dashboard!.data.shopDetails.length > 0
+                                            ? MediaQuery.removePadding(
+                                                context: context,
+                                                removeTop: true,
+                                                child: ListView.builder(
+                                                  physics:
+                                                      BouncingScrollPhysics(),
+                                                  shrinkWrap: true,
+                                                  itemCount: dashboard!
+                                                      .data.shopDetails.length,
+                                                  itemBuilder:
+                                                      (context, index) {
+                                                    return GestureDetector(
+                                                      onTap: () async {
+                                                        var shopsId =
+                                                            await dashboard!
+                                                                .data
+                                                                .shopDetails[
+                                                                    index]
+                                                                .shopid
+                                                                .toString();
+                                                        // print('Clicked');
+                                                        Navigator.push(
+                                                          context,
+                                                          MaterialPageRoute(
+                                                            builder: (context) =>
+                                                                ShopDetailsPage(
+                                                              id: widget.id,
+                                                              shopId: shopsId,
+                                                            ),
+                                                          ),
+                                                        );
+                                                      },
+                                                      child: Card(
+                                                        clipBehavior:
+                                                            Clip.antiAlias,
+                                                        elevation: 0,
+                                                        margin:
+                                                            getMargin(top: 8),
+                                                        color: ColorConstant
+                                                            .blue600,
+                                                        shape: RoundedRectangleBorder(
+                                                            borderRadius:
+                                                                BorderRadiusStyle
+                                                                    .roundedBorder16),
+                                                        child: Container(
+                                                          height:
+                                                              getVerticalSize(
+                                                                  138),
+                                                          width:
+                                                              getHorizontalSize(
+                                                                  378),
+                                                          padding: getPadding(
+                                                              left: 13,
+                                                              top: 24,
+                                                              right: 13,
+                                                              bottom: 24),
+                                                          decoration: AppDecoration
+                                                              .fillBlue600
+                                                              .copyWith(
+                                                                  borderRadius:
+                                                                      BorderRadiusStyle
+                                                                          .roundedBorder16),
+                                                          child: Stack(
+                                                            children: [
+                                                              Row(
+                                                                mainAxisAlignment:
+                                                                    MainAxisAlignment
+                                                                        .start,
+                                                                crossAxisAlignment:
+                                                                    CrossAxisAlignment
+                                                                        .end,
+                                                                children: [
+                                                                  CustomIconButton(
+                                                                    height: 42,
+                                                                    width: 42,
+                                                                    margin: getMargin(
+                                                                        bottom:
+                                                                            54),
+                                                                    shape: IconButtonShape
+                                                                        .CircleBorder16,
+                                                                    padding:
+                                                                        IconButtonPadding
+                                                                            .PaddingAll8,
+                                                                    child: Text(dashboard!
+                                                                        .data
+                                                                        .shopDetails[
+                                                                            index]
+                                                                        .shopName[
+                                                                            0]
+                                                                        .toUpperCase()),
+                                                                  ),
+                                                                  SizedBox(
+                                                                    width: 5,
+                                                                  ),
+                                                                  Column(
+                                                                    crossAxisAlignment:
+                                                                        CrossAxisAlignment
+                                                                            .start,
+                                                                    mainAxisAlignment:
+                                                                        MainAxisAlignment
+                                                                            .start,
+                                                                    children: [
+                                                                      Text(
+                                                                          dashboard!
+                                                                              .data
+                                                                              .shopDetails[
+                                                                                  index]
+                                                                              .shopName,
+                                                                          overflow: TextOverflow
+                                                                              .ellipsis,
+                                                                          textAlign: TextAlign
+                                                                              .left,
+                                                                          style:
+                                                                              AppStyle.txtDMSansMedium20),
+                                                                      Text(
+                                                                          dashboard!
+                                                                              .data
+                                                                              .shopDetails[
+                                                                                  index]
+                                                                              .address,
+                                                                          overflow: TextOverflow
+                                                                              .ellipsis,
+                                                                          textAlign: TextAlign
+                                                                              .left,
+                                                                          style:
+                                                                              AppStyle.txtDMSansRegular18WhiteA700),
+                                                                    ],
+                                                                  ),
+                                                                ],
+                                                              ),
+                                                              Align(
+                                                                alignment: Alignment
+                                                                    .bottomRight,
+                                                                child: Row(
+                                                                  crossAxisAlignment:
+                                                                      CrossAxisAlignment
+                                                                          .center,
+                                                                  mainAxisAlignment:
+                                                                      MainAxisAlignment
+                                                                          .spaceBetween,
+                                                                  children: [
+                                                                    Padding(
+                                                                      padding: const EdgeInsets
+                                                                              .only(
+                                                                          left:
+                                                                              8),
+                                                                      child:
+                                                                          Row(
+                                                                        children: [
+                                                                          Text(
+                                                                            'Balance : ',
+                                                                            style:
+                                                                                TextStyle(color: Colors.white),
+                                                                          ),
+                                                                          Text(
+                                                                            dashboard!.data.shopDetails[index].balance.toString(),
+                                                                            style:
+                                                                                TextStyle(color: Colors.white),
+                                                                          ),
+                                                                        ],
+                                                                      ),
+                                                                    ),
+                                                                    Row(
+                                                                      children: [
+                                                                        Text(
+                                                                          'Route :',
+                                                                          style:
+                                                                              TextStyle(color: Colors.white),
+                                                                        ),
+                                                                        SizedBox(
+                                                                          width:
+                                                                              5,
+                                                                        ),
+                                                                        Text(
+                                                                          dashboard!
+                                                                              .data
+                                                                              .shopDetails[index]
+                                                                              .route,
+                                                                          overflow:
+                                                                              TextOverflow.ellipsis,
+                                                                          textAlign:
+                                                                              TextAlign.left,
+                                                                          style:
+                                                                              AppStyle.txtDMSansBold16,
+                                                                        ),
+                                                                      ],
+                                                                    ),
+                                                                  ],
+                                                                ),
+                                                              ),
+                                                              Align(
+                                                                alignment:
+                                                                    Alignment
+                                                                        .topRight,
+                                                                child: Row(
+                                                                  mainAxisAlignment:
+                                                                      MainAxisAlignment
+                                                                          .end,
+                                                                  mainAxisSize:
+                                                                      MainAxisSize
+                                                                          .min,
+                                                                  children: [
+                                                                    Card(
+                                                                      clipBehavior:
+                                                                          Clip.antiAlias,
+                                                                      elevation:
+                                                                          0,
+                                                                      margin: EdgeInsets
+                                                                          .all(
+                                                                              0),
+                                                                      color: ColorConstant
+                                                                          .whiteA700,
+                                                                      shape: RoundedRectangleBorder(
+                                                                          borderRadius:
+                                                                              BorderRadiusStyle.roundedBorder12),
+                                                                      child:
+                                                                          GestureDetector(
+                                                                        onTap:
+                                                                            () async {
+                                                                          var whatsapp = dashboard!
+                                                                              .data
+                                                                              .shopDetails[index]
+                                                                              .whatsappNumber;
+                                                                          // https://wa.me/91" + whatsapp
+                                                                          await launch(whatsappurl +
+                                                                              whatsapp);
+                                                                        },
+                                                                        child:
+                                                                            Container(
+                                                                          height:
+                                                                              getVerticalSize(42),
+                                                                          width:
+                                                                              getHorizontalSize(61),
+                                                                          padding: getPadding(
+                                                                              left: 18,
+                                                                              top: 8,
+                                                                              right: 18,
+                                                                              bottom: 8),
+                                                                          decoration: AppDecoration
+                                                                              .outlineBlack9003f
+                                                                              .copyWith(borderRadius: BorderRadiusStyle.roundedBorder12),
+                                                                          child:
+                                                                              Stack(
+                                                                            children: [
+                                                                              CustomImageView(imagePath: ImageConstant.imgWhatsapp31, height: getSize(25), width: getSize(25), alignment: Alignment.topCenter)
+                                                                            ],
+                                                                          ),
+                                                                        ),
+                                                                      ),
+                                                                    ),
+                                                                    Card(
+                                                                        clipBehavior:
+                                                                            Clip
+                                                                                .antiAlias,
+                                                                        elevation:
+                                                                            0,
+                                                                        margin: getMargin(
+                                                                            left:
+                                                                                5),
+                                                                        color: ColorConstant
+                                                                            .whiteA700,
+                                                                        shape: RoundedRectangleBorder(
+                                                                            borderRadius: BorderRadiusStyle
+                                                                                .roundedBorder12),
+                                                                        child:
+                                                                            GestureDetector(
+                                                                          onTap:
+                                                                              () async {
+                                                                            await launch("tel:/${dashboard!.data.shopDetails[index].phoneNumber}");
+                                                                          },
+                                                                          child: Container(
+                                                                              height: getVerticalSize(42),
+                                                                              width: getHorizontalSize(61),
+                                                                              padding: getPadding(left: 19, top: 9, right: 19, bottom: 9),
+                                                                              decoration: AppDecoration.outlineBlack9003f.copyWith(borderRadius: BorderRadiusStyle.roundedBorder12),
+                                                                              child: Stack(children: [
+                                                                                CustomImageView(imagePath: ImageConstant.imgRectangle23x23, height: getSize(23), width: getSize(23), alignment: Alignment.topCenter)
+                                                                              ])),
+                                                                        ))
+                                                                  ],
+                                                                ),
+                                                              ),
+                                                            ],
+                                                          ),
                                                         ),
                                                       ),
                                                     );
                                                   },
-                                                  child: Card(
-                                                    clipBehavior: Clip.antiAlias,
-                                                    elevation: 0,
-                                                    margin: getMargin(top: 8),
-                                                    color: ColorConstant.blue600,
-                                                    shape: RoundedRectangleBorder(
-                                                        borderRadius:
-                                                            BorderRadiusStyle
-                                                                .roundedBorder16),
-                                                    child: Container(
-                                                      height:
-                                                          getVerticalSize(138),
-                                                      width:
-                                                          getHorizontalSize(378),
-                                                      padding: getPadding(
-                                                          left: 13,
-                                                          top: 24,
-                                                          right: 13,
-                                                          bottom: 24),
-                                                      decoration: AppDecoration
-                                                          .fillBlue600
-                                                          .copyWith(
-                                                              borderRadius:
-                                                                  BorderRadiusStyle
-                                                                      .roundedBorder16),
-                                                      child: Stack(
-                                                        children: [
-                                                          Row(
-                                                            mainAxisAlignment:
-                                                                MainAxisAlignment
-                                                                    .start,
-                                                            crossAxisAlignment:
-                                                                CrossAxisAlignment
-                                                                    .end,
-                                                            children: [
-                                                              CustomIconButton(
-                                                                  height: 42,
-                                                                  width: 42,
-                                                                  margin:
-                                                                      getMargin(
-                                                                          bottom:
-                                                                              54),
-                                                                  shape: IconButtonShape
-                                                                      .CircleBorder16,
-                                                                  padding:
-                                                                      IconButtonPadding
-                                                                          .PaddingAll8,
-                                                                child: Text(dashboard!.data.shopDetails[index].shopName[0].toUpperCase()), ),
-                                                              SizedBox(
-                                                                width: 5,
-                                                              ),
-                                                              Column(
-                                                                crossAxisAlignment:
-                                                                    CrossAxisAlignment
-                                                                        .start,
-                                                                mainAxisAlignment:
-                                                                    MainAxisAlignment
-                                                                        .start,
-                                                                children: [
-                                                                  Text(
-                                                                      dashboard!
-                                                                          .data
-                                                                          .shopDetails[
-                                                                              index]
-                                                                          .shopName,
-                                                                      overflow:
-                                                                          TextOverflow
-                                                                              .ellipsis,
-                                                                      textAlign:
-                                                                          TextAlign
-                                                                              .left,
-                                                                      style: AppStyle
-                                                                          .txtDMSansMedium20),
-                                                                  Text(
-                                                                      dashboard!
-                                                                          .data
-                                                                          .shopDetails[
-                                                                              index]
-                                                                          .address,
-                                                                      overflow:
-                                                                          TextOverflow
-                                                                              .ellipsis,
-                                                                      textAlign:
-                                                                          TextAlign
-                                                                              .left,
-                                                                      style: AppStyle
-                                                                          .txtDMSansRegular18WhiteA700),
-                                                                ],
-                                                              ),
-                                                            ],
-                                                          ),
-                                                          Align(
-                                                            alignment: Alignment
-                                                                .bottomRight,
-                                                            child: Row(
-                                                              crossAxisAlignment:
-                                                                  CrossAxisAlignment
-                                                                      .center,
-                                                              mainAxisAlignment:
-                                                                  MainAxisAlignment
-                                                                      .spaceBetween,
-                                                              children: [
-                                                                Padding(
-                                                                  padding:
-                                                                      const EdgeInsets
-                                                                              .only(
-                                                                          left:
-                                                                              8),
-                                                                  child: Row(
-                                                                    children: [
-                                                                      Text(
-                                                                        'Balance : ',
-                                                                        style: TextStyle(
-                                                                            color:
-                                                                                Colors.white),
-                                                                      ),
-                                                                      Text(
-                                                                        dashboard!
-                                                                            .data
-                                                                            .shopDetails[
-                                                                                index]
-                                                                            .balance
-                                                                            .toString(),
-                                                                        style: TextStyle(
-                                                                            color:
-                                                                                Colors.white),
-                                                                      ),
-                                                                    ],
-                                                                  ),
-                                                                ),
-                                                                Row(
-                                                                  children: [
-                                                                  Text('Route :',style: TextStyle(color: Colors.white),),
-                                                                    SizedBox(
-                                                                      width: 5,
-                                                                    ),
-                                                                    Text(
-                                                                      dashboard!
-                                                                          .data
-                                                                          .shopDetails[
-                                                                              index]
-                                                                          .route,
-                                                                      overflow:
-                                                                          TextOverflow
-                                                                              .ellipsis,
-                                                                      textAlign:
-                                                                          TextAlign
-                                                                              .left,
-                                                                      style: AppStyle
-                                                                          .txtDMSansBold16,
-                                                                    ),
-                                                                  ],
-                                                                ),
-                                                              ],
-                                                            ),
-                                                          ),
-                                                          Align(
-                                                            alignment: Alignment
-                                                                .topRight,
-                                                            child: Row(
-                                                              mainAxisAlignment:
-                                                                  MainAxisAlignment
-                                                                      .end,
-                                                              mainAxisSize:
-                                                                  MainAxisSize
-                                                                      .min,
-                                                              children: [
-                                                                Card(
-                                                                  clipBehavior: Clip
-                                                                      .antiAlias,
-                                                                  elevation: 0,
-                                                                  margin:
-                                                                      EdgeInsets
-                                                                          .all(0),
-                                                                  color: ColorConstant
-                                                                      .whiteA700,
-                                                                  shape: RoundedRectangleBorder(
-                                                                      borderRadius:
-                                                                          BorderRadiusStyle
-                                                                              .roundedBorder12),
-                                                                  child:
-                                                                      GestureDetector(
-                                                                    onTap:
-                                                                        () async {
-                                                                      var whatsapp = dashboard!
-                                                                          .data
-                                                                          .shopDetails[
-                                                                              index]
-                                                                          .whatsappNumber;
-                                                                      // https://wa.me/91" + whatsapp
-                                                                      await launch(
-                                                                          whatsappurl +
-                                                                              whatsapp);
-                                                                    },
-                                                                    child:
-                                                                        Container(
-                                                                      height:
-                                                                          getVerticalSize(
-                                                                              42),
-                                                                      width:
-                                                                          getHorizontalSize(
-                                                                              61),
-                                                                      padding: getPadding(
-                                                                          left:
-                                                                              18,
-                                                                          top: 8,
-                                                                          right:
-                                                                              18,
-                                                                          bottom:
-                                                                              8),
-                                                                      decoration: AppDecoration
-                                                                          .outlineBlack9003f
-                                                                          .copyWith(
-                                                                              borderRadius:
-                                                                                  BorderRadiusStyle.roundedBorder12),
-                                                                      child:
-                                                                          Stack(
-                                                                        children: [
-                                                                          CustomImageView(
-                                                                              imagePath:
-                                                                                  ImageConstant.imgWhatsapp31,
-                                                                              height: getSize(25),
-                                                                              width: getSize(25),
-                                                                              alignment: Alignment.topCenter)
-                                                                        ],
-                                                                      ),
-                                                                    ),
-                                                                  ),
-                                                                ),
-                                                                Card(
-                                                                    clipBehavior: Clip
-                                                                        .antiAlias,
-                                                                    elevation: 0,
-                                                                    margin:
-                                                                        getMargin(
-                                                                            left:
-                                                                                5),
-                                                                    color: ColorConstant
-                                                                        .whiteA700,
-                                                                    shape: RoundedRectangleBorder(
-                                                                        borderRadius:
-                                                                            BorderRadiusStyle
-                                                                                .roundedBorder12),
-                                                                    child:
-                                                                        GestureDetector(
-                                                                      onTap:
-                                                                          () async {
-                                                                        await launch(
-                                                                            "tel:/${dashboard!.data.shopDetails[index].phoneNumber}");
-                                                                      },
-                                                                      child: Container(
-                                                                          height: getVerticalSize(42),
-                                                                          width: getHorizontalSize(61),
-                                                                          padding: getPadding(left: 19, top: 9, right: 19, bottom: 9),
-                                                                          decoration: AppDecoration.outlineBlack9003f.copyWith(borderRadius: BorderRadiusStyle.roundedBorder12),
-                                                                          child: Stack(children: [
-                                                                            CustomImageView(
-                                                                                imagePath: ImageConstant.imgRectangle23x23,
-                                                                                height: getSize(23),
-                                                                                width: getSize(23),
-                                                                                alignment: Alignment.topCenter)
-                                                                          ])),
-                                                                    ))
-                                                              ],
-                                                            ),
-                                                          ),
-                                                        ],
-                                                      ),
-                                                    ),
-                                                  ),
-                                                );
-                                              },
-                                            ),
-                                          )
-                                        : Text('No data')),
+                                                ),
+                                              )
+                                            : Text('No data')),
                               ],
                             ),
                           ),
@@ -906,7 +936,7 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> {
                       ),
                     ),
                   ),
-              )),
+                )),
     );
   }
 
@@ -915,8 +945,7 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> {
   }
 
   onTapImgAddtobasketone(BuildContext context) {
-    Get.to(CollectionScreen(
-        id: widget.id));
+    Get.to(CollectionScreen(id: widget.id));
   }
 
   attendanceMarking() async {
@@ -974,5 +1003,51 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> {
         );
       },
     );
+  }
+  checkConnectiVity()async{
+    final connectivityResult = await (Connectivity().checkConnectivity());
+    if (connectivityResult == ConnectivityResult.mobile || connectivityResult == ConnectivityResult.wifi) {
+      dataConnection =true;
+      if(dataConnection==true){
+        getname();
+        getList();
+        getRoutes();
+      }
+    } else{
+      dataConnection =false;
+      showDialog(context: context, builder: (context) {
+        return AlertDialog(
+          clipBehavior: Clip.none,
+          content:Container(
+            height: 200,
+            child: Column(
+              children: [
+                Text('No data Connection'),
+                SizedBox(
+                  height: 15,
+                ),
+                Container(
+                  height: 150,
+                  width: 150,
+                  decoration: BoxDecoration(
+                    image: DecorationImage(image: AssetImage(ImageConstant.network),),
+                  ),
+                )
+              ],
+            ),
+
+          ),
+          actions: [
+            TextButton(onPressed: () {
+              setState(() {
+                checkConnectiVity();
+                Navigator.pop(context);
+              });
+
+            }, child: Text('Retry'))
+          ],
+        );
+      },);
+    }
   }
 }

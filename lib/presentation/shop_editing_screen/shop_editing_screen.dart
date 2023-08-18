@@ -101,6 +101,8 @@ class _ShopEditingScreenState extends State<ShopEditingScreen> {
                                               style: AppStyle
                                                   .txtMontserratRegular14))),
                                   CustomTextFormField(
+                                      variant:
+                                      TextFormFieldVariant.OutlineBlackA700,
                                       validator: (value) {
                                         if (value!.isEmpty) {
                                           return 'Please enter Shopname';
@@ -120,6 +122,8 @@ class _ShopEditingScreenState extends State<ShopEditingScreen> {
                                               style: AppStyle
                                                   .txtMontserratRegular14))),
                                   CustomTextFormField(
+                                      variant:
+                                      TextFormFieldVariant.OutlineBlackA700,
                                       validator: (value) {
                                         if (value!.isEmpty) {
                                           return 'Please enter Adress';
@@ -140,6 +144,8 @@ class _ShopEditingScreenState extends State<ShopEditingScreen> {
                                     ),
                                   ),
                                   CustomTextFormField(
+                                    variant:
+                                    TextFormFieldVariant.OutlineBlackA700,
                                     textInputType: TextInputType.phone,
                                     validator: (value) {
                                       if (value!.isEmpty) {
@@ -157,7 +163,7 @@ class _ShopEditingScreenState extends State<ShopEditingScreen> {
                                   Align(
                                       alignment: Alignment.centerLeft,
                                       child: Container(
-                                          width: getHorizontalSize(73),
+                                          width: getHorizontalSize(170),
                                           margin: getMargin(left: 39, top: 17),
                                           child: Text("Whatsapp Number",
                                               maxLines: null,
@@ -165,6 +171,8 @@ class _ShopEditingScreenState extends State<ShopEditingScreen> {
                                               style: AppStyle
                                                   .txtMontserratRegular14))),
                                   CustomTextFormField(
+                                      variant:
+                                      TextFormFieldVariant.OutlineBlackA700,
                                       validator: (value) {
                                         if (value!.isEmpty) {
                                           return 'Please enter whatsapp number';
@@ -180,7 +188,7 @@ class _ShopEditingScreenState extends State<ShopEditingScreen> {
                                   Align(
                                     alignment: Alignment.centerLeft,
                                     child: Container(
-                                      width: getHorizontalSize(59),
+                                      width: getHorizontalSize(170),
                                       margin: getMargin(left: 39, top: 17),
                                       child: Text("GST Number",
                                           maxLines: null,
@@ -190,6 +198,8 @@ class _ShopEditingScreenState extends State<ShopEditingScreen> {
                                     ),
                                   ),
                                   CustomTextFormField(
+                                      variant:
+                                      TextFormFieldVariant.OutlineBlackA700,
                                       validator: (value) {
                                         if (value!.length > 15) {
                                           return 'Please enter valid GST number';
@@ -210,6 +220,8 @@ class _ShopEditingScreenState extends State<ShopEditingScreen> {
                                     ),
                                   ),
                                   CustomTextFormField(
+                                    variant:
+                                    TextFormFieldVariant.OutlineBlackA700,
                                     textInputType: TextInputType.phone,
                                     // validator: (value) {
                                     //   if (value!.isEmpty) {
@@ -231,33 +243,50 @@ class _ShopEditingScreenState extends State<ShopEditingScreen> {
                                     padding: const EdgeInsets.only(
                                         left: 35, right: 35),
                                     child: Container(
+                                      height: 45,
                                       width: double.infinity,
-                                      child: DropdownButton(
-                                        value: dropdownvalue,
-                                        hint: Text('Select Route'),
-                                        onChanged: (selecteditem) {
-                                          setState(() {
-                                            dropdownvalue = selecteditem;
-                                            _validatedropdown = true;
-                                          });
-                                        },
-                                        items: routelist!.data.length > 0
-                                            ? routelist!.data
-                                                .map<DropdownMenuItem<String>>(
-                                                    (e) {
-                                                return DropdownMenuItem<String>(
-                                                  value: e.id.toString(),
-                                                  child: Text(e.route),
-                                                );
-                                              }).toList()
-                                            : null,
+                                      decoration: BoxDecoration(
+                                        border: Border.all(
+                                          color: ColorConstant.gray300,
+                                          width: 3.0,
+                                        ),
+
+                                        borderRadius: BorderRadius.circular(25)
+                                      ),
+                                      child: Padding(
+                                        padding: const EdgeInsets.only(left: 8,right: 8),
+                                        child: DropdownButton(
+                                          underline: Container(),
+                                          value: dropdownvalue,
+                                          hint: Text('Select Route'),
+                                            style:  AppStyle.txtMontserratRegular14,
+                                          onChanged: (selecteditem) {
+                                            setState(() {
+                                              dropdownvalue = selecteditem;
+                                              _validatedropdown = true;
+                                            });
+                                          },
+                                          items: routelist!.data.length > 0
+                                              ? routelist!.data
+                                                  .map<DropdownMenuItem<String>>(
+                                                      (e) {
+                                                  return DropdownMenuItem<String>(
+                                                    value: e.id.toString(),
+                                                    child: Text(e.route),
+                                                  );
+                                                }).toList()
+                                              : null,
+                                        ),
                                       ),
                                     ),
+                                  ),
+                                  SizedBox(
+                                    height: 15,
                                   ),
                                   CustomButton(
                                     text: "Submit",
                                     margin:
-                                        getMargin(left: 15, top: 10, right: 15),
+                                        getMargin(left: 35, top: 10, right: 35),
                                     shape: ButtonShape.RoundedBorder24,
                                     fontStyle:
                                         ButtonFontStyle.DMSansMedium20WhiteA700,

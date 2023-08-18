@@ -94,7 +94,7 @@ class _OderScreenState extends State<OderScreen> {
                                       fillColor: Colors.grey[300],
                                       prefixIcon: Icon(Icons.search,
                                           color: Colors.grey),
-                                      hintText: 'Search',
+                                      hintText: 'Shops search here...',
                                       enabledBorder: OutlineInputBorder(
                                         borderSide: BorderSide(
                                             color: Colors.transparent),

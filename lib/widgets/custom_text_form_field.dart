@@ -202,6 +202,14 @@ class CustomTextFormField extends StatelessWidget {
             width: 3,
           ),
         );
+      case TextFormFieldVariant.OutlineBlackA700:
+        return OutlineInputBorder(
+          borderRadius: _setOutlineBorderRadius(),
+          borderSide: BorderSide(
+            color: ColorConstant.gray300,
+            width: 3,
+          ),
+        );
       case TextFormFieldVariant.None:
         return InputBorder.none;
       default:
@@ -263,6 +271,7 @@ enum TextFormFieldVariant {
   UnderLineGray300,
   OutlineWhiteA700,
   OutlineBlack9003f,
+  OutlineBlackA700,
 }
 
 enum TextFormFieldFontStyle {

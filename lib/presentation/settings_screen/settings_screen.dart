@@ -57,14 +57,34 @@ class _SettingsScreenState extends State<SettingsScreen> {
             leading: Icon(Icons.logout),
             title: Text("Logout"),
             onTap: () async {
-              await CommonFuntion.addDataToSharedPreferences(
-                  'logout', 'succees');
-              Navigator.pushAndRemoveUntil(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => LoginScreen(),
-                  ),
-                  (route) => false);
+              showDialog(
+                context: context,
+                builder: (context) {
+                  return AlertDialog(
+                    content: Text('Are you sure want to logout?'),
+                    actions: [
+                      TextButton(
+                        onPressed: () {
+                          Navigator.pop(context);
+                        },
+                        child: Text('No'),
+                      ),
+                      ElevatedButton(
+                          onPressed: () async {
+                            await CommonFuntion.addDataToSharedPreferences(
+                                'logout', 'succees');
+                            Navigator.pushAndRemoveUntil(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => LoginScreen(),
+                                ),
+                                (route) => false);
+                          },
+                          child: Text('Yes'))
+                    ],
+                  );
+                },
+              );
             },
           ),
         ],

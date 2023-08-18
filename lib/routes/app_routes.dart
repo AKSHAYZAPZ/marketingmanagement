@@ -45,7 +45,7 @@ class AppRoutes {
     loginScreen: (context) => LoginScreen(),
     homeDashboardScreen: (context) => HomeDashboardScreen(id: '',),
     addShopScreen: (context) => AddShopScreen(token: '',),
-    shopsScreen: (context) => ShopsScreen(),
+    shopsScreen: (context) => ShopsScreen(id: ''),
     // shopDetailsTabContainerScreen: (context) => ShopDetailsTabContainerScreen(),
     productScreen: (context) => CategoryScreen(id: '',),
     productDScreen: (context) => ProductDScreen(),

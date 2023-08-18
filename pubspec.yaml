@@ -20,6 +20,8 @@ dependencies:
   url_launcher: ^6.1.12
   geolocator: ^9.0.2
   flutter_typeahead: ^4.6.2
+  flutter_slidable: ^3.0.0
+  connectivity_plus: ^4.0.2
 
   
   

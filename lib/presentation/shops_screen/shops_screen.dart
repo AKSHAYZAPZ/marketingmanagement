@@ -1,3 +1,4 @@
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:jibin_s_application1/services/service.dart';
 import '../../model/allshops_model.dart';
 import '../../model/routemodel.dart';
@@ -9,7 +10,8 @@ import 'package:jibin_s_application1/core/app_export.dart';
 
 
 class ShopsScreen extends StatefulWidget {
-  ShopsScreen({Key? key}) : super(key: key);
+  ShopsScreen({Key? key,required this.id}) : super(key: key);
+  String id;
 
   @override
   State<ShopsScreen> createState() => _ShopsScreenState();
@@ -21,21 +23,23 @@ class _ShopsScreenState extends State<ShopsScreen> {
   Allshops? allshops;
   Routelist? routelist;
 
+  bool  dataConnection =false;
+
   var route ='';
   var searchKey = '';
-  var token = '';
+
 
 
   @override
   void initState() {
     super.initState();
-    getid();
-    getRoutes();
+    checkConnectiVity();
   }
 
 
   getRoutes() async {
-    routelist = await HttpService.getRoute(token);
+    routelist = await HttpService.getRoute(widget.id);
+    print(routelist);
     // print('routes---------- :${routelist!.data.length}');
     if (routelist == null) {
       return Center(
@@ -46,16 +50,16 @@ class _ShopsScreenState extends State<ShopsScreen> {
     }
   }
 
-  getid() async {
-    token = await CommonFuntion.getSavedKey('token');
-    // print('this is token: $token');
-    setState(() {
-      getShops();
-    });
-  }
+  // getid() async {
+  //   token = await CommonFuntion.getSavedKey('token');
+  //   // print('this is token: $token');
+  //   setState(() {
+  //     getShops();
+  //   });
+  // }
 
   getShops() async {
-    allshops = await HttpService.allShops(token, searchKey, route);
+    allshops = await HttpService.allShops(widget.id, searchKey, route);
     if (allshops!.data.length > 0) {
       setState(() {});
     }
@@ -71,32 +75,32 @@ class _ShopsScreenState extends State<ShopsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return RefreshIndicator(
-      onRefresh: _onRefresh,
-      child: Scaffold(
-          backgroundColor: ColorConstant.whiteA700,
-          appBar: AppBar(
-            backgroundColor: ColorConstant.lightBlue700,
-            centerTitle: true,
-            title: Text('Shops'),
-            leading: IconButton(
-              icon: Icon(Icons.arrow_back),
-              onPressed: () {
-                // Handle the back button press here
-                Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => BottomNavigationScreen(id: token),
-                  ),
-                );
-              },
-            ),
+    return Scaffold(
+        backgroundColor: ColorConstant.whiteA700,
+        appBar: AppBar(
+          backgroundColor: ColorConstant.lightBlue700,
+          centerTitle: true,
+          title: Text('Shops'),
+          leading: IconButton(
+            icon: Icon(Icons.arrow_back),
+            onPressed: () {
+              // Handle the back button press here
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => BottomNavigationScreen(id: widget.id),
+                ),
+              );
+            },
           ),
-          body: allshops == null
-              ? Center(
-                  child: CircularProgressIndicator(),
-                )
-              : Padding(
+        ),
+        body: allshops == null
+            ? Center(
+                child: CircularProgressIndicator(),
+              )
+            : RefreshIndicator(
+          onRefresh: _onRefresh,
+              child: Padding(
                   padding: const EdgeInsets.only(left: 8, right: 8),
                   child: SizedBox(
                     width: double.maxFinite,
@@ -219,7 +223,7 @@ class _ShopsScreenState extends State<ShopsScreen> {
                                       allshops!.data[index].phoneNo,
                                         allshops!.data[index].balance,
                                         allshops!.data[index].route,
-                                      token
+                                        widget.id
                                     );
                                   })
                               : Text('No Data'),
@@ -227,8 +231,8 @@ class _ShopsScreenState extends State<ShopsScreen> {
                       ],
                     ),
                   ),
-                )),
-    );
+                ),
+            ));
   }
 
   /// Navigates back to the previous screen.
@@ -239,7 +243,52 @@ class _ShopsScreenState extends State<ShopsScreen> {
     Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => BottomNavigationScreen(id: token),
+          builder: (context) => BottomNavigationScreen(id: widget.id),
         ));
+  }
+
+  checkConnectiVity()async{
+    final connectivityResult = await (Connectivity().checkConnectivity());
+    if (connectivityResult == ConnectivityResult.mobile || connectivityResult == ConnectivityResult.wifi) {
+      dataConnection =true;
+      if(dataConnection==true){
+        getRoutes();
+        getShops();
+      }
+    } else{
+      dataConnection =false;
+      showDialog(context: context, builder: (context) {
+        return AlertDialog(
+          content:Container(
+            height: 200,
+            child: Column(
+              children: [
+                Text('No data Connection'),
+                SizedBox(
+                  height: 15,
+                ),
+                Container(
+                  height: 150,
+                  width: 150,
+                  decoration: BoxDecoration(
+                    image: DecorationImage(image: AssetImage(ImageConstant.network),),
+                  ),
+                )
+              ],
+            ),
+
+          ),
+          actions: [
+            TextButton(onPressed: () {
+              setState(() {
+                checkConnectiVity();
+                Navigator.pop(context);
+              });
+
+            }, child: Text('Retry'))
+          ],
+        );
+      },);
+    }
   }
 }
