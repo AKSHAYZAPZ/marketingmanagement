@@ -1,3 +1,4 @@
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -40,6 +41,7 @@ class _AddCollectionScreenState extends State<AddCollectionScreen> {
   bool _validatedropdown = false;
 
   var dropdownvalue;
+  bool dataConnection = false;
 
   PaymentType? paymentType;
 
@@ -58,8 +60,7 @@ class _AddCollectionScreenState extends State<AddCollectionScreen> {
   @override
   void initState() {
     super.initState();
-    getallshops();
-    dropdownvalues();
+    checkConnectiVity();
   }
 
   dropdownvalues() async {
@@ -189,7 +190,8 @@ class _AddCollectionScreenState extends State<AddCollectionScreen> {
                             child: Padding(
                               padding: const EdgeInsets.all(8.0),
                               child: Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
                                 children: [
                                   Text(
                                     date,
@@ -346,5 +348,55 @@ class _AddCollectionScreenState extends State<AddCollectionScreen> {
               ),
       ),
     );
+  }
+
+  checkConnectiVity() async {
+    final connectivityResult = await (Connectivity().checkConnectivity());
+    if (connectivityResult == ConnectivityResult.mobile ||
+        connectivityResult == ConnectivityResult.wifi) {
+      dataConnection = true;
+      if (dataConnection == true) {
+        setState(() {
+          getallshops();
+          dropdownvalues();
+        });
+      }
+    } else {
+      showModalBottomSheet(
+        context: context,
+        builder: (context) {
+          return Container(
+            decoration: BoxDecoration(
+              color: Colors.red,
+            ),
+            height: 70,
+            child: Center(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  const Text(
+                    'No Network connection',
+                    style: TextStyle(color: Colors.white),
+                  ),
+                  ElevatedButton(
+                    style: ButtonStyle(
+                      backgroundColor: MaterialStateProperty.all(Colors.white),
+                    ),
+                    child: const Text(
+                      'Retry',
+                      style: TextStyle(color: Colors.black),
+                    ),
+                    onPressed: () {
+                      Navigator.pop(context);
+                      checkConnectiVity();
+                    },
+                  ),
+                ],
+              ),
+            ),
+          );
+        },
+      );
+    }
   }
 }

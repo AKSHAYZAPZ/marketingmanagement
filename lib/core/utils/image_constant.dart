@@ -13,6 +13,8 @@ class ImageConstant {
 
   static String imgMenu = 'assets/images/img_menu.svg';
 
+  static String upload = 'assets/images/upload.png';
+
   static String imgSearchBlueGray400 =
       'assets/images/img_search_blue_gray_400.svg';
 

@@ -1,3 +1,4 @@
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:jibin_s_application1/model/product_view_model.dart';
 import 'package:jibin_s_application1/services/service.dart';
@@ -19,11 +20,12 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
 //   ProductById? prouctById;
   var currentIndex = 0;
   ProductView? productView;
+  bool dataConnection =false;
 
   @override
   void initState() {
     super.initState();
-    product();
+    checkConnectiVity();
   }
 
   product() async {
@@ -155,7 +157,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                                   height: 5,
                                 ),
                                 Text(
-                                  " is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem",
+                                  productView!.data.description,
                                   textAlign: TextAlign.justify,
                                   style: TextStyle(color: Colors.grey[600]),
                                 )
@@ -170,5 +172,43 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
               ),
             ),
     );
+  }
+
+  checkConnectiVity()async{
+    final connectivityResult = await (Connectivity().checkConnectivity());
+    if (connectivityResult == ConnectivityResult.mobile || connectivityResult == ConnectivityResult.wifi) {
+      dataConnection =true;
+      if(dataConnection==true){
+        setState(() {
+          product();
+        });
+      }
+    } else{
+      showModalBottomSheet(context: context, builder: (context) {
+        return Container(
+          decoration: BoxDecoration(color: Colors.red,
+          ),
+          height: 70,
+          child: Center(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                const Text('No Network connection',style: TextStyle(color: Colors.white),),
+                ElevatedButton(
+                  style: ButtonStyle(
+                    backgroundColor: MaterialStateProperty.all(Colors.white),
+                  ),
+                  child: const Text('Retry',style: TextStyle(color: Colors.black),),
+                  onPressed: (){
+                    Navigator.pop(context);
+                    checkConnectiVity();
+                  },
+                ),
+              ],
+            ),
+          ),
+        );
+      },);
+    }
   }
 }

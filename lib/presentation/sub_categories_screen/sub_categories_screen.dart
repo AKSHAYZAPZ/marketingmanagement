@@ -3,9 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:jibin_s_application1/model/all_sub_category_model.dart';
 import 'package:jibin_s_application1/presentation/product_list_screen/product_list_screen.dart';
 import 'package:jibin_s_application1/services/service.dart';
-
 import '../../core/utils/color_constant.dart';
-import '../../core/utils/image_constant.dart';
 import '../product_detailed_screen.dart';
 
 class SubCategoriesScreen extends StatefulWidget {
@@ -23,14 +21,15 @@ class _SubCategoriesScreenState extends State<SubCategoriesScreen> {
   TextEditingController searchCntrller = TextEditingController();
 
   var searchkey = '';
-  bool dataConnection =false;
+  bool dataConnection = false;
   AllSubCategory? allSubCategory;
 
   @override
   void initState() {
     super.initState();
-   checkConnectiVity();
+    checkConnectiVity();
   }
+
   Future<void> _onRefresh() async {
     await Future.delayed(Duration(seconds: 2));
     setState(() {
@@ -59,8 +58,8 @@ class _SubCategoriesScreenState extends State<SubCategoriesScreen> {
                 child: CircularProgressIndicator(),
               )
             : RefreshIndicator(
-          onRefresh: _onRefresh,
-              child: Column(
+                onRefresh: _onRefresh,
+                child: Column(
                   children: [
                     Padding(
                       padding: const EdgeInsets.only(
@@ -137,7 +136,8 @@ class _SubCategoriesScreenState extends State<SubCategoriesScreen> {
                                 crossAxisSpacing: 0, // Spacing between columns
                                 mainAxisSpacing: 0, // Spacing between rows
                               ),
-                              itemCount: allSubCategory!.data.subcategory.length,
+                              itemCount:
+                                  allSubCategory!.data.subcategory.length,
                               itemBuilder: (context, index) {
                                 return GestureDetector(
                                   onTap: () {
@@ -145,49 +145,56 @@ class _SubCategoriesScreenState extends State<SubCategoriesScreen> {
                                         .data.subcategory[index].subcategoryId
                                         .toString();
                                     Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (context) => ProductListScreen(
-                                              id: widget.id,
-                                              subCategoryId: subCategryId),
-                                        ));
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => ProductListScreen(
+                                            id: widget.id,
+                                            subCategoryId: subCategryId),
+                                      ),
+                                    );
                                   },
                                   child: Container(
                                     child: Center(
-                                        child: Column(
-                                      children: [
-                                        Container(
-                                          decoration: BoxDecoration(
-                                            borderRadius:
-                                                BorderRadius.circular(15),
-                                            color: Colors.white,
-                                          ),
-                                          height: 90,
-                                          width: 90,
-                                          child: Padding(
-                                            padding: const EdgeInsets.all(8.0),
-                                            child: Container(
-                                              decoration: BoxDecoration(
-                                                borderRadius: BorderRadius.circular(12),
-                                                image: DecorationImage(
-                                                    fit: BoxFit.cover,
-                                                    image: NetworkImage(
-                                                        allSubCategory!
-                                                            .data
-                                                            .subcategory[index]
-                                                            .subcategoryImage)),
-                                                color: Colors.grey[100],
+                                      child: Column(
+                                        children: [
+                                          Container(
+                                            decoration: BoxDecoration(
+                                              borderRadius:
+                                                  BorderRadius.circular(15),
+                                              color: Colors.white,
+                                            ),
+                                            height: 90,
+                                            width: 90,
+                                            child: Padding(
+                                              padding:
+                                                  const EdgeInsets.all(8.0),
+                                              child: Container(
+                                                decoration: BoxDecoration(
+                                                  borderRadius:
+                                                      BorderRadius.circular(12),
+                                                  image: DecorationImage(
+                                                      fit: BoxFit.cover,
+                                                      image: NetworkImage(
+                                                          allSubCategory!
+                                                              .data
+                                                              .subcategory[
+                                                                  index]
+                                                              .subcategoryImage)),
+                                                  color: Colors.grey[100],
+                                                ),
                                               ),
                                             ),
                                           ),
-                                        ),
-                                        SizedBox(
-                                          height: 5,
-                                        ),
-                                        Text(allSubCategory!.data
-                                            .subcategory[index].subcategoryName),
-                                      ],
-                                    )),
+                                          SizedBox(
+                                            height: 5,
+                                          ),
+                                          Text(allSubCategory!
+                                              .data
+                                              .subcategory[index]
+                                              .subcategoryName),
+                                        ],
+                                      ),
+                                    ),
                                   ),
                                 );
                               },
@@ -198,24 +205,25 @@ class _SubCategoriesScreenState extends State<SubCategoriesScreen> {
                               ),
                             ),
                     ),
-                    allSubCategory!.data.products.length>0 ?
-                    Container(
-                      height: 30,
-                      child: Text('Recently Added'),
-                    ):
-                        Container(),
+                    allSubCategory!.data.products.length > 0
+                        ? Container(
+                            height: 30,
+                            child: Text('Recently Added'),
+                          )
+                        : Container(),
                     Expanded(
                       child: ListView.builder(
                         shrinkWrap: true,
                         itemCount: allSubCategory!.data.products.length,
                         itemBuilder: (context, index) {
                           return Padding(
-                            padding:
-                                const EdgeInsets.only(left: 8, right: 8, top: 8),
+                            padding: const EdgeInsets.only(
+                                left: 8, right: 8, top: 8),
                             child: GestureDetector(
                               onTap: () {
                                 var productId = allSubCategory!
-                                    .data.products[index].productId.toString();
+                                    .data.products[index].productId
+                                    .toString();
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
@@ -258,7 +266,7 @@ class _SubCategoriesScreenState extends State<SubCategoriesScreen> {
                     ),
                   ],
                 ),
-            ),
+              ),
       ),
     );
   }
@@ -271,49 +279,42 @@ class _SubCategoriesScreenState extends State<SubCategoriesScreen> {
     }
   }
 
-  checkConnectiVity()async{
+  checkConnectiVity() async {
     final connectivityResult = await (Connectivity().checkConnectivity());
-    if (connectivityResult == ConnectivityResult.mobile || connectivityResult == ConnectivityResult.wifi) {
-      dataConnection =true;
-      if(dataConnection==true){
+    if (connectivityResult == ConnectivityResult.mobile ||
+        connectivityResult == ConnectivityResult.wifi) {
+      dataConnection = true;
+      if (dataConnection == true) {
         setState(() {
           allSubCategoys();
         });
       }
-    } else{
-      dataConnection =false;
-      showDialog(context: context, builder: (context) {
-        return AlertDialog(
-          content:Container(
+    } else {
+      showModalBottomSheet(
+        context: context,
+        builder: (context) {
+          return Container(
             height: 200,
-            child: Column(
-              children: [
-                Text('No data Connection'),
-                SizedBox(
-                  height: 15,
-                ),
-                Container(
-                  height: 150,
-                  width: 150,
-                  decoration: BoxDecoration(
-                    image: DecorationImage(image: AssetImage(ImageConstant.network),),
+            color: Colors.amber,
+            child: Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  const Text('No Network connection'),
+                  ElevatedButton(
+                    child: const Text('Retry'),
+                    onPressed: () {
+                      Navigator.pop(context);
+                      checkConnectiVity();
+                    },
                   ),
-                )
-              ],
+                ],
+              ),
             ),
-
-          ),
-          actions: [
-            TextButton(onPressed: () {
-              setState(() {
-                checkConnectiVity();
-                Navigator.pop(context);
-              });
-
-            }, child: Text('Retry'))
-          ],
-        );
-      },);
+          );
+        },
+      );
     }
   }
 }

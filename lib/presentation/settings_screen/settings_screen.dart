@@ -1,3 +1,4 @@
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/foundation/key.dart';
 import 'package:flutter/src/widgets/framework.dart';
@@ -17,6 +18,8 @@ class SettingsScreen extends StatefulWidget {
 }
 
 class _SettingsScreenState extends State<SettingsScreen> {
+
+ bool dataConnection = false;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -57,38 +60,86 @@ class _SettingsScreenState extends State<SettingsScreen> {
             leading: Icon(Icons.logout),
             title: Text("Logout"),
             onTap: () async {
-              showDialog(
-                context: context,
-                builder: (context) {
-                  return AlertDialog(
-                    content: Text('Are you sure want to logout?'),
-                    actions: [
-                      TextButton(
-                        onPressed: () {
-                          Navigator.pop(context);
-                        },
-                        child: Text('No'),
-                      ),
-                      ElevatedButton(
-                          onPressed: () async {
-                            await CommonFuntion.addDataToSharedPreferences(
-                                'logout', 'succees');
-                            Navigator.pushAndRemoveUntil(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => LoginScreen(),
-                                ),
-                                (route) => false);
-                          },
-                          child: Text('Yes'))
-                    ],
-                  );
-                },
-              );
+              checkConnectiVity();
             },
           ),
         ],
       ),
     );
+  }
+  checkConnectiVity() async {
+    final connectivityResult = await (Connectivity().checkConnectivity());
+    if (connectivityResult == ConnectivityResult.mobile ||
+        connectivityResult == ConnectivityResult.wifi) {
+      dataConnection = true;
+      if (dataConnection == true) {
+        showDialog(
+          context: context,
+          builder: (context) {
+            return AlertDialog(
+              content: Text('Are you sure want to logout?'),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  child: Text('No'),
+                ),
+                ElevatedButton(
+                  onPressed: () async {
+                    await CommonFuntion.addDataToSharedPreferences(
+                        'logout', 'succees');
+                    Navigator.pushAndRemoveUntil(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => LoginScreen(),
+                        ),
+                            (route) => false);
+                  },
+                  child: Text('Yes'),
+                ),
+              ],
+            );
+          },
+        );
+      }
+    } else {
+      showModalBottomSheet(
+        context: context,
+        builder: (context) {
+          return Container(
+            decoration: BoxDecoration(
+              color: Colors.red,
+            ),
+            height: 70,
+            child: Center(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  const Text(
+                    'No Network connection',
+                    style: TextStyle(color: Colors.white),
+                  ),
+                  ElevatedButton(
+                    style: ButtonStyle(
+                      backgroundColor: MaterialStateProperty.all(Colors.white),
+                    ),
+                    child: const Text(
+                      'Retry',
+                      style: TextStyle(color: Colors.black),
+                    ),
+                    onPressed: () {
+                      Navigator.pop(context);
+                      checkConnectiVity();
+                    },
+                  ),
+                ],
+              ),
+            ),
+          );
+        },
+      );
+
+    }
   }
 }

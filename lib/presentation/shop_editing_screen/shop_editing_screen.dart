@@ -1,5 +1,8 @@
+import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:custom_switch_widget/custom_switch_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:jibin_s_application1/presentation/shop_details_page/shop_details_page.dart';
 
 import '../../core/utils/color_constant.dart';
@@ -26,6 +29,58 @@ class ShopEditingScreen extends StatefulWidget {
 class _ShopEditingScreenState extends State<ShopEditingScreen> {
   bool isLoading = true;
 
+  final CustomSwitchController _switchcontroller =
+  CustomSwitchController(initialValue: false);
+
+  var latitude = '';
+  var longitude = '';
+
+  void _enable() async {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          content: Text('Update shop location?'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              child: Text('Close'),
+            ),
+            ElevatedButton(
+                onPressed: () async {
+                  LocationPermission permission =
+                  await Geolocator.checkPermission();
+                  if (permission == LocationPermission.denied) {
+                    permission = await Geolocator.requestPermission();
+                  } else {}
+                  Position position = await Geolocator.getCurrentPosition(
+                    desiredAccuracy: LocationAccuracy.high,
+                  );
+                  double latitudes = position.latitude;
+                  double longitudes = position.longitude;
+
+                  latitude = latitudes.toString();
+                  longitude = longitudes.toString();
+                  print(latitude);
+                  print(longitude);
+                  Navigator.pop(context);
+                  setState(() {
+                    _switchcontroller.enable();
+                  });
+                },
+                child: Text("Yes"))
+          ],
+        );
+      },
+    );
+  }
+
+  void _disable() async {
+    _switchcontroller.disable();
+  }
+
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   TextEditingController shopnameController = TextEditingController();
@@ -39,6 +94,7 @@ class _ShopEditingScreenState extends State<ShopEditingScreen> {
   TextEditingController gstnumberController = TextEditingController();
 
   TextEditingController balanceController = TextEditingController();
+  bool dataConnection = false;
 
   Routelist? routelist;
   ShopEdit? shopEdit;
@@ -51,7 +107,7 @@ class _ShopEditingScreenState extends State<ShopEditingScreen> {
   void initState() {
     super.initState();
     findRoute();
-    getshopsdetials();
+    checkConnectiVity();
   }
 
   @override
@@ -73,16 +129,6 @@ class _ShopEditingScreenState extends State<ShopEditingScreen> {
                     child: Column(
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
-                          Stack(
-                            alignment: Alignment.center,
-                            children: [
-                              Column(
-                                mainAxisSize: MainAxisSize.min,
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [],
-                              ),
-                            ],
-                          ),
                           Container(
                             padding: getPadding(top: 6, bottom: 6),
                             child: Form(
@@ -90,6 +136,31 @@ class _ShopEditingScreenState extends State<ShopEditingScreen> {
                               child: Column(
                                 mainAxisAlignment: MainAxisAlignment.start,
                                 children: [
+                                  SizedBox(
+                                    height: 10,
+                                  ),
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.end,
+                                    children: [
+                                      Text('Set Shop Location'),
+                                      SizedBox(
+                                        width: 10,
+                                      ),
+                                      Padding(
+                                        padding: const EdgeInsets.only(right: 22),
+                                        child: CustomSwitchWidget(
+                                          activeColor: ColorConstant.blue600,
+                                          controller: _switchcontroller,
+                                          onChange: (value) {
+                                            if (value)
+                                              _disable();
+                                            else
+                                              _enable();
+                                          },
+                                        ),
+                                      ),
+                                    ],
+                                  ),
                                   Align(
                                       alignment: Alignment.centerLeft,
                                       child: Padding(
@@ -102,7 +173,7 @@ class _ShopEditingScreenState extends State<ShopEditingScreen> {
                                                   .txtMontserratRegular14))),
                                   CustomTextFormField(
                                       variant:
-                                      TextFormFieldVariant.OutlineBlackA700,
+                                          TextFormFieldVariant.OutlineBlackA700,
                                       validator: (value) {
                                         if (value!.isEmpty) {
                                           return 'Please enter Shopname';
@@ -123,7 +194,7 @@ class _ShopEditingScreenState extends State<ShopEditingScreen> {
                                                   .txtMontserratRegular14))),
                                   CustomTextFormField(
                                       variant:
-                                      TextFormFieldVariant.OutlineBlackA700,
+                                          TextFormFieldVariant.OutlineBlackA700,
                                       validator: (value) {
                                         if (value!.isEmpty) {
                                           return 'Please enter Adress';
@@ -145,7 +216,7 @@ class _ShopEditingScreenState extends State<ShopEditingScreen> {
                                   ),
                                   CustomTextFormField(
                                     variant:
-                                    TextFormFieldVariant.OutlineBlackA700,
+                                        TextFormFieldVariant.OutlineBlackA700,
                                     textInputType: TextInputType.phone,
                                     validator: (value) {
                                       if (value!.isEmpty) {
@@ -172,7 +243,7 @@ class _ShopEditingScreenState extends State<ShopEditingScreen> {
                                                   .txtMontserratRegular14))),
                                   CustomTextFormField(
                                       variant:
-                                      TextFormFieldVariant.OutlineBlackA700,
+                                          TextFormFieldVariant.OutlineBlackA700,
                                       validator: (value) {
                                         if (value!.isEmpty) {
                                           return 'Please enter whatsapp number';
@@ -199,7 +270,7 @@ class _ShopEditingScreenState extends State<ShopEditingScreen> {
                                   ),
                                   CustomTextFormField(
                                       variant:
-                                      TextFormFieldVariant.OutlineBlackA700,
+                                          TextFormFieldVariant.OutlineBlackA700,
                                       validator: (value) {
                                         if (value!.length > 15) {
                                           return 'Please enter valid GST number';
@@ -221,7 +292,7 @@ class _ShopEditingScreenState extends State<ShopEditingScreen> {
                                   ),
                                   CustomTextFormField(
                                     variant:
-                                    TextFormFieldVariant.OutlineBlackA700,
+                                        TextFormFieldVariant.OutlineBlackA700,
                                     textInputType: TextInputType.phone,
                                     // validator: (value) {
                                     //   if (value!.isEmpty) {
@@ -246,20 +317,21 @@ class _ShopEditingScreenState extends State<ShopEditingScreen> {
                                       height: 45,
                                       width: double.infinity,
                                       decoration: BoxDecoration(
-                                        border: Border.all(
-                                          color: ColorConstant.gray300,
-                                          width: 3.0,
-                                        ),
-
-                                        borderRadius: BorderRadius.circular(25)
-                                      ),
+                                          border: Border.all(
+                                            color: ColorConstant.gray300,
+                                            width: 3.0,
+                                          ),
+                                          borderRadius:
+                                              BorderRadius.circular(25)),
                                       child: Padding(
-                                        padding: const EdgeInsets.only(left: 8,right: 8),
+                                        padding: const EdgeInsets.only(
+                                            left: 8, right: 8),
                                         child: DropdownButton(
                                           underline: Container(),
                                           value: dropdownvalue,
                                           hint: Text('Select Route'),
-                                            style:  AppStyle.txtMontserratRegular14,
+                                          style:
+                                              AppStyle.txtMontserratRegular14,
                                           onChanged: (selecteditem) {
                                             setState(() {
                                               dropdownvalue = selecteditem;
@@ -267,10 +339,11 @@ class _ShopEditingScreenState extends State<ShopEditingScreen> {
                                             });
                                           },
                                           items: routelist!.data.length > 0
-                                              ? routelist!.data
-                                                  .map<DropdownMenuItem<String>>(
-                                                      (e) {
-                                                  return DropdownMenuItem<String>(
+                                              ? routelist!.data.map<
+                                                      DropdownMenuItem<String>>(
+                                                  (e) {
+                                                  return DropdownMenuItem<
+                                                      String>(
                                                     value: e.id.toString(),
                                                     child: Text(e.route),
                                                   );
@@ -302,6 +375,8 @@ class _ShopEditingScreenState extends State<ShopEditingScreen> {
                                         widget.token,
                                         balanceController.text,
                                         widget.shopId,
+                                            latitude,
+                                            longitude
                                       );
                                       if (updateShop.status == true) {
                                         Fluttertoast.showToast(
@@ -369,6 +444,55 @@ class _ShopEditingScreenState extends State<ShopEditingScreen> {
         balanceController.text = shopEdit!.data.openingBalance;
         dropdownvalue = shopEdit!.data.route;
       });
+    }
+  }
+
+  checkConnectiVity() async {
+    final connectivityResult = await (Connectivity().checkConnectivity());
+    if (connectivityResult == ConnectivityResult.mobile ||
+        connectivityResult == ConnectivityResult.wifi) {
+      dataConnection = true;
+      if (dataConnection == true) {
+        setState(() {
+          getshopsdetials();
+        });
+      }
+    } else {
+      showModalBottomSheet(
+        context: context,
+        builder: (context) {
+          return Container(
+            decoration: BoxDecoration(
+              color: Colors.red,
+            ),
+            height: 70,
+            child: Center(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  const Text(
+                    'No Network connection',
+                    style: TextStyle(color: Colors.white),
+                  ),
+                  ElevatedButton(
+                    style: ButtonStyle(
+                      backgroundColor: MaterialStateProperty.all(Colors.white),
+                    ),
+                    child: const Text(
+                      'Retry',
+                      style: TextStyle(color: Colors.black),
+                    ),
+                    onPressed: () {
+                      Navigator.pop(context);
+                      checkConnectiVity();
+                    },
+                  ),
+                ],
+              ),
+            ),
+          );
+        },
+      );
     }
   }
 }

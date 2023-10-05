@@ -2,14 +2,12 @@ import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:jibin_s_application1/presentation/add_collection_screen/add_collection_screen.dart';
-import 'package:jibin_s_application1/presentation/home_dashboard_screen/home_dashboard_screen.dart';
 import 'package:jibin_s_application1/presentation/shop_details_page/shop_details_page.dart';
 import 'package:jibin_s_application1/services/service.dart';
 import '../../model/collection_model.dart';
 import '../bottom_navigation_page/bottom_navigation.dart';
 import 'package:flutter/material.dart';
 import 'package:jibin_s_application1/core/app_export.dart';
-import 'package:flutter_slidable/flutter_slidable.dart';
 
 class CollectionScreen extends StatefulWidget {
   CollectionScreen({Key? key, required this.id}) : super(key: key);
@@ -34,7 +32,7 @@ class _CollectionScreenState extends State<CollectionScreen> {
   @override
   void initState() {
     super.initState();
-    checkConnectiVity();
+   checkConnectiVity();
   }
 
   collectionReport() async {
@@ -46,7 +44,7 @@ class _CollectionScreenState extends State<CollectionScreen> {
   }
 
   Future<void> _onRefresh() async {
-    await Future.delayed(Duration(seconds: 2));
+    await Future.delayed(Duration(seconds: 1));
     setState(() {
       collectionReport();
     });
@@ -788,46 +786,54 @@ class _CollectionScreenState extends State<CollectionScreen> {
   onTapArrowleft5(BuildContext context) {
     Navigator.pop(context);
   }
-  checkConnectiVity()async{
+  checkConnectiVity() async {
     final connectivityResult = await (Connectivity().checkConnectivity());
-    if (connectivityResult == ConnectivityResult.mobile || connectivityResult == ConnectivityResult.wifi) {
-      dataConnection =true;
-      if(dataConnection==true){
-        collectionReport();
-      }
-    } else{
-      dataConnection =false;
-      showDialog(context: context, builder: (context) {
-        return AlertDialog(
-          content:Container(
-            height: 200,
-            child: Column(
-              children: [
-                Text('No data Connection'),
-                SizedBox(
-                  height: 15,
-                ),
-                Container(
-                  height: 150,
-                  width: 150,
-                  decoration: BoxDecoration(
-                    image: DecorationImage(image: AssetImage(ImageConstant.network),),
-                  ),
-                )
-              ],
-            ),
+    if (connectivityResult == ConnectivityResult.mobile ||
+        connectivityResult == ConnectivityResult.wifi) {
+      dataConnection = true;
+      if (dataConnection == true) {
+       collectionReport();
+        setState(() {
 
-          ),
-          actions: [
-            TextButton(onPressed: () {
-              setState(() {
-                checkConnectiVity();
-                Navigator.pop(context);
-              });
-            }, child: Text('Retry'))
-          ],
-        );
-      },);
+        });
+      }
+    } else {
+      showModalBottomSheet(
+        context: context,
+        builder: (context) {
+          return Container(
+            decoration: BoxDecoration(
+              color: Colors.red,
+            ),
+            height: 70,
+            child: Center(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  const Text(
+                    'No Network connection',
+                    style: TextStyle(color: Colors.white),
+                  ),
+                  ElevatedButton(
+                    style: ButtonStyle(
+                      backgroundColor: MaterialStateProperty.all(Colors.white),
+                    ),
+                    child: const Text(
+                      'Retry',
+                      style: TextStyle(color: Colors.black),
+                    ),
+                    onPressed: () {
+                      Navigator.pop(context);
+                      checkConnectiVity();
+                    },
+                  ),
+                ],
+              ),
+            ),
+          );
+        },
+      );
+
     }
   }
 }

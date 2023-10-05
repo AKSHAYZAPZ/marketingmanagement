@@ -1,3 +1,4 @@
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
@@ -30,11 +31,12 @@ class _OderDetailsScreenState extends State<OderDetailsScreen> {
   TextEditingController _quantityController = TextEditingController();
 
   OderDetailsModel? oderDetailsModel;
+  bool dataConnection = false;
 
   @override
   void initState() {
     super.initState();
-    oders();
+    checkConnectiVity();
   }
 
   oders() async {
@@ -75,7 +77,7 @@ class _OderDetailsScreenState extends State<OderDetailsScreen> {
                 child: Column(
                   children: [
                     Container(
-                      height: 145,
+                      height: 130,
                       width: MediaQuery.of(context).size.width,
                       decoration: BoxDecoration(
                         color: ColorConstant.lightBlue700,
@@ -86,7 +88,8 @@ class _OderDetailsScreenState extends State<OderDetailsScreen> {
                         children: [
                           Container(
                             height: double.maxFinite,
-                            width: 125,
+                            width: MediaQuery.of(context).size.width * 0.38,
+
                             child: Padding(
                               padding:
                                   const EdgeInsets.only(left: 10, right: 10),
@@ -102,7 +105,7 @@ class _OderDetailsScreenState extends State<OderDetailsScreen> {
                                     maxLines: 2,
                                     overflow: TextOverflow.ellipsis,
                                     style: TextStyle(
-                                      fontSize: 16,
+                                      fontSize: 14,
                                       color: Colors.white,
                                     ),
                                   ),
@@ -112,7 +115,7 @@ class _OderDetailsScreenState extends State<OderDetailsScreen> {
                                   Text(
                                     'Order Date :',
                                     style: TextStyle(
-                                      fontSize: 16,
+                                      fontSize: 14,
                                       color: Colors.white,
                                     ),
                                   ),
@@ -124,7 +127,7 @@ class _OderDetailsScreenState extends State<OderDetailsScreen> {
                                     child: Text(
                                       'Order Id :',
                                       style: TextStyle(
-                                        fontSize: 16,
+                                        fontSize: 14,
                                         color: Colors.white,
                                       ),
                                     ),
@@ -135,7 +138,7 @@ class _OderDetailsScreenState extends State<OderDetailsScreen> {
                                   Text(
                                     'Total Amount :',
                                     style: TextStyle(
-                                      fontSize: 16,
+                                      fontSize: 14,
                                       color: Colors.white,
                                     ),
                                   ),
@@ -145,7 +148,7 @@ class _OderDetailsScreenState extends State<OderDetailsScreen> {
                                   Text(
                                     'Created by :',
                                     style: TextStyle(
-                                      fontSize: 16,
+                                      fontSize: 14,
                                       color: Colors.white,
                                     ),
                                   ),
@@ -156,7 +159,6 @@ class _OderDetailsScreenState extends State<OderDetailsScreen> {
                           Expanded(
                             child: Container(
                               height: double.maxFinite,
-                              width: 120,
                               child: Padding(
                                 padding:
                                     const EdgeInsets.only(left: 10, right: 10),
@@ -172,7 +174,7 @@ class _OderDetailsScreenState extends State<OderDetailsScreen> {
                                       child: Text(
                                         oderDetailsModel!.data.shopName,
                                         style: TextStyle(
-                                          fontSize: 16,
+                                          fontSize: 14,
                                           color: Colors.white,
                                         ),
                                       ),
@@ -183,7 +185,7 @@ class _OderDetailsScreenState extends State<OderDetailsScreen> {
                                     Text(
                                       oderDetailsModel!.data.orderDate,
                                       style: TextStyle(
-                                        fontSize: 16,
+                                        fontSize: 14,
                                         color: Colors.white,
                                       ),
                                     ),
@@ -195,7 +197,7 @@ class _OderDetailsScreenState extends State<OderDetailsScreen> {
                                       child: Text(
                                         oderDetailsModel!.data.orderId,
                                         style: TextStyle(
-                                          fontSize: 16,
+                                          fontSize: 14,
                                           color: Colors.white,
                                         ),
                                       ),
@@ -208,7 +210,7 @@ class _OderDetailsScreenState extends State<OderDetailsScreen> {
                                       child: Text(
                                         oderDetailsModel!.data.total.toString(),
                                         style: TextStyle(
-                                          fontSize: 16,
+                                          fontSize: 14,
                                           color: Colors.white,
                                         ),
                                       ),
@@ -221,7 +223,7 @@ class _OderDetailsScreenState extends State<OderDetailsScreen> {
                                       child: Text(
                                         oderDetailsModel!.data.createdBy,
                                         style: TextStyle(
-                                          fontSize: 16,
+                                          fontSize: 14,
                                           color: Colors.white,
                                         ),
                                       ),
@@ -639,6 +641,55 @@ class _OderDetailsScreenState extends State<OderDetailsScreen> {
                 child: Text('Close'),
               ),
             ],
+          );
+        },
+      );
+    }
+  }
+
+  checkConnectiVity() async {
+    final connectivityResult = await (Connectivity().checkConnectivity());
+    if (connectivityResult == ConnectivityResult.mobile ||
+        connectivityResult == ConnectivityResult.wifi) {
+      dataConnection = true;
+      if (dataConnection == true) {
+        setState(() {
+          oders();
+        });
+      }
+    } else {
+      showModalBottomSheet(
+        context: context,
+        builder: (context) {
+          return Container(
+            decoration: BoxDecoration(
+              color: Colors.red,
+            ),
+            height: 70,
+            child: Center(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  const Text(
+                    'No Network connection',
+                    style: TextStyle(color: Colors.white),
+                  ),
+                  ElevatedButton(
+                    style: ButtonStyle(
+                      backgroundColor: MaterialStateProperty.all(Colors.white),
+                    ),
+                    child: const Text(
+                      'Retry',
+                      style: TextStyle(color: Colors.black),
+                    ),
+                    onPressed: () {
+                      Navigator.pop(context);
+                      checkConnectiVity();
+                    },
+                  ),
+                ],
+              ),
+            ),
           );
         },
       );

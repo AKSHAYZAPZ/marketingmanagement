@@ -8,9 +8,8 @@ import '../shops_screen/widgets/shops_item_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:jibin_s_application1/core/app_export.dart';
 
-
 class ShopsScreen extends StatefulWidget {
-  ShopsScreen({Key? key,required this.id}) : super(key: key);
+  ShopsScreen({Key? key, required this.id}) : super(key: key);
   String id;
 
   @override
@@ -23,19 +22,16 @@ class _ShopsScreenState extends State<ShopsScreen> {
   Allshops? allshops;
   Routelist? routelist;
 
-  bool  dataConnection =false;
+  bool dataConnection = false;
 
-  var route ='';
+  var route = '';
   var searchKey = '';
-
-
 
   @override
   void initState() {
     super.initState();
     checkConnectiVity();
   }
-
 
   getRoutes() async {
     routelist = await HttpService.getRoute(widget.id);
@@ -60,11 +56,12 @@ class _ShopsScreenState extends State<ShopsScreen> {
 
   getShops() async {
     allshops = await HttpService.allShops(widget.id, searchKey, route);
-    if (allshops!.data.length > 0) {
+    if (allshops != null) {
       setState(() {});
     }
     // print(allshops);
   }
+
   Future<void> _onRefresh() async {
     await Future.delayed(Duration(seconds: 2));
     setState(() {
@@ -99,8 +96,8 @@ class _ShopsScreenState extends State<ShopsScreen> {
                 child: CircularProgressIndicator(),
               )
             : RefreshIndicator(
-          onRefresh: _onRefresh,
-              child: Padding(
+                onRefresh: _onRefresh,
+                child: Padding(
                   padding: const EdgeInsets.only(left: 8, right: 8),
                   child: SizedBox(
                     width: double.maxFinite,
@@ -110,7 +107,9 @@ class _ShopsScreenState extends State<ShopsScreen> {
                       children: [
                         Padding(
                           padding: const EdgeInsets.only(
-                              left: 5, right: 5,),
+                            left: 5,
+                            right: 5,
+                          ),
                           child: Container(
                             height: 70,
                             width: double.infinity,
@@ -122,7 +121,8 @@ class _ShopsScreenState extends State<ShopsScreen> {
                                     child: TextFormField(
                                       controller: searchCntrller,
                                       decoration: InputDecoration(
-                                        contentPadding: EdgeInsets.fromLTRB(0, 10, 0, 10),
+                                        contentPadding:
+                                            EdgeInsets.fromLTRB(0, 10, 0, 10),
                                         hintStyle: TextStyle(
                                           color: Colors.grey,
                                         ),
@@ -166,30 +166,27 @@ class _ShopsScreenState extends State<ShopsScreen> {
                           ),
                         ),
                         Padding(
-                          padding: const EdgeInsets.only(left: 8,right: 8),
+                          padding: const EdgeInsets.only(left: 8, right: 8),
                           child: Row(
-                            mainAxisAlignment:
-                            MainAxisAlignment.spaceBetween,
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
                               Text("Shops",
                                   overflow: TextOverflow.ellipsis,
                                   textAlign: TextAlign.left,
-                                  style: AppStyle
-                                      .txtDMSansBold20Black900),
+                                  style: AppStyle.txtDMSansBold20Black900),
                               DropdownButton(
                                 underline: Container(),
                                 value: route == '' ? null : route,
                                 hint: Text('Select Route'),
                                 items: routelist != null
                                     ? routelist!.data
-                                    .map<DropdownMenuItem<String>>(
-                                        (e) {
-                                      return DropdownMenuItem<String>(
-                                        value: e.id.toString(),
-                                        child: Text(e.route),
-                                      );
-                                    }).toList()
+                                        .map<DropdownMenuItem<String>>((e) {
+                                        return DropdownMenuItem<String>(
+                                          value: e.id.toString(),
+                                          child: Text(e.route),
+                                        );
+                                      }).toList()
                                     : null,
                                 onChanged: (value) {
                                   setState(() {
@@ -215,16 +212,15 @@ class _ShopsScreenState extends State<ShopsScreen> {
                                   itemCount: allshops!.data.length,
                                   itemBuilder: (context, index) {
                                     return ShopsItemWidget(
-                                      allshops!.data[index].shopName,
-                                      allshops!.data[index].address,
-                                      allshops!.data[index].id,
-                                      allshops!.data[index].createdAt,
-                                      allshops!.data[index].whatsappNo,
-                                      allshops!.data[index].phoneNo,
+                                        allshops!.data[index].shopName,
+                                        allshops!.data[index].address,
+                                        allshops!.data[index].id,
+                                        allshops!.data[index].createdAt,
+                                        allshops!.data[index].whatsappNo,
+                                        allshops!.data[index].phoneNo,
                                         allshops!.data[index].balance,
                                         allshops!.data[index].route,
-                                        widget.id
-                                    );
+                                        widget.id);
                                   })
                               : Text('No Data'),
                         )),
@@ -232,7 +228,7 @@ class _ShopsScreenState extends State<ShopsScreen> {
                     ),
                   ),
                 ),
-            ));
+              ));
   }
 
   /// Navigates back to the previous screen.
@@ -247,46 +243,42 @@ class _ShopsScreenState extends State<ShopsScreen> {
         ));
   }
 
-  checkConnectiVity()async{
+  checkConnectiVity() async {
     final connectivityResult = await (Connectivity().checkConnectivity());
-    if (connectivityResult == ConnectivityResult.mobile || connectivityResult == ConnectivityResult.wifi) {
-      dataConnection =true;
-      if(dataConnection==true){
+    if (connectivityResult == ConnectivityResult.mobile ||
+        connectivityResult == ConnectivityResult.wifi) {
+      dataConnection = true;
+      if (dataConnection == true) {
         getRoutes();
         getShops();
+        setState(() {
+
+        });
       }
-    } else{
-      dataConnection =false;
-      showDialog(context: context, builder: (context) {
-        return AlertDialog(
-          content:Container(
-            height: 200,
-            child: Column(
+    } else {
+      showModalBottomSheet(context: context, builder: (context) {
+        return Container(
+          decoration: BoxDecoration(color: Colors.red,
+          ),
+          height: 70,
+          child: Center(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                Text('No data Connection'),
-                SizedBox(
-                  height: 15,
-                ),
-                Container(
-                  height: 150,
-                  width: 150,
-                  decoration: BoxDecoration(
-                    image: DecorationImage(image: AssetImage(ImageConstant.network),),
+                const Text('No Network connection',style: TextStyle(color: Colors.white),),
+                ElevatedButton(
+                  style: ButtonStyle(
+                    backgroundColor: MaterialStateProperty.all(Colors.white),
                   ),
-                )
+                  child: const Text('Retry',style: TextStyle(color: Colors.black),),
+                  onPressed: (){
+                    Navigator.pop(context);
+                    checkConnectiVity();
+                  },
+                ),
               ],
             ),
-
           ),
-          actions: [
-            TextButton(onPressed: () {
-              setState(() {
-                checkConnectiVity();
-                Navigator.pop(context);
-              });
-
-            }, child: Text('Retry'))
-          ],
         );
       },);
     }

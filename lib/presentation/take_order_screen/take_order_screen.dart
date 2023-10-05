@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -52,10 +53,10 @@ class TakeOderScreen extends StatefulWidget {
 }
 
 class _TakeOderScreenState extends State<TakeOderScreen> {
-
   String search = '';
   GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   PostOder? postOder;
+  bool dataConnection = false;
 
   String orderdate = DateFormat('dd-MM-yyyy').format(DateTime.now());
   String createdate = DateFormat('dd-MM-yyyy').format(DateTime.now());
@@ -99,33 +100,32 @@ class _TakeOderScreenState extends State<TakeOderScreen> {
   @override
   void initState() {
     super.initState();
-    allProducts();
+    checkConnectiVity();
   }
 
   allProducts() async {
-    allProductList = await HttpService.allProductList(widget.token,search);
+    allProductList = await HttpService.allProductList(widget.token, search);
     if (allProductList != null) {
       setState(() {});
     }
   }
 
   Future<List<MyResult>> getSearchResults(String query) async {
-      return List.generate(
-        allProductList!.length,
-        (index) => MyResult(
-          title: allProductList![index].productName,
-          subtitle: allProductList![index].productCode,
-          sellingPrice: allProductList![index].sellingPrice,
-          quantity: quantityController.text != ''
-              ? int.parse(quantityController.text)
-              : 0,
-          productId: allProductList![index].productId,
-          categoryId: allProductList![index].categoryid,
-          subCategoryId: allProductList![index].subcategoryId,
-        ),
-      );
+    return List.generate(
+      allProductList!.length,
+      (index) => MyResult(
+        title: allProductList![index].productName,
+        subtitle: allProductList![index].productCode,
+        sellingPrice: allProductList![index].sellingPrice,
+        quantity: quantityController.text != ''
+            ? int.parse(quantityController.text)
+            : 0,
+        productId: allProductList![index].productId,
+        categoryId: allProductList![index].categoryid,
+        subCategoryId: allProductList![index].subcategoryId,
+      ),
+    );
   }
-
 
   Future<List<MyResult>> getSuggestions(String query) async {
     List<MyResult> results = await getSearchResults(query);
@@ -144,11 +144,9 @@ class _TakeOderScreenState extends State<TakeOderScreen> {
         centerTitle: true,
         title: Text('Take Oder'),
       ),
-      body:
-      allProductList == null
+      body: allProductList == null
           ? Center(child: CircularProgressIndicator())
-          :
-      Form(
+          : Form(
               key: _formKey,
               child: Container(
                 child: Column(children: [
@@ -203,21 +201,22 @@ class _TakeOderScreenState extends State<TakeOderScreen> {
                                   },
                                   noItemsFoundBuilder: (context) {
                                     return SizedBox(
-                                      child:allProductList == null ?
-                                          Center(
-                                            child: CircularProgressIndicator(),
-                                          )
-                                    : Center(
-                                    child: Text("No Items Found"),
-                                    ),
+                                      child: allProductList == null
+                                          ? Center(
+                                              child:
+                                                  CircularProgressIndicator(),
+                                            )
+                                          : Center(
+                                              child: Text("No Items Found"),
+                                            ),
                                     );
                                   },
                                   textFieldConfiguration:
                                       TextFieldConfiguration(
-                                        onChanged: (value) {
-                                        search = _searchController.text;
-                                            allProducts();
-                                        },
+                                    onChanged: (value) {
+                                      search = _searchController.text;
+                                      allProducts();
+                                    },
                                     controller: _searchController,
                                     decoration: InputDecoration(
                                         border: InputBorder.none,
@@ -225,7 +224,7 @@ class _TakeOderScreenState extends State<TakeOderScreen> {
                                         hintStyle: TextStyle(fontSize: 12),
                                         hintText: 'Product Name or code'),
                                   ),
-                                  suggestionsCallback: getSuggestions ,
+                                  suggestionsCallback: getSuggestions,
                                   itemBuilder: (context, MyResult suggestion) {
                                     return ListTile(
                                       title: Text(suggestion.title),
@@ -604,5 +603,54 @@ class _TakeOderScreenState extends State<TakeOderScreen> {
         label: Text('Take oder'),
       ),
     );
+  }
+
+  checkConnectiVity() async {
+    final connectivityResult = await (Connectivity().checkConnectivity());
+    if (connectivityResult == ConnectivityResult.mobile ||
+        connectivityResult == ConnectivityResult.wifi) {
+      dataConnection = true;
+      if (dataConnection == true) {
+        setState(() {
+          allProducts();
+        });
+      }
+    } else {
+      showModalBottomSheet(
+        context: context,
+        builder: (context) {
+          return Container(
+            decoration: BoxDecoration(
+              color: Colors.red,
+            ),
+            height: 70,
+            child: Center(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  const Text(
+                    'No Network connection',
+                    style: TextStyle(color: Colors.white),
+                  ),
+                  ElevatedButton(
+                    style: ButtonStyle(
+                      backgroundColor: MaterialStateProperty.all(Colors.white),
+                    ),
+                    child: const Text(
+                      'Retry',
+                      style: TextStyle(color: Colors.black),
+                    ),
+                    onPressed: () {
+                      Navigator.pop(context);
+                      checkConnectiVity();
+                    },
+                  ),
+                ],
+              ),
+            ),
+          );
+        },
+      );
+    }
   }
 }

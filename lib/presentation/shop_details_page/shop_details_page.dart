@@ -1,3 +1,4 @@
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:custom_switch_widget/custom_switch_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
@@ -42,9 +43,11 @@ class _ShopDetailsPageState extends State<ShopDetailsPage>
   MarkVisit? markVisit;
   String whatsappurl = "https://wa.me/91";
 
-  var tabbarController ;
+  var tabbarController;
 
   ShopDetails? shopDetails;
+  bool dataConnection = false;
+  bool canMark = false;
 
   String fdate = DateFormat('dd-MM-yyyy').format(DateTime.now());
   String tdate = DateFormat('dd-MM-yyyy').format(DateTime.now());
@@ -69,6 +72,7 @@ class _ShopDetailsPageState extends State<ShopDetailsPage>
             ),
             ElevatedButton(
                 onPressed: () async {
+                  Navigator.pop(context);
                   LocationPermission permission =
                       await Geolocator.checkPermission();
                   if (permission == LocationPermission.denied) {
@@ -77,36 +81,57 @@ class _ShopDetailsPageState extends State<ShopDetailsPage>
                   Position position = await Geolocator.getCurrentPosition(
                     desiredAccuracy: LocationAccuracy.high,
                   );
-                  isLoading = true;
-                  if (isLoading == true) {
-                    AlertDialog(
-                      content: Center(
-                        child: CircularProgressIndicator(),
-                      ),
-                    );
-                  }
+
                   double latitudes = position.latitude;
                   double longitudes = position.longitude;
 
-                  var latitude = latitudes.toString();
-                  var longitude = longitudes.toString();
+                  String latitude = latitudes.toString();
+                  String longitude = longitudes.toString();
                   print(latitude);
                   print(longitude);
+                  print(shopDetails!.data.latitude);
+                  print(shopDetails!.data.longitude);
+                  double targetLatitude =
+                      double.parse(shopDetails!.data.latitude);
+                  double targetLongitude =
+                      double.parse(shopDetails!.data.longitude);
+                  checkLocationRadius(targetLatitude, targetLongitude,
+                      double.parse(latitude), double.parse(longitude));
+                  if (canMark == true) {
+                    markVisit = await HttpService.markVisit(
+                        widget.shopId, latitude, longitude, widget.id);
+                    if (markVisit!.status == true) {
+                      print('truwwww');
+                     setState(() {
+                       isLoading =  false ;
+                       _switchcontroller.enable();
+                       Fluttertoast.showToast(
+                         msg: markVisit!.message,
+                         toastLength: Toast.LENGTH_SHORT,
+                         gravity: ToastGravity.BOTTOM,
+                         backgroundColor: Colors.black,
+                         textColor: Colors.white,
+                                                );
+                     });
+                    } else {
+                      setState(() {
 
-                  markVisit = await HttpService.markVisit(
-                      widget.shopId, latitude, longitude, widget.id);
-                  if (markVisit!.status == true) {
-                    isLoading = false;
-                    _switchcontroller.enable();
-                    Fluttertoast.showToast(
-                      msg: markVisit!.message,
-                      toastLength: Toast.LENGTH_SHORT,
-                      gravity: ToastGravity.BOTTOM,
-                      backgroundColor: Colors.black,
-                      textColor: Colors.white,
-                    );
-                    Navigator.pop(context);
-                  } else {}
+                      });
+                    }
+                  } else {
+                    setState(() {
+                      Fluttertoast.showToast(
+                        msg:
+                            "You are out side 20 meters from shop , please verify",
+                        toastLength: Toast.LENGTH_SHORT,
+                        gravity: ToastGravity.BOTTOM,
+                        backgroundColor: Colors.black,
+                        textColor: Colors.white,
+
+                      );
+                      Navigator.pop(context);
+                    });
+                  }
                 },
                 child: Text("Yes I'am here"))
           ],
@@ -122,15 +147,15 @@ class _ShopDetailsPageState extends State<ShopDetailsPage>
   @override
   void initState() {
     tabbarController = TabController(length: 3, vsync: this);
-    shopDetailingScreen();
+    checkConnectiVity();
     super.initState();
   }
 
   shopDetailingScreen() async {
-    // print('shop id ---- ${widget.shopId}');
-    // print('shop id ---- ${widget.id}');
-    // print('fdate ---- ${fdate}');
-    // print('fdate ---- ${tdate}');
+    print('shop id ---- ${widget.shopId}');
+    print('shop id ---- ${widget.id}');
+    print('fdate ---- ${fdate}');
+    print('fdate ---- ${tdate}');
     shopDetails =
         await HttpService.shopDetails(widget.shopId, widget.id, fdate, tdate);
     print(shopDetails!.data);
@@ -144,6 +169,19 @@ class _ShopDetailsPageState extends State<ShopDetailsPage>
     setState(() {
       shopDetailingScreen();
     });
+  }
+
+  checkLocationRadius(double targetLatitude, double targetLongitude,
+      double latitude, double longitude) {
+    double distance = Geolocator.distanceBetween(
+      targetLatitude,
+      targetLongitude,
+      latitude,
+      longitude,
+    );
+    if (distance <= 20) {
+      canMark = true;
+    } else {} // Check if the distance is within the 20-meter radius
   }
 
   @override
@@ -307,7 +345,7 @@ class _ShopDetailsPageState extends State<ShopDetailsPage>
                                           ),
                                         )),
                                     Padding(
-                                      padding: const EdgeInsets.all(8.0),
+                                      padding: const EdgeInsets.all(6.0),
                                       child: Container(
                                         height:
                                             MediaQuery.of(context).size.height *
@@ -358,9 +396,7 @@ class _ShopDetailsPageState extends State<ShopDetailsPage>
                                                 ),
                                               ),
                                             ),
-                                            SizedBox(
-                                              width: 5,
-                                            ),
+
                                             GestureDetector(
                                               onTap: () async {
                                                 await launch(
@@ -514,94 +550,97 @@ class _ShopDetailsPageState extends State<ShopDetailsPage>
                                     ),
                                   ),
                                 ),
-                                Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Container(
-                                      width: MediaQuery.of(context).size.width *
-                                          0.32,
-                                      height:
-                                          MediaQuery.of(context).size.height *
-                                              0.05,
-                                      child: Padding(
-                                        padding:
-                                            const EdgeInsets.only(left: 10),
-                                        child: Row(
+                                Padding(
+                                  padding: const EdgeInsets.only(right: 8),
+                                  child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Container(
+                                        width: MediaQuery.of(context).size.width *
+                                            0.32,
+                                        height:
+                                            MediaQuery.of(context).size.height *
+                                                0.05,
+                                        child: Padding(
+                                          padding:
+                                              const EdgeInsets.only(left: 8),
+                                          child: Row(
+                                            children: [
+                                              Icon(
+                                                Icons.calendar_month,
+                                                color: ColorConstant.whiteA700,
+                                              ),
+                                              SizedBox(
+                                                width: 5,
+                                              ),
+                                              Text(
+                                                shopDetails!.data.createdAt,
+                                                style: AppStyle
+                                                    .txtDMSansRegular18WhiteA702,
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                      Container(
+                                        width: MediaQuery.of(context).size.width *
+                                            0.19,
+                                        height:
+                                            MediaQuery.of(context).size.height *
+                                                0.05,
+                                        child: GestureDetector(
+                                          onTap: _showPopupTextField,
+                                          child: Icon(
+                                            Icons.comment_outlined,
+                                            size: 32,
+                                            color: ColorConstant.whiteA700,
+                                          ),
+                                        ),
+                                      ),
+                                      Container(
+                                        width: MediaQuery.of(context).size.width *
+                                            0.32,
+                                        height:
+                                            MediaQuery.of(context).size.height *
+                                                0.08,
+                                        child: Column(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
                                           children: [
-                                            Icon(
-                                              Icons.calendar_month,
-                                              color: ColorConstant.whiteA700,
-                                            ),
-                                            SizedBox(
-                                              width: 5,
-                                            ),
-                                            Text(
-                                              shopDetails!.data.createdAt,
-                                              style: AppStyle
-                                                  .txtDMSansRegular18WhiteA702,
+                                            ElevatedButton(
+                                              onPressed: () {
+                                                Navigator.push(
+                                                    context,
+                                                    MaterialPageRoute(
+                                                      builder: (context) =>
+                                                          TakeOderScreen(
+                                                        shopid: widget.shopId,
+                                                        token: widget.id,
+                                                      ),
+                                                    ));
+                                              },
+                                              style: ElevatedButton.styleFrom(
+                                                backgroundColor: Colors.green,
+                                                // Set the background color of the button
+                                                padding: EdgeInsets.only(
+                                                    left: 22,
+                                                    right: 22,
+                                                    top: 5,
+                                                    bottom: 5),
+                                                // Set the padding of the button
+                                                shape: RoundedRectangleBorder(
+                                                  borderRadius: BorderRadius.circular(
+                                                      8.0), // Set the border radius of the button
+                                                ),
+                                              ),
+                                              child: Text('Take order'),
                                             ),
                                           ],
                                         ),
-                                      ),
-                                    ),
-                                    Container(
-                                      width: MediaQuery.of(context).size.width *
-                                          0.19,
-                                      height:
-                                          MediaQuery.of(context).size.height *
-                                              0.05,
-                                      child: GestureDetector(
-                                        onTap: _showPopupTextField,
-                                        child: Icon(
-                                          Icons.comment_outlined,
-                                          size: 32,
-                                          color: ColorConstant.whiteA700,
-                                        ),
-                                      ),
-                                    ),
-                                    Container(
-                                      width: MediaQuery.of(context).size.width *
-                                          0.32,
-                                      height:
-                                          MediaQuery.of(context).size.height *
-                                              0.08,
-                                      child: Column(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        children: [
-                                          ElevatedButton(
-                                            onPressed: () {
-                                              Navigator.push(
-                                                  context,
-                                                  MaterialPageRoute(
-                                                    builder: (context) =>
-                                                        TakeOderScreen(
-                                                      shopid: widget.shopId,
-                                                      token: widget.id,
-                                                    ),
-                                                  ));
-                                            },
-                                            style: ElevatedButton.styleFrom(
-                                              backgroundColor: Colors.green,
-                                              // Set the background color of the button
-                                              padding: EdgeInsets.only(
-                                                  left: 22,
-                                                  right: 22,
-                                                  top: 5,
-                                                  bottom: 5),
-                                              // Set the padding of the button
-                                              shape: RoundedRectangleBorder(
-                                                borderRadius: BorderRadius.circular(
-                                                    8.0), // Set the border radius of the button
-                                              ),
-                                            ),
-                                            child: Text('Take order'),
-                                          ),
-                                        ],
-                                      ),
-                                    )
-                                  ],
+                                      )
+                                    ],
+                                  ),
                                 )
                               ],
                             ),
@@ -812,13 +851,17 @@ class _ShopDetailsPageState extends State<ShopDetailsPage>
                                                     children: [
                                                       SlidableAction(
                                                         onPressed: (context) {
-                                                          if(shopDetails!.data.orderDetails[index].isEdit == true){
+                                                          if (shopDetails!
+                                                                  .data
+                                                                  .orderDetails[
+                                                                      index]
+                                                                  .isEdit ==
+                                                              true) {
                                                             deleteorderData(
                                                                 index);
-                                                          }else{
+                                                          } else {
                                                             showDialog(
-                                                              context:
-                                                              context,
+                                                              context: context,
                                                               builder:
                                                                   (context) {
                                                                 return AlertDialog(
@@ -859,15 +902,17 @@ class _ShopDetailsPageState extends State<ShopDetailsPage>
                                                         ? Navigator.push(
                                                             context,
                                                             MaterialPageRoute(
-                                                              builder: (context) => OderDetailsScreen(
-                                                                  oderid: shopDetails!
-                                                                      .data
-                                                                      .orderDetails[
-                                                                          index]
-                                                                      .id
-                                                                      .toString(),
-                                                                  token: widget
-                                                                      .id,),
+                                                              builder: (context) =>
+                                                                  OderDetailsScreen(
+                                                                oderid: shopDetails!
+                                                                    .data
+                                                                    .orderDetails[
+                                                                        index]
+                                                                    .id
+                                                                    .toString(),
+                                                                token:
+                                                                    widget.id,
+                                                              ),
                                                             ),
                                                           )
                                                         : Navigator.push(
@@ -1761,7 +1806,8 @@ class _ShopDetailsPageState extends State<ShopDetailsPage>
             ElevatedButton(
                 onPressed: () async {
                   DeleteOrder deleteOrder = await HttpService.deleteOrder(
-                      widget.id, shopDetails!.data.orderDetails[index].id.toString());
+                      widget.id,
+                      shopDetails!.data.orderDetails[index].id.toString());
                   setState(() {
                     if (deleteOrder.status == true) {
                       Fluttertoast.showToast(
@@ -1806,6 +1852,55 @@ class _ShopDetailsPageState extends State<ShopDetailsPage>
       );
     } else {
       print('Not deleted');
+    }
+  }
+
+  checkConnectiVity() async {
+    final connectivityResult = await (Connectivity().checkConnectivity());
+    if (connectivityResult == ConnectivityResult.mobile ||
+        connectivityResult == ConnectivityResult.wifi) {
+      dataConnection = true;
+      if (dataConnection == true) {
+        setState(() {
+          shopDetailingScreen();
+        });
+      }
+    } else {
+      showModalBottomSheet(
+        context: context,
+        builder: (context) {
+          return Container(
+            decoration: BoxDecoration(
+              color: Colors.red,
+            ),
+            height: 70,
+            child: Center(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  const Text(
+                    'No Network connection',
+                    style: TextStyle(color: Colors.white),
+                  ),
+                  ElevatedButton(
+                    style: ButtonStyle(
+                      backgroundColor: MaterialStateProperty.all(Colors.white),
+                    ),
+                    child: const Text(
+                      'Retry',
+                      style: TextStyle(color: Colors.black),
+                    ),
+                    onPressed: () {
+                      Navigator.pop(context);
+                      checkConnectiVity();
+                    },
+                  ),
+                ],
+              ),
+            ),
+          );
+        },
+      );
     }
   }
 }

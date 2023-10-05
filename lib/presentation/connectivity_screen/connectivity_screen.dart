@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:jibin_s_application1/presentation/splash_screen/splash_screen.dart';
-
 import '../../core/utils/image_constant.dart';
 
 class ConnectivityScreen extends StatefulWidget {

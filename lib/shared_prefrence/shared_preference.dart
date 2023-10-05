@@ -6,6 +6,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 class CommonFuntion{
 
 
+
+
   static addDataToSharedPreferences(String key,dynamic value) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
 
@@ -13,6 +15,9 @@ class CommonFuntion{
        await prefs.setString(key, value);
      }
      else if( key == 'name'){
+       await prefs.setString(key, value);
+     }
+     else if( key == 'url'){
        await prefs.setString(key, value);
      }else{
        prefs.clear();

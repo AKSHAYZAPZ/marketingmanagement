@@ -1,13 +1,18 @@
 import 'dart:convert';
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 import 'package:jibin_s_application1/model/post_oder_model.dart';
 import 'package:jibin_s_application1/model/sendotp_model.dart';
+import 'package:jibin_s_application1/presentation/expense_screen/expense_screen.dart';
 import '../model/DeleteOderDetailId_model.dart';
 import '../model/Reset_model.dart';
 import '../model/add_comment_model.dart';
 import '../model/add_neww_data_order_model.dart';
 import '../model/addshopmodel.dart';
 import '../model/all_category_model.dart';
+import '../model/all_expense_model.dart';
 import '../model/all_products_list_model.dart';
 import '../model/all_sub_category_model.dart';
 import '../model/allshops_model.dart';
@@ -16,10 +21,13 @@ import '../model/cashpayment_model.dart';
 import '../model/checknumber.dart';
 import '../model/collection_model.dart';
 import '../model/dashboard_model.dart';
+import '../model/delete_expense_model.dart';
 import '../model/delete_order_model.dart';
 import '../model/delete_payment_model.dart';
 import '../model/delete_shop_model.dart';
 import '../model/executiveslist_model.dart';
+import '../model/expense_detail_model.dart';
+import '../model/expense_service_model.dart';
 import '../model/getupdateoderdetail_data_model.dart';
 import '../model/invoice_details_model.dart';
 import '../model/mark_visit_model.dart';
@@ -27,6 +35,7 @@ import '../model/oder_details_model.dart';
 import '../model/oderlist_model.dart';
 import '../model/payment_editing_model.dart';
 import '../model/payment_type_model.dart';
+import '../model/post_expense_model.dart';
 import '../model/product_view_model.dart';
 import '../model/products_model.dart';
 import '../model/routemodel.dart';
@@ -36,17 +45,22 @@ import '../model/update_oder_detail_model.dart';
 import '../model/update_payment_model.dart';
 import '../model/update_shop_model.dart';
 import '../model/usermodel.dart';
+import '../shared_prefrence/shared_preference.dart';
 
 class HttpService {
-  static var baseurl = 'https://dev.login2.in/MeMa/MobileApi/';
+  static getBaseUrl() async {
+    String? value = await CommonFuntion.getSavedKey('url');
+    return value;
+  }
 
   //check the login----------------check the login
 
   static Future checkLogin(mobile, password) async {
     var response = await http.post(
-      Uri.parse("${baseurl}login"),
+      Uri.parse("${await getBaseUrl()}login"),
       body: ({'phone': mobile, 'password': password}),
     );
+    print(response.statusCode);
     if (response.statusCode == 200) {
       // print('Status code: ${response.statusCode}');
       // print(response.body);
@@ -57,16 +71,21 @@ class HttpService {
   // Dashboard----------------Dashboard
 
   static Future Dashborad(token, searchkey, route) async {
-    var shoplistResponse = await http.post(
-      Uri.parse("${baseurl}dashboard"),
-      body: ({'token': token, 'search_key': searchkey, 'route': route}),
-    );
-    // print(shoplistResponse.statusCode);
-    if (shoplistResponse.statusCode == 200) {
-      // print(shoplistResponse.body);
-      return dashboardFromJson(shoplistResponse.body);
-    } else {
-      // print('shops: ${shoplistResponse.statusCode}');
+    try {
+      var shoplistResponse = await http.post(
+        Uri.parse("${await getBaseUrl()}dashboard"),
+        body: ({'token': token, 'search_key': searchkey, 'route': route}),
+      );
+      // print(shoplistResponse.statusCode);
+      if (shoplistResponse.statusCode == 200) {
+        // print(shoplistResponse.body);
+        return dashboardFromJson(shoplistResponse.body);
+      } else {
+        // print('shops: ${shoplistResponse.statusCode}');
+        return;
+      }
+    } catch (e) {
+      print(e);
       return;
     }
   }
@@ -75,7 +94,7 @@ class HttpService {
 
   static Future getRoute(token) async {
     var routeRsponse = await http.post(
-      Uri.parse("${baseurl}getExecuitiveRoute"),
+      Uri.parse("${await getBaseUrl()}getExecuitiveRoute"),
       body: ({'token': token}),
     );
     // print('new response : ${routeRsponse.statusCode}');
@@ -87,10 +106,10 @@ class HttpService {
 
   // shop adding ----------------------------- shop adding
 
-  static Future addShop(
-      shopname, adress, phone, whatsapp, gst, route, token,balance) async {
+  static Future addShop(shopname, adress, phone, whatsapp, gst, route, token,
+      balance, latitude, longitude) async {
     var addShopResponse = await http.post(
-      Uri.parse("${baseurl}addShop"),
+      Uri.parse("${await getBaseUrl()}addShop"),
       body: ({
         'name': shopname,
         'address': adress,
@@ -100,8 +119,8 @@ class HttpService {
         'route': route,
         'token': token,
         'openingBalance': balance,
-        'latitude': '',
-        'longitude': '',
+        'latitude': latitude,
+        'longitude': longitude,
       }),
     );
 
@@ -118,7 +137,8 @@ class HttpService {
     String encodedValue = Uri.encodeComponent(phonenum);
 
     // Create the URL with the encoded value
-    String url = '${baseurl}checkPhoneNumber?phoneNumber=$encodedValue';
+    String url =
+        '${await getBaseUrl()}checkPhoneNumber?phoneNumber=$encodedValue';
 
     // Send the GET request
     http.Response response = await http.get(
@@ -139,7 +159,7 @@ class HttpService {
   static Future verifyOtp(phone, otp) async {
     final params = {'phoneNumber': phone, 'otp': otp};
     http.Response verifyresponse = await http.get(
-      Uri.parse('${baseurl}sendOTP').replace(
+      Uri.parse('${await getBaseUrl()}sendOTP').replace(
         queryParameters: params,
       ),
     );
@@ -156,7 +176,7 @@ class HttpService {
     final params = {'phoneNumber': mob, 'password': password};
     // print('params    : $params');
     http.Response resetResponse = await http.get(
-      Uri.parse("${baseurl}resetPassword").replace(
+      Uri.parse("${await getBaseUrl()}resetPassword").replace(
         queryParameters: params,
       ),
     );
@@ -169,13 +189,18 @@ class HttpService {
     }
   }
 
-  static Future getCollection(token, fdate, tdate,search) async {
+  static Future getCollection(token, fdate, tdate, search) async {
     // print('fdate -- $fdate');
     // print('tdate -- $tdate');
     // print(token);
-    final params = {'token': token, 'fdate': fdate, 'tdate': tdate, 'searchkey': search};
+    final params = {
+      'token': token,
+      'fdate': fdate,
+      'tdate': tdate,
+      'searchkey': search
+    };
     http.Response CollectionResp = await http.get(
-      Uri.parse("${baseurl}collectionReport").replace(
+      Uri.parse("${await getBaseUrl()}collectionReport").replace(
         queryParameters: params,
       ),
     );
@@ -188,7 +213,7 @@ class HttpService {
 
   static Future markAttendance(latitude, longitude, token) async {
     http.Response response = await http.post(
-      Uri.parse("${baseurl}markAttendance"),
+      Uri.parse("${await getBaseUrl()}markAttendance"),
       body: ({
         'latitude': latitude,
         'longitude': longitude,
@@ -200,15 +225,15 @@ class HttpService {
     } else {}
   }
 
-  static Future allShops(token, searchkey,route) async {
+  static Future allShops(token, searchkey, route) async {
     // print('token----------- $token');
     // print('searchkey----------- $searchkey');
     http.Response response = await http.post(
-      Uri.parse("${baseurl}getExecuitiveShopDetails"),
+      Uri.parse("${await getBaseUrl()}getExecuitiveShopDetails"),
       body: ({
         'token': token,
         'search_key': searchkey,
-        'route' : route,
+        'route': route,
       }),
     );
     // print(response.statusCode);
@@ -224,13 +249,13 @@ class HttpService {
     // print(fdate);
     // print(tdate);
     http.Response response =
-        await http.post(Uri.parse("${baseurl}shopDetailsByID"),
-            body: ({
-              'shop_id': shopid,
-              'token': token,
-              'fdate': fdate,
-              'tdate': tdate,
-            }));
+    await http.post(Uri.parse("${await getBaseUrl()}shopDetailsByID"),
+        body: ({
+          'shop_id': shopid,
+          'token': token,
+          'fdate': fdate,
+          'tdate': tdate,
+        }));
     print('Status code ${response.statusCode}');
     if (response.statusCode == 200) {
       return shopDetailsFromJson(response.body);
@@ -239,7 +264,7 @@ class HttpService {
 
   static Future getProducts(token, searchkey) async {
     http.Response response = await http.post(
-      Uri.parse("${baseurl}productDetails"),
+      Uri.parse("${await getBaseUrl()}productDetails"),
       body: ({
         'token': token,
         'search_key': searchkey,
@@ -254,7 +279,7 @@ class HttpService {
 
   static Future markVisit(shopid, latitude, longitude, token) async {
     http.Response response = await http.post(
-      Uri.parse("${baseurl}addLocation"),
+      Uri.parse("${await getBaseUrl()}addLocation"),
       body: ({
         'shop_id': shopid,
         'latitude': latitude,
@@ -270,7 +295,7 @@ class HttpService {
 
   // static Future productDetailsByID(productid) async {
   //   http.Response response = await http.post(
-  //     Uri.parse("${baseurl}productDetailsByID"),
+  //     Uri.parse("${await getBaseUrl()}productDetailsByID"),
   //     body: ({'product_id': productid}),
   //   );
   //   // print(response.statusCode);
@@ -278,22 +303,21 @@ class HttpService {
   //     return productByIdFromJson(response.body);
   //   } else {}
   // }
-
-  static Future allProductList(token,searchKey) async {
+  static Future allProductList(token, searchKey) async {
     http.Response response = await http.post(
-        Uri.parse("${baseurl}allProductDetails"),
-        body: ({'token': token,'search_key':searchKey}));
+        Uri.parse("${await getBaseUrl()}allProductDetails"),
+        body: ({'token': token, 'search_key': searchKey}));
     if (response.statusCode == 200) {
       // print(response.body);
       return allProductListsFromJson(response.body);
     }
   }
 
-  static Future postOrders(
-      shopid, orderdate, createdat, orderDetails, token) async {
+  static Future postOrders(shopid, orderdate, createdat, orderDetails,
+      token) async {
     print(orderDetails);
     http.Response response = await http.post(
-      Uri.parse("${baseurl}postOrders"),
+      Uri.parse("${await getBaseUrl()}postOrders"),
       body: ({
         'shop_id': shopid,
         'order_date': orderdate,
@@ -309,7 +333,7 @@ class HttpService {
 
   static Future orderDetailsByID(oderId, token) async {
     http.Response response = await http.post(
-        Uri.parse("${baseurl}orderDetailsByID"),
+        Uri.parse("${await getBaseUrl()}orderDetailsByID"),
         body: ({'token': token, 'order_id': oderId}));
     // print(response.statusCode);
     if (response.statusCode == 200) {
@@ -319,7 +343,7 @@ class HttpService {
 
   static Future invoiceDetailsByID(oderId, token) async {
     http.Response response = await http.post(
-        Uri.parse("${baseurl}invoiceDetailsByID"),
+        Uri.parse("${await getBaseUrl()}invoiceDetailsByID"),
         body: ({'token': token, 'order_id': oderId}));
     // print(response.statusCode);
     if (response.statusCode == 200) {
@@ -327,15 +351,15 @@ class HttpService {
     } else {}
   }
 
-  static Future paymentByCash(paidAmount, date, token, shopId,type) async {
+  static Future paymentByCash(paidAmount, date, token, shopId, type) async {
     http.Response response = await http.post(
-      Uri.parse("${baseurl}paymentByCash"),
+      Uri.parse("${await getBaseUrl()}paymentByCash"),
       body: ({
         'paid_amount': paidAmount,
         'created_at': date,
         'token': token,
         'shop_id': shopId,
-        'payment_type':type,
+        'payment_type': type,
       }),
     );
     if (response.statusCode == 200) {
@@ -345,18 +369,19 @@ class HttpService {
 
   static Future paymentTypes() async {
     http.Response response =
-        await http.get(Uri.parse("${baseurl}paymentTypes"));
+    await http.get(Uri.parse("${await getBaseUrl()}paymentTypes"));
     if (response.statusCode == 200) {
       return paymentTypeFromJson(response.body);
     }
   }
-  static Future addShopComments( token, shopId, comment) async {
+
+  static Future addShopComments(token, shopId, comment) async {
     http.Response response = await http.post(
-      Uri.parse("${baseurl}addShopComments"),
+      Uri.parse("${await getBaseUrl()}addShopComments"),
       body: ({
         'token': token,
         'shop_id': shopId,
-        'comment':comment,
+        'comment': comment,
       }),
     );
     if (response.statusCode == 200) {
@@ -365,9 +390,10 @@ class HttpService {
     }
   }
 
-  static Future getShopDetailseditingData( token, shopId,) async {
+  static Future getShopDetailseditingData(token,
+      shopId,) async {
     http.Response response = await http.post(
-      Uri.parse("${baseurl}get_ShopDetails"),
+      Uri.parse("${await getBaseUrl()}get_ShopDetails"),
       body: ({
         'token': token,
         'shop_id': shopId,
@@ -379,10 +405,10 @@ class HttpService {
     }
   }
 
-  static Future updateShop(
-      shopname, adress, phone, whatsapp, gst, route, token,balance,shopid) async {
+  static Future updateShop(shopname, adress, phone, whatsapp, gst, route, token,
+      balance, shopid, latitude, longitude) async {
     http.Response response = await http.post(
-      Uri.parse("${baseurl}updateShop"),
+      Uri.parse("${await getBaseUrl()}updateShop"),
       body: ({
         'name': shopname,
         'address': adress,
@@ -392,7 +418,9 @@ class HttpService {
         'route': route,
         'token': token,
         'openingBalance': balance,
-        'shop_id':shopid,
+        'shop_id': shopid,
+        'latitude': latitude,
+        'longitude': longitude,
       }),
     );
 
@@ -404,9 +432,9 @@ class HttpService {
     }
   }
 
-  static Future deleteShop( token, shopId) async {
+  static Future deleteShop(token, shopId) async {
     http.Response response = await http.post(
-      Uri.parse("${baseurl}deleteShop"),
+      Uri.parse("${await getBaseUrl()}deleteShop"),
       body: ({
         'token': token,
         'shop_id': shopId,
@@ -417,9 +445,9 @@ class HttpService {
     }
   }
 
-  static Future allCategorys( token, search) async {
+  static Future allCategorys(token, search) async {
     http.Response response = await http.post(
-      Uri.parse("${baseurl}allCategoryDetails"),
+      Uri.parse("${await getBaseUrl()}allCategoryDetails"),
       body: ({
         'token': token,
         'search_key': search,
@@ -430,12 +458,14 @@ class HttpService {
     }
   }
 
-  static Future allSubCategorys( token,categoryId, search,) async {
+  static Future allSubCategorys(token,
+      categoryId,
+      search,) async {
     http.Response response = await http.post(
-      Uri.parse("${baseurl}allSubCategoryDetails"),
+      Uri.parse("${await getBaseUrl()}allSubCategoryDetails"),
       body: ({
         'token': token,
-        'category_id' :categoryId,
+        'category_id': categoryId,
         'search_key': search,
       }),
     );
@@ -444,13 +474,12 @@ class HttpService {
     }
   }
 
-
-  static Future allProductbysubcategory( token,subCategoryId, search) async {
+  static Future allProductbysubcategory(token, subCategoryId, search) async {
     http.Response response = await http.post(
-      Uri.parse("${baseurl}productList"),
+      Uri.parse("${await getBaseUrl()}productList"),
       body: ({
         'token': token,
-        'sub_category' :subCategoryId,
+        'sub_category': subCategoryId,
         'search_key': search,
       }),
     );
@@ -459,12 +488,13 @@ class HttpService {
     }
   }
 
-  static Future productViews( token,productId,) async {
+  static Future productViews(token,
+      productId,) async {
     http.Response response = await http.post(
-      Uri.parse("${baseurl}productView"),
+      Uri.parse("${await getBaseUrl()}productView"),
       body: ({
         'token': token,
-        'product_id' :productId,
+        'product_id': productId,
       }),
     );
     if (response.statusCode == 200) {
@@ -475,7 +505,7 @@ class HttpService {
 
   static Future executiveLists(token) async {
     http.Response response = await http.post(
-        Uri.parse("${baseurl}executiveLists"),
+        Uri.parse("${await getBaseUrl()}executiveLists"),
         body: ({'token': token}));
     print(response.statusCode);
     if (response.statusCode == 200) {
@@ -484,33 +514,33 @@ class HttpService {
     }
   }
 
-
-  static Future orderLists(token,fdate,tdate,searchkey,route,statusbar,salesexecutive) async {
+  static Future orderLists(token, fdate, tdate, searchkey, route, statusbar,
+      salesexecutive) async {
     http.Response response = await http.post(
-      Uri.parse("${baseurl}orderLists"),
+      Uri.parse("${await getBaseUrl()}orderLists"),
       body: ({
         'token': token,
-        'fdate' :fdate,
+        'fdate': fdate,
         'tdate': tdate,
-        'searchkey':searchkey,
-        'route':route,
-        'status':statusbar,
-        'salesexecutive':salesexecutive,
+        'searchkey': searchkey,
+        'route': route,
+        'status': statusbar,
+        'salesexecutive': salesexecutive,
       }),
     );
-    print(response.statusCode );
+    print(response.statusCode);
     if (response.statusCode == 200) {
       return oderlistsFromJson(response.body);
     }
   }
 
-
-  static Future editPaymentDetails( token,paymentId,) async {
+  static Future editPaymentDetails(token,
+      paymentId,) async {
     http.Response response = await http.post(
-      Uri.parse("${baseurl}editPaymentDetails"),
+      Uri.parse("${await getBaseUrl()}editPaymentDetails"),
       body: ({
         'token': token,
-        'payment_id' :paymentId,
+        'payment_id': paymentId,
       }),
     );
     if (response.statusCode == 200) {
@@ -519,31 +549,32 @@ class HttpService {
     }
   }
 
-  static Future updatePayment(token,paymentId,payAmount,paymentMethodId,shopId,date) async {
+  static Future updatePayment(token, paymentId, payAmount, paymentMethodId,
+      shopId, date) async {
     http.Response response = await http.post(
-      Uri.parse("${baseurl}updatePayment"),
+      Uri.parse("${await getBaseUrl()}updatePayment"),
       body: ({
         'token': token,
-        'payment_id' :paymentId,
+        'payment_id': paymentId,
         'pay_amount': payAmount,
-        'payment_method_id':paymentMethodId,
-        'shop_id':shopId,
+        'payment_method_id': paymentMethodId,
+        'shop_id': shopId,
         'created_at': date,
       }),
     );
-    print(response.statusCode );
+    print(response.statusCode);
     if (response.statusCode == 200) {
       return updatePaymentFromJson(response.body);
     }
   }
 
-
-  static Future deletePayment( token,paymentId,) async {
+  static Future deletePayment(token,
+      paymentId,) async {
     http.Response response = await http.post(
-      Uri.parse("${baseurl}deletePayment"),
+      Uri.parse("${await getBaseUrl()}deletePayment"),
       body: ({
         'token': token,
-        'payment_id' :paymentId,
+        'payment_id': paymentId,
       }),
     );
     if (response.statusCode == 200) {
@@ -552,12 +583,13 @@ class HttpService {
     }
   }
 
-  static Future deleteOrder( token,orderId,) async {
+  static Future deleteOrder(token,
+      orderId,) async {
     http.Response response = await http.post(
-      Uri.parse("${baseurl}deleteOrder"),
+      Uri.parse("${await getBaseUrl()}deleteOrder"),
       body: ({
         'token': token,
-        'order_id' :orderId,
+        'order_id': orderId,
       }),
     );
     print(response.statusCode);
@@ -567,16 +599,15 @@ class HttpService {
     }
   }
 
-
-  static Future deleteorderDetailsById( token,orderDetailId,masterId) async {
+  static Future deleteorderDetailsById(token, orderDetailId, masterId) async {
     print(orderDetailId);
     print(masterId);
     http.Response response = await http.post(
-      Uri.parse("${baseurl}delete_orderDetailsById"),
+      Uri.parse("${await getBaseUrl()}delete_orderDetailsById"),
       body: ({
         'token': token,
-        'order_details_id' :orderDetailId,
-        'order_master_id' : masterId,
+        'order_details_id': orderDetailId,
+        'order_master_id': masterId,
       }),
     );
     // print(' -2-2-2-2-2${response.statusCode}');
@@ -585,15 +616,16 @@ class HttpService {
     }
   }
 
-  static Future editOrderDetailsById( token,orderId,oderDetailsId,categoryId,productId,quantity,amount) async {
+  static Future editOrderDetailsById(token, orderId, oderDetailsId, categoryId,
+      productId, quantity, amount) async {
     http.Response response = await http.post(
-      Uri.parse("${baseurl}editOrderDetailsById"),
+      Uri.parse("${await getBaseUrl()}editOrderDetailsById"),
       body: ({
         'token': token,
-        'order_id' :orderId,
-        'order_details_id':oderDetailsId,
-        'category_id' :categoryId ,
-        'product_id':productId,
+        'order_id': orderId,
+        'order_details_id': oderDetailsId,
+        'category_id': categoryId,
+        'product_id': productId,
         'quantity': quantity,
         'amount': amount,
       }),
@@ -605,13 +637,13 @@ class HttpService {
     }
   }
 
-  static Future getingorderDetailsById( token,orderDetailId,masterId) async {
+  static Future getingorderDetailsById(token, orderDetailId, masterId) async {
     http.Response response = await http.post(
-      Uri.parse("${baseurl}get_orderDetailsById"),
+      Uri.parse("${await getBaseUrl()}get_orderDetailsById"),
       body: ({
         'token': token,
-        'order_details_id' :orderDetailId,
-        'order_master_id' : masterId,
+        'order_details_id': orderDetailId,
+        'order_master_id': masterId,
       }),
     );
     print(response.statusCode);
@@ -621,15 +653,13 @@ class HttpService {
     }
   }
 
-  static Future addNewOrderByOrderId(
-      token, orderDetails,masterId,orderdate,shopid,) async {
-    print(token);
-    print(orderDetails);
-    print(masterId);
-    print(orderdate);
-    print(shopid);
+  static Future addNewOrderByOrderId(token,
+      orderDetails,
+      masterId,
+      orderdate,
+      shopid,) async {
     http.Response response = await http.post(
-      Uri.parse("${baseurl}addNewOrderByOrderId"),
+      Uri.parse("${await getBaseUrl()}addNewOrderByOrderId"),
       body: ({
         'token': token,
         'order_details': jsonEncode(orderDetails),
@@ -642,4 +672,131 @@ class HttpService {
       return addNewDataInOrderFromJson(response.body);
     } else {}
   }
+
+  static Future getAllExpenses(token, fdate, tdate) async {
+    print('token' + token);
+    http.Response response = await http.post(
+      Uri.parse("${await getBaseUrl()}getAllExpenses"),
+      body: ({
+        'token': token,
+        'fdate': fdate,
+        'tdate': tdate,
+      }),
+    );
+    if (response.statusCode == 200) {
+      return allExpenseFromJson(response.body);
+    } else {}
+  }
+
+  static Future deleteExpenses(token, expenseId) async {
+    http.Response response = await http.post(
+      Uri.parse("${await getBaseUrl()}deleteExpenses"),
+      body: ({
+        'token': token,
+        'expense_id': expenseId,
+      }),
+    );
+    print(response.statusCode);
+    if (response.statusCode == 200) {
+      return deleteExpenseFromJson(response.body);
+    } else {}
+  }
+
+  static Future expenseServices(token,) async {
+    http.Response response = await http.post(
+      Uri.parse("${await getBaseUrl()}expenseServices"),
+      body: ({
+        'token': token,
+      }),
+    );
+
+    if (response.statusCode == 200) {
+      print(response.body);
+      return expenseServiceFromJson(response.body);
+    } else {}
+  }
+
+  static Future postExpense(
+      BuildContext context, token, service, amount, expenseBill,remark) async {
+    var headers = {'Cookie': 'session=j301hgh2l3p0aduichbng630hca55fnj'};
+    var request = http.MultipartRequest(
+        'POST', Uri.parse('https://dev.login2.in/MeMa/MobileApi/postExpense'));
+    request.fields
+        .addAll({'token': token, 'expense_service': service, 'amount': amount,'remark':remark});
+    request.files.add(await http.MultipartFile.fromPath(
+        'expense_bill', expenseBill.path.toString()));
+    request.headers.addAll(headers);
+
+    http.StreamedResponse response = await request.send();
+
+    if (response.statusCode == 200) {
+      Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => ExpenseScreen(id: token),
+          ));
+
+      Fluttertoast.showToast(
+        msg: 'Successfully add expense',
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.BOTTOM,
+        backgroundColor: Colors.black,
+        textColor: Colors.white,
+      );
+      // print(await response.stream.bytesToString());
+      //  return postingExpenseFromJson(response.);
+    } else {
+      // print(response.reasonPhrase);
+    }
+  }
+
+  static Future getExpenseById(token, expenseId) async {
+    http.Response response = await http.post(
+      Uri.parse("${await getBaseUrl()}getExpenseById"),
+      body: ({
+        'token': token,
+        'expense_id': expenseId,
+      }),
+    );
+
+    if (response.statusCode == 200) {
+      print(response.body);
+      return getExpensFromJson(response.body);
+    } else {}
+  }
+
+
+  static Future updateExpenseById(BuildContext context, token, expenseId,
+      service, amount, expenseBill, remark) async {
+    var headers = {
+      'Cookie': 'session=inhtp0sbo9qom735cm51edarrfrv3uf1'
+    };
+    var request = http.MultipartRequest('POST',
+        Uri.parse('https://dev.login2.in/MeMa/MobileApi/updateExpenseById'));
+    request.fields.addAll({
+      'token': token,
+      'expense_id': expenseId,
+      'expense_service': service,
+      'amount': amount,
+      'remark': remark
+    });
+    if (expenseBill == null) {
+      expenseBill = '';
+    }
+    request.files.add(
+        await http.MultipartFile.fromPath('expense_bill', expenseBill));
+    request.headers.addAll(headers);
+
+    http.StreamedResponse response = await request.send();
+
+    if (response.statusCode == 200) {
+      Navigator.push(context,
+          MaterialPageRoute(builder: (context) => ExpenseScreen(id: token),));
+    }
+    else {
+      print(response.reasonPhrase);
+    }
+  }
+
+
 }

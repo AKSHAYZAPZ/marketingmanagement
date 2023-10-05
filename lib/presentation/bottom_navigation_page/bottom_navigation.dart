@@ -1,6 +1,8 @@
 import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:jibin_s_application1/core/app_export.dart';
+import 'package:jibin_s_application1/presentation/expense_screen/expense_screen.dart';
 import '../category_screen/category_screen.dart';
 import '../collection_screen/collection_screen.dart';
 import '../home_dashboard_screen/home_dashboard_screen.dart';
@@ -41,8 +43,8 @@ class _MainPageState extends State<BottomNavigationScreen > {
         currentIndex: _currentIndex,
         onTap: (int index) {
           setState(() {
-            checkConnectiVity();
             _currentIndex = index;
+            checkConnectiVity();
           });
         },
         items: [
@@ -59,8 +61,8 @@ class _MainPageState extends State<BottomNavigationScreen > {
               label: 'Products'
           ),
           BottomNavigationBarItem(
-              icon:Icon(Icons.collections_bookmark_outlined),
-              label: 'Collection'
+              icon:Icon(Icons.receipt_long_outlined),
+              label: 'Expense'
           ),
           BottomNavigationBarItem(
               icon:Icon(Icons.settings),
@@ -85,7 +87,7 @@ class _MainPageState extends State<BottomNavigationScreen > {
           ),
           Offstage(
             offstage: _currentIndex != 3,
-            child: CollectionScreen(id: widget.id),
+            child: ExpenseScreen(id: widget.id),
           ),
           Offstage(
             offstage: _currentIndex != 4,
@@ -110,38 +112,29 @@ class _MainPageState extends State<BottomNavigationScreen > {
         });
       }
     } else{
-      dataConnection =false;
-      showDialog(context: context, builder: (context) {
-        return AlertDialog(
-          content:Container(
-            height: 200,
-            width: 200,
-            child: Column(
+      showModalBottomSheet(context: context, builder: (context) {
+        return Container(
+          decoration: BoxDecoration(color: Colors.red,
+          ),
+          height: 70,
+          child: Center(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                Text('No data Connection'),
-                SizedBox(
-                  height: 15,
-                ),
-                Container(
-                  height: 150,
-                  width: 150,
-                  decoration: BoxDecoration(
-                    image: DecorationImage(image: AssetImage(ImageConstant.network),),
+                const Text('No Network connection',style: TextStyle(color: Colors.white),),
+                ElevatedButton(
+                  style: ButtonStyle(
+                    backgroundColor: MaterialStateProperty.all(Colors.white),
                   ),
-                )
+                  child: const Text('Retry',style: TextStyle(color: Colors.black),),
+                  onPressed: (){
+                    Navigator.pop(context);
+                    checkConnectiVity();
+                  },
+                ),
               ],
             ),
-
           ),
-          actions: [
-            TextButton(onPressed: () {
-              setState(() {
-                checkConnectiVity();
-                Navigator.pop(context);
-              });
-
-            }, child: Text('Retry'))
-          ],
         );
       },);
     }

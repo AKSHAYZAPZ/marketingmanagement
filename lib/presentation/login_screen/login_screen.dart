@@ -26,7 +26,7 @@ class _LoginScreenState extends State<LoginScreen> {
   TextEditingController passwordController = TextEditingController();
 
   GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  bool isVisible =true;
+  bool isVisible = true;
 
   @override
   Widget build(BuildContext context) {
@@ -48,11 +48,12 @@ class _LoginScreenState extends State<LoginScreen> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   SizedBox(
-                      width: getHorizontalSize(224),
-                      child: Text("Welcome to\nMEMA",
-                          maxLines: null,
-                          textAlign: TextAlign.center,
-                          style: AppStyle.txtDMSansMedium40),),
+                    width: getHorizontalSize(224),
+                    child: Text("Welcome to\nMEMA",
+                        maxLines: null,
+                        textAlign: TextAlign.center,
+                        style: AppStyle.txtDMSansMedium40),
+                  ),
                   Padding(
                     padding: getPadding(top: 55),
                     child: Text("Login to your account",
@@ -64,53 +65,56 @@ class _LoginScreenState extends State<LoginScreen> {
                     focusBordercolor: Colors.white,
                     errorBorderColor: Colors.white,
                     errorColor: Colors.white,
-                      validator: (value) {
-                        if (value!.isEmpty) {
-                          return 'Please enter Mobile number';
-                        } else if (value.length != 10) {
-                          return 'Please enter valid Mobilenumber';
-                        } else {
-                          return null;
-                        }
-                      },
-                      focusNode: FocusNode(),
-                      controller: mobilenumberController,
-                      hintText: "Mobile Number",
-                      margin: getMargin(top: 64),
-                      variant: TextFormFieldVariant.OutlineWhiteA700,
-                      fontStyle: TextFormFieldFontStyle.DMSansRegular19,
-                      textInputType: TextInputType.phone,),
-                  SizedBox(height: 3,),
+                    validator: (value) {
+                      if (value!.isEmpty) {
+                        return 'Please enter Mobile number';
+                      } else if (value.length != 10) {
+                        return 'Please enter valid Mobilenumber';
+                      } else {
+                        return null;
+                      }
+                    },
+                    focusNode: FocusNode(),
+                    controller: mobilenumberController,
+                    hintText: "Mobile Number",
+                    margin: getMargin(top: 64),
+                    variant: TextFormFieldVariant.OutlineWhiteA700,
+                    fontStyle: TextFormFieldFontStyle.DMSansRegular19,
+                    textInputType: TextInputType.phone,
+                  ),
+                  SizedBox(
+                    height: 3,
+                  ),
                   CustomTextFormField(
-                    focusBordercolor: Colors.white,
+                      focusBordercolor: Colors.white,
                       errorBorderColor: Colors.white,
-                    errorColor: Colors.white,
+                      errorColor: Colors.white,
                       suffix: isVisible
                           ? IconButton(
-                          onPressed: () {
-                            setState(() {
-                              isVisible = !isVisible;
-                            });
-                          },
-                          icon: Icon(
-                            Icons.visibility_off,
-                            color: Colors.white,
-                          ))
+                              onPressed: () {
+                                setState(() {
+                                  isVisible = !isVisible;
+                                });
+                              },
+                              icon: Icon(
+                                Icons.visibility_off,
+                                color: Colors.white,
+                              ))
                           : IconButton(
-                          onPressed: () {
-                            setState(() {
-                              isVisible = !isVisible;
-                            });
-                          },
-                          icon: Icon(
-                            Icons.visibility,
-                            color: Colors.white,
-                          )),
+                              onPressed: () {
+                                setState(() {
+                                  isVisible = !isVisible;
+                                });
+                              },
+                              icon: Icon(
+                                Icons.visibility,
+                                color: Colors.white,
+                              ),
+                            ),
                       validator: (value) {
                         if (value!.isEmpty) {
                           return 'Please enter Password';
-                        }
-                        else {
+                        } else {
                           return null;
                         }
                       },
@@ -123,59 +127,60 @@ class _LoginScreenState extends State<LoginScreen> {
                       textInputType: TextInputType.visiblePassword,
                       isObscureText: isVisible ? true : false),
                   CustomButton(
-                      height: getVerticalSize(59),
-                      text: "Login",
-                      margin: getMargin(top: 25),
-                      variant: ButtonVariant.FillWhiteA700,
-                      shape: ButtonShape.RoundedBorder24,
-                      fontStyle: ButtonFontStyle.DMSansMedium20,
-                      onTap: () async {
-                        if (_formKey.currentState != null &&
-                            _formKey.currentState!.validate()) {
-                          _formKey.currentState!.save();
-                          if (mobilenumberController.text.isNotEmpty &&
-                              passwordController.text.isNotEmpty) {
-                            var mobilenum = mobilenumberController.text;
-                            var password = passwordController.text;
-                            var userInfo =
-                            await HttpService.checkLogin(mobilenum, password);
-                            if (userInfo.status != false) {
-                              print('token:${userInfo.data.token}');
-                              // print(userInfo.data.username);
-                              // print(userInfo.message);
-                              key = userInfo.data.token;
-                              var username = userInfo.data.username;
-                              var name = username.toString()
-                                  .split(' ')
-                                  .map((word) => word[0].toUpperCase() + word.substring(1))
-                                  .join(' ');
+                    height: getVerticalSize(59),
+                    text: "Login",
+                    margin: getMargin(top: 25),
+                    variant: ButtonVariant.FillWhiteA700,
+                    shape: ButtonShape.RoundedBorder24,
+                    fontStyle: ButtonFontStyle.DMSansMedium20,
+                    onTap: () async {
+                      if (_formKey.currentState != null &&
+                          _formKey.currentState!.validate()) {
+                        _formKey.currentState!.save();
+                        if (mobilenumberController.text.isNotEmpty &&
+                            passwordController.text.isNotEmpty) {
+                          var mobilenum = mobilenumberController.text;
+                          var password = passwordController.text;
+                          var userInfo =
+                              await HttpService.checkLogin(mobilenum, password);
 
-                              CommonFuntion.addDataToSharedPreferences(
-                                  'token', key);
-                              CommonFuntion.addDataToSharedPreferences(
-                                  'name', name);
-                              Fluttertoast.showToast(
-                                msg: userInfo.message,
-                                toastLength: Toast.LENGTH_SHORT,
-                                gravity: ToastGravity.BOTTOM,
-                                backgroundColor: Colors.black,
-                                textColor: Colors.white,
-                              );
-                              onTapLogin(context);
-                            } else {
-                              // print(userInfo.message);
-                              Fluttertoast.showToast(
-                                msg: userInfo.message,
-                                toastLength: Toast.LENGTH_SHORT,
-                                gravity: ToastGravity.BOTTOM,
-                                backgroundColor: Colors.black,
-                                textColor: Colors.white,
-                              );
-                            }
+                          if (userInfo.status != false) {
+                            print('token:${userInfo.data.token}');
+                            // print(userInfo.data.username);
+                            // print(userInfo.message);
+                            key = userInfo.data.token;
+                            var username = userInfo.data.username;
+                            var name = username
+                                .toString()
+                                .split(' ')
+                                .map((word) =>
+                                    word[0].toUpperCase() + word.substring(1))
+                                .join(' ');
+                            CommonFuntion.addDataToSharedPreferences(
+                                'token', key);
+                            CommonFuntion.addDataToSharedPreferences(
+                                'name', name);
+                            Fluttertoast.showToast(
+                              msg: userInfo.message,
+                              toastLength: Toast.LENGTH_SHORT,
+                              gravity: ToastGravity.BOTTOM,
+                              backgroundColor: Colors.black,
+                              textColor: Colors.white,
+                            );
+                            onTapLogin(context);
+                          } else {
+                            // print(userInfo.message);
+                            Fluttertoast.showToast(
+                              msg: userInfo.message,
+                              toastLength: Toast.LENGTH_SHORT,
+                              gravity: ToastGravity.BOTTOM,
+                              backgroundColor: Colors.black,
+                              textColor: Colors.white,
+                            );
                           }
                         }
-
-                      },
+                      }
+                    },
                   ),
                   Padding(
                     padding: getPadding(top: 41),

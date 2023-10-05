@@ -4,10 +4,7 @@ import 'package:get/get.dart';
 import 'package:jibin_s_application1/routes/app_routes.dart';
 
 void main() {
-  WidgetsFlutterBinding.ensureInitialized();
-  SystemChrome.setPreferredOrientations([
-    DeviceOrientation.portraitUp,
-  ]);
+
   runApp(MyApp());
 }
 

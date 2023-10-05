@@ -1,3 +1,4 @@
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
@@ -26,8 +27,7 @@ class _PaymentEditingScreenState extends State<PaymentEditingScreen> {
   @override
   void initState() {
     super.initState();
-    getData();
-    dropdownvalues();
+   checkConnectiVity();
   }
 
   EditPayment? editPayment;
@@ -38,6 +38,7 @@ class _PaymentEditingScreenState extends State<PaymentEditingScreen> {
 
   PaymentType? paymentType;
   String date = '';
+  bool dataConnection =false;
 
   dropdownvalues() async {
     paymentType = await HttpService.paymentTypes();
@@ -282,6 +283,44 @@ class _PaymentEditingScreenState extends State<PaymentEditingScreen> {
         dropdownvalue = editPayment!.data.paymentMethodId.toString();
         date = editPayment!.data.createdAt.toString();
       });
+    }
+  }
+  checkConnectiVity()async{
+    final connectivityResult = await (Connectivity().checkConnectivity());
+    if (connectivityResult == ConnectivityResult.mobile || connectivityResult == ConnectivityResult.wifi) {
+      dataConnection =true;
+      if(dataConnection==true){
+        setState(() {
+          getData();
+          dropdownvalues();
+        });
+      }
+    } else{
+      showModalBottomSheet(context: context, builder: (context) {
+        return Container(
+          decoration: BoxDecoration(color: Colors.red,
+          ),
+          height: 70,
+          child: Center(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                const Text('No Network connection',style: TextStyle(color: Colors.white),),
+                ElevatedButton(
+                  style: ButtonStyle(
+                    backgroundColor: MaterialStateProperty.all(Colors.white),
+                  ),
+                  child: const Text('Retry',style: TextStyle(color: Colors.black),),
+                  onPressed: (){
+                    Navigator.pop(context);
+                    checkConnectiVity();
+                  },
+                ),
+              ],
+            ),
+          ),
+        );
+      },);
     }
   }
 }

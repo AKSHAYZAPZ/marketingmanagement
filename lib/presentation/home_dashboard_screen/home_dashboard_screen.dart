@@ -37,7 +37,7 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> {
 
   TextEditingController searchCntrller = TextEditingController();
   Routelist? routelist;
-  bool dataConnection =false;
+  bool dataConnection = false;
 
   String date = DateFormat('dd-MM-yyyy').format(DateTime.now());
 
@@ -251,8 +251,9 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> {
                             height: 200,
                             decoration: BoxDecoration(
                               image: DecorationImage(
-                                  fit: BoxFit.fill,
-                                  image: AssetImage(ImageConstant.imgCrm232)),
+                                fit: BoxFit.fill,
+                                image: AssetImage(ImageConstant.imgCrm232),
+                              ),
                             ),
                           ),
                           SizedBox(
@@ -610,7 +611,9 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> {
                                                   .txtDMSansBold20Black900)),
                                       DropdownButton(
                                         underline: Container(),
-                                        value: routes == '' ? null : routes,
+                                        value:
+                                        routes == '' ? null :
+                                        routes,
                                         hint: Text('Select Route'),
                                         items: routelist != null
                                             ? routelist!.data
@@ -964,7 +967,7 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> {
             ElevatedButton(
               onPressed: () async {
                 Navigator.of(context).pop();
-                _switchcontroller.enable();
+
                 LocationPermission permission =
                     await Geolocator.checkPermission();
                 if (permission == LocationPermission.denied) {
@@ -981,10 +984,9 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> {
 
                 var latitude = latitudes.toString();
                 var longitude = longitudes.toString();
-
                 Attendance attendance = await HttpService.markAttendance(
                     latitude, longitude, widget.id);
-
+                _switchcontroller.enable();
                 if (attendance.data != null) {
                   _switchcontroller.enable();
                   Fluttertoast.showToast(
@@ -1004,50 +1006,54 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> {
       },
     );
   }
-  checkConnectiVity()async{
+
+  checkConnectiVity() async {
     final connectivityResult = await (Connectivity().checkConnectivity());
-    if (connectivityResult == ConnectivityResult.mobile || connectivityResult == ConnectivityResult.wifi) {
-      dataConnection =true;
-      if(dataConnection==true){
+    if (connectivityResult == ConnectivityResult.mobile ||
+        connectivityResult == ConnectivityResult.wifi) {
+      dataConnection = true;
+      if (dataConnection == true) {
         getname();
         getList();
         getRoutes();
+        setState(() {});
       }
-    } else{
-      dataConnection =false;
-      showDialog(context: context, builder: (context) {
-        return AlertDialog(
-          clipBehavior: Clip.none,
-          content:Container(
-            height: 200,
-            child: Column(
-              children: [
-                Text('No data Connection'),
-                SizedBox(
-                  height: 15,
-                ),
-                Container(
-                  height: 150,
-                  width: 150,
-                  decoration: BoxDecoration(
-                    image: DecorationImage(image: AssetImage(ImageConstant.network),),
-                  ),
-                )
-              ],
+    } else {
+      showModalBottomSheet(
+        context: context,
+        builder: (context) {
+          return Container(
+            decoration: BoxDecoration(
+              color: Colors.red,
             ),
-
-          ),
-          actions: [
-            TextButton(onPressed: () {
-              setState(() {
-                checkConnectiVity();
-                Navigator.pop(context);
-              });
-
-            }, child: Text('Retry'))
-          ],
-        );
-      },);
+            height: 70,
+            child: Center(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  const Text(
+                    'No Network connection',
+                    style: TextStyle(color: Colors.white),
+                  ),
+                  ElevatedButton(
+                    style: ButtonStyle(
+                      backgroundColor: MaterialStateProperty.all(Colors.white),
+                    ),
+                    child: const Text(
+                      'Retry',
+                      style: TextStyle(color: Colors.black),
+                    ),
+                    onPressed: () {
+                      Navigator.pop(context);
+                      checkConnectiVity();
+                    },
+                  ),
+                ],
+              ),
+            ),
+          );
+        },
+      );
     }
   }
 }

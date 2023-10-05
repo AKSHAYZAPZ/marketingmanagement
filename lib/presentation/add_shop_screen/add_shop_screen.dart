@@ -1,5 +1,8 @@
+import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:custom_switch_widget/custom_switch_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:jibin_s_application1/core/app_export.dart';
 import 'package:jibin_s_application1/model/addshopmodel.dart';
 import 'package:jibin_s_application1/services/service.dart';
@@ -23,6 +26,52 @@ class _AddShopScreenState extends State<AddShopScreen> {
 
   bool _validatedropdown = false;
 
+  var latitude = '';
+  var longitude = '';
+
+  void _disable() async {
+    _switchcontroller.disable();
+  }
+
+  void _enable() async {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          content: Text('Set shop location?'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              child: Text('Close'),
+            ),
+            ElevatedButton(
+                onPressed: () async {
+                  LocationPermission permission =
+                      await Geolocator.checkPermission();
+                  if (permission == LocationPermission.denied) {
+                    permission = await Geolocator.requestPermission();
+                  } else {}
+                  Position position = await Geolocator.getCurrentPosition(
+                    desiredAccuracy: LocationAccuracy.high,
+                  );
+                  double latitudes = position.latitude;
+                  double longitudes = position.longitude;
+                  _switchcontroller.enable();
+                   latitude = latitudes.toString();
+                   longitude = longitudes.toString();
+                  print(latitude);
+                  print(longitude);
+                  Navigator.pop(context);
+                },
+                child: Text("Yes"))
+          ],
+        );
+      },
+    );
+  }
+
   var dropdownvalue;
 
   TextEditingController shopnameController = TextEditingController();
@@ -38,11 +87,15 @@ class _AddShopScreenState extends State<AddShopScreen> {
   TextEditingController balanceController = TextEditingController();
 
   Routelist? routelist;
+  bool dataConnection = false;
+
+  final CustomSwitchController _switchcontroller =
+      CustomSwitchController(initialValue: false);
 
   @override
   void initState() {
     super.initState();
-    findRoute();
+    checkConnectiVity();
   }
 
   findRoute() async {
@@ -100,13 +153,28 @@ class _AddShopScreenState extends State<AddShopScreen> {
                     child: Column(
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
-                          Stack(
-                            alignment: Alignment.center,
+                          SizedBox(
+                            height: 10,
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
                             children: [
-                              Column(
-                                mainAxisSize: MainAxisSize.min,
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [],
+                              Text('Set Shop Location'),
+                              SizedBox(
+                                width: 10,
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.only(right: 22),
+                                child: CustomSwitchWidget(
+                                  activeColor: ColorConstant.blue600,
+                                  controller: _switchcontroller,
+                                  onChange: (value) {
+                                    if (value)
+                                      _disable();
+                                    else
+                                      _enable();
+                                  },
+                                ),
                               ),
                             ],
                           ),
@@ -341,15 +409,16 @@ class _AddShopScreenState extends State<AddShopScreen> {
                                         } else {
                                           Addshop addshop =
                                               await HttpService.addShop(
-                                            shopnameController.text,
-                                            addressController.text,
-                                            mobilenoController.text,
-                                            whatsappController.text,
-                                            gstnumberController.text,
-                                            dropdownvalue,
-                                            widget.token,
-                                            balanceController.text,
-                                          );
+                                                  shopnameController.text,
+                                                  addressController.text,
+                                                  mobilenoController.text,
+                                                  whatsappController.text,
+                                                  gstnumberController.text,
+                                                  dropdownvalue,
+                                                  widget.token,
+                                                  balanceController.text,
+                                                  latitude,
+                                                  longitude);
                                           if (addshop.status == true) {
                                             Fluttertoast.showToast(
                                               msg: addshop.message,
@@ -412,5 +481,54 @@ class _AddShopScreenState extends State<AddShopScreen> {
         MaterialPageRoute(
           builder: (context) => BottomNavigationScreen(id: widget.token),
         ));
+  }
+
+  checkConnectiVity() async {
+    final connectivityResult = await (Connectivity().checkConnectivity());
+    if (connectivityResult == ConnectivityResult.mobile ||
+        connectivityResult == ConnectivityResult.wifi) {
+      dataConnection = true;
+      if (dataConnection == true) {
+        setState(() {
+          findRoute();
+        });
+      }
+    } else {
+      showModalBottomSheet(
+        context: context,
+        builder: (context) {
+          return Container(
+            decoration: BoxDecoration(
+              color: Colors.red,
+            ),
+            height: 70,
+            child: Center(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  const Text(
+                    'No Network connection',
+                    style: TextStyle(color: Colors.white),
+                  ),
+                  ElevatedButton(
+                    style: ButtonStyle(
+                      backgroundColor: MaterialStateProperty.all(Colors.white),
+                    ),
+                    child: const Text(
+                      'Retry',
+                      style: TextStyle(color: Colors.black),
+                    ),
+                    onPressed: () {
+                      Navigator.pop(context);
+                      checkConnectiVity();
+                    },
+                  ),
+                ],
+              ),
+            ),
+          );
+        },
+      );
+    }
   }
 }

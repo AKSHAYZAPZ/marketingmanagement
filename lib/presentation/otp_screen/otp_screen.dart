@@ -91,7 +91,6 @@ class _OtpScreenState extends State<OtpScreen> {
                       (index) => SizedBox(
                     width: 50, // Set the desired width for each TextField
                     child: TextField(
-
                       controller: _controllers[index],
                       focusNode: _focusNodes[index],
                       keyboardType: TextInputType.number,
@@ -99,7 +98,6 @@ class _OtpScreenState extends State<OtpScreen> {
                       maxLength: 1,
                       onChanged: (value) => _otpValueChanged(value, index),
                       decoration: InputDecoration(
-
                         fillColor: Colors.white,
                         enabledBorder: UnderlineInputBorder(
                           borderSide: BorderSide(color: Colors.white),

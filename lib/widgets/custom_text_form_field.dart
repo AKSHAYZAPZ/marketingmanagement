@@ -27,6 +27,7 @@ class CustomTextFormField extends StatelessWidget {
     this.errorBorderColor,
     this.focusBordercolor,
     this.textCapitalization = TextCapitalization.words,
+    // this.cursorColor,
   });
 
   TextFormFieldPadding? padding;
@@ -72,6 +73,7 @@ class CustomTextFormField extends StatelessWidget {
   Color? errorBorderColor;
   Color? focusBordercolor;
   TextCapitalization? textCapitalization;
+  // TextFormcurser? cursorColor;
 
   @override
   Widget build(BuildContext context) {
@@ -99,6 +101,7 @@ class CustomTextFormField extends StatelessWidget {
         decoration: _buildDecoration(errorColor, errorBorderColor,focusBordercolor),
         validator: validator,
         textCapitalization: textCapitalization!,
+        // TextFormcurser:  cursorColor,
       ),
     );
   }

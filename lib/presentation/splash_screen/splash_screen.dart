@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:jibin_s_application1/core/app_export.dart';
 import 'package:jibin_s_application1/presentation/bottom_navigation_page/bottom_navigation.dart';
 import 'package:jibin_s_application1/presentation/connectivity_screen/connectivity_screen.dart';
+import 'package:jibin_s_application1/presentation/select_branch_screen/select_branch_screen.dart';
 import 'package:jibin_s_application1/shared_prefrence/shared_preference.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -52,10 +53,10 @@ class _SplashScreenState extends State<SplashScreen> {
   splashOn() {
     Timer(Duration(seconds: 3), () async {
       var id = await CommonFuntion.getSavedKey('token');
-      var username = await CommonFuntion.getSavedKey('name');
+      var username = await CommonFuntion. getSavedKey('name');
       print('already login :$id');
       if (id == null) {
-        Navigator.pushReplacementNamed(context, AppRoutes.loginScreen);
+        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => SelectBranchScreen(),));
       } else {
 
         Navigator.pushReplacement(

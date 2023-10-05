@@ -39,6 +39,8 @@ class Data {
   String whatsappNumber;
   String gstNo;
   String createdAt;
+  String latitude;
+  String longitude;
   int balance;
   List<Detail> orderDetails;
   List<Detail> invoiceDetails;
@@ -54,6 +56,8 @@ class Data {
     required this.whatsappNumber,
     required this.gstNo,
     required this.createdAt,
+    required this.latitude,
+    required this.longitude,
     required this.balance,
     required this.orderDetails,
     required this.invoiceDetails,
@@ -70,6 +74,8 @@ class Data {
     whatsappNumber: json["whatsapp_number"],
     gstNo: json["gst_no"],
     createdAt: json["created_at"],
+    latitude: json["latitude "],
+    longitude: json["longitude "],
     balance: json["balance"],
     orderDetails: List<Detail>.from(json["orderDetails"].map((x) => Detail.fromJson(x))),
     invoiceDetails: List<Detail>.from(json["invoiceDetails"].map((x) => Detail.fromJson(x))),
@@ -86,6 +92,8 @@ class Data {
     "whatsapp_number": whatsappNumber,
     "gst_no": gstNo,
     "created_at": createdAt,
+    "latitude ": latitude,
+    "longitude ": longitude,
     "balance": balance,
     "orderDetails": List<dynamic>.from(orderDetails.map((x) => x.toJson())),
     "invoiceDetails": List<dynamic>.from(invoiceDetails.map((x) => x.toJson())),

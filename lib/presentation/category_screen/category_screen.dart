@@ -1,17 +1,11 @@
 import 'package:connectivity_plus/connectivity_plus.dart';
-import 'package:jibin_s_application1/model/products_model.dart';
 import 'package:jibin_s_application1/presentation/sub_categories_screen/sub_categories_screen.dart';
 import 'package:jibin_s_application1/services/service.dart';
-
 import '../../model/all_category_model.dart';
-import '../../model/product_by_id_model.dart';
 import '../bottom_navigation_page/bottom_navigation.dart';
-import '../product_detailed_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:jibin_s_application1/core/app_export.dart';
-import 'package:jibin_s_application1/widgets/app_bar/appbar_image.dart';
-import 'package:jibin_s_application1/widgets/app_bar/appbar_title.dart';
-import 'package:jibin_s_application1/widgets/app_bar/custom_app_bar.dart';
+
 
 class CategoryScreen extends StatefulWidget {
   CategoryScreen({Key? key, required this.id}) : super(key: key);
@@ -58,6 +52,8 @@ class _ProductScreenState extends State<CategoryScreen> {
 
   @override
   Widget build(BuildContext context) {
+    print('category $allCategory');
+    print('data $dataConnection');
     return Scaffold(
       appBar: AppBar(
         backgroundColor: ColorConstant.lightBlue700,
@@ -75,7 +71,7 @@ class _ProductScreenState extends State<CategoryScreen> {
           },
         ),
       ),
-      body: allCategory == null
+      body: allCategory == null || dataConnection ==false
           ? Center(
               child: CircularProgressIndicator(),
             )
@@ -221,37 +217,29 @@ class _ProductScreenState extends State<CategoryScreen> {
         allCategorys();
       }
     } else{
-      dataConnection =false;
-      showDialog(context: context, builder: (context) {
-        return AlertDialog(
-          content:Container(
-            height: 200,
-            child: Column(
+      showModalBottomSheet(context: context, builder: (context) {
+        return Container(
+          decoration: BoxDecoration(color: Colors.red,
+          ),
+          height: 70,
+          child: Center(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                Text('No data Connection'),
-                SizedBox(
-                  height: 15,
-                ),
-                Container(
-                  height: 150,
-                  width: 150,
-                  decoration: BoxDecoration(
-                    image: DecorationImage(image: AssetImage(ImageConstant.network),),
+                const Text('No Network connection',style: TextStyle(color: Colors.white),),
+                ElevatedButton(
+                  style: ButtonStyle(
+                    backgroundColor: MaterialStateProperty.all(Colors.white),
                   ),
-                )
+                  child: const Text('Retry',style: TextStyle(color: Colors.black),),
+                  onPressed: (){
+                    Navigator.pop(context);
+                    checkConnectiVity();
+                  },
+                ),
               ],
             ),
-
           ),
-          actions: [
-            TextButton(onPressed: () {
-              setState(() {
-                checkConnectiVity();
-                Navigator.pop(context);
-              });
-
-            }, child: Text('Retry'))
-          ],
         );
       },);
     }

@@ -1,3 +1,4 @@
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:jibin_s_application1/presentation/product_detailed_screen.dart';
 import 'package:jibin_s_application1/services/service.dart';
@@ -20,11 +21,12 @@ class _ProductListScreenState extends State<ProductListScreen> {
   TextEditingController searchCntrller = TextEditingController();
 
   String search = '';
+  bool dataConnection = false;
 
   @override
   void initState() {
     super.initState();
-    allProductList();
+    checkConnectiVity();
   }
 
   allProductList() async {
@@ -54,9 +56,8 @@ class _ProductListScreenState extends State<ProductListScreen> {
                 child: CircularProgressIndicator(),
               )
             : RefreshIndicator(
-          onRefresh: _onRefresh,
-              child: Stack(
-                children:<Widget> [
+                onRefresh: _onRefresh,
+                child: Stack(children: <Widget>[
                   ListView(),
                   Column(
                     children: [
@@ -77,23 +78,23 @@ class _ProductListScreenState extends State<ProductListScreen> {
                                     controller: searchCntrller,
                                     decoration: InputDecoration(
                                       contentPadding:
-                                      EdgeInsets.fromLTRB(0, 10, 0, 10),
+                                          EdgeInsets.fromLTRB(0, 10, 0, 10),
                                       hintStyle: TextStyle(
                                         color: Colors.grey,
                                       ),
                                       filled: true,
                                       fillColor: Colors.grey[300],
-                                      prefixIcon:
-                                      Icon(Icons.search, color: Colors.grey),
+                                      prefixIcon: Icon(Icons.search,
+                                          color: Colors.grey),
                                       hintText: 'Search',
                                       enabledBorder: OutlineInputBorder(
-                                        borderSide:
-                                        BorderSide(color: Colors.transparent),
+                                        borderSide: BorderSide(
+                                            color: Colors.transparent),
                                         borderRadius: BorderRadius.circular(15),
                                       ),
                                       focusedBorder: OutlineInputBorder(
-                                        borderSide:
-                                        BorderSide(color: Colors.transparent),
+                                        borderSide: BorderSide(
+                                            color: Colors.transparent),
                                         borderRadius: BorderRadius.circular(15),
                                       ),
                                     ),
@@ -127,66 +128,115 @@ class _ProductListScreenState extends State<ProductListScreen> {
                       Expanded(
                         child: productList!.data.length > 0
                             ? ListView.builder(
-                          itemCount: productList!.data.length,
-                          itemBuilder: (context, index) {
-                            return Padding(
-                              padding: const EdgeInsets.only(
-                                  left: 8, right: 8, top: 8),
-                              child: GestureDetector(
-                                onTap: () {
-                                  var productId = productList!
-                                      .data[index].productId
-                                      .toString();
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) =>
-                                          ProductDetailScreen(
-                                              id: widget.id,
-                                              productId: productId),
+                                itemCount: productList!.data.length,
+                                itemBuilder: (context, index) {
+                                  return Padding(
+                                    padding: const EdgeInsets.only(
+                                        left: 8, right: 8, top: 8),
+                                    child: GestureDetector(
+                                      onTap: () {
+                                        var productId = productList!
+                                            .data[index].productId
+                                            .toString();
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) =>
+                                                ProductDetailScreen(
+                                                    id: widget.id,
+                                                    productId: productId),
+                                          ),
+                                        );
+                                      },
+                                      child: Container(
+                                        decoration: BoxDecoration(
+                                          borderRadius:
+                                              BorderRadius.circular(10),
+                                          color: Colors.blueGrey[50],
+                                        ),
+                                        child: ListTile(
+                                          leading: Container(
+                                            decoration: BoxDecoration(
+                                              image: DecorationImage(
+                                                fit: BoxFit.cover,
+                                                image: NetworkImage(productList!
+                                                    .data[index].image),
+                                              ),
+                                              color: Colors.grey,
+                                            ),
+                                            width: 60,
+                                            height: 120,
+                                          ),
+                                          title: Text(productList!
+                                              .data[index].productName),
+                                          subtitle: Text(productList!
+                                              .data[index].productCode),
+                                          trailing: Text(productList!
+                                              .data[index].sellingPrice),
+                                        ),
+                                      ),
                                     ),
                                   );
                                 },
-                                child: Container(
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(10),
-                                    color: Colors.blueGrey[50],
-                                  ),
-                                  child: ListTile(
-                                    leading: Container(
-                                      decoration: BoxDecoration(
-                                        image: DecorationImage(
-                                          fit: BoxFit.cover,
-                                          image: NetworkImage(
-                                              productList!.data[index].image),
-                                        ),
-                                        color: Colors.grey,
-                                      ),
-                                      width: 60,
-                                      height: 120,
-                                    ),
-                                    title: Text(
-                                        productList!.data[index].productName),
-                                    subtitle: Text(
-                                        productList!.data[index].productCode),
-                                    trailing: Text(productList!
-                                        .data[index].sellingPrice),
-                                  ),
+                              )
+                            : Container(
+                                child: Center(
+                                  child: Text('No Data'),
                                 ),
                               ),
-                            );
-                          },
-                        )
-                            : Container(
-                          child: Center(
-                            child: Text('No Data'),
-                          ),
-                        ),
                       ),
                     ],
                   ),
-                ]
+                ]),
+              ));
+  }
+
+  checkConnectiVity() async {
+    final connectivityResult = await (Connectivity().checkConnectivity());
+    if (connectivityResult == ConnectivityResult.mobile ||
+        connectivityResult == ConnectivityResult.wifi) {
+      dataConnection = true;
+      if (dataConnection == true) {
+        setState(() {
+          allProductList();
+        });
+      }
+    } else {
+      showModalBottomSheet(
+        context: context,
+        builder: (context) {
+          return Container(
+            decoration: BoxDecoration(
+              color: Colors.red,
+            ),
+            height: 70,
+            child: Center(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  const Text(
+                    'No Network connection',
+                    style: TextStyle(color: Colors.white),
+                  ),
+                  ElevatedButton(
+                    style: ButtonStyle(
+                      backgroundColor: MaterialStateProperty.all(Colors.white),
+                    ),
+                    child: const Text(
+                      'Retry',
+                      style: TextStyle(color: Colors.black),
+                    ),
+                    onPressed: () {
+                      Navigator.pop(context);
+                      checkConnectiVity();
+                    },
+                  ),
+                ],
               ),
-            ));
+            ),
+          );
+        },
+      );
+    }
   }
 }

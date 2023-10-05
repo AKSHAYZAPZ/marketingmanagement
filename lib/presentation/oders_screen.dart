@@ -1,3 +1,4 @@
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:jibin_s_application1/presentation/invoice_details_screen/invoice_details_screen.dart';
@@ -36,6 +37,7 @@ class _OderScreenState extends State<OderScreen> {
   ExecutiveLists? executiveLists;
   Routelist? routelist;
   var routes = '';
+  bool dataConnection = false;
 
   String fdate = DateFormat('dd-MM-yyyy').format(DateTime.now());
   String tdate = DateFormat('dd-MM-yyyy').format(DateTime.now());
@@ -47,9 +49,7 @@ class _OderScreenState extends State<OderScreen> {
   @override
   void initState() {
     super.initState();
-    executives();
-    getRoutes();
-    fullOders();
+    checkConnectiVity();
   }
 
   @override
@@ -133,7 +133,7 @@ class _OderScreenState extends State<OderScreen> {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               GestureDetector(
-                                onTap: ()async {
+                                onTap: () async {
                                   final selctedDatetimetemp =
                                       await showDatePicker(
                                     context: context,
@@ -179,7 +179,8 @@ class _OderScreenState extends State<OderScreen> {
                                         MainAxisAlignment.spaceBetween,
                                     children: [
                                       Padding(
-                                        padding: const EdgeInsets.only(left: 10),
+                                        padding:
+                                            const EdgeInsets.only(left: 10),
                                         child: Text(
                                           fdate.toString(),
                                         ),
@@ -202,9 +203,8 @@ class _OderScreenState extends State<OderScreen> {
                                 ),
                               ),
                               GestureDetector(
-                                onTap: ()async{
-                                  final toDateselectTemp =
-                                      await showDatePicker(
+                                onTap: () async {
+                                  final toDateselectTemp = await showDatePicker(
                                     context: context,
                                     initialDate: DateTime.now(),
                                     firstDate: DateTime(2000),
@@ -247,7 +247,8 @@ class _OderScreenState extends State<OderScreen> {
                                         MainAxisAlignment.spaceBetween,
                                     children: [
                                       Padding(
-                                        padding: const EdgeInsets.only(left: 10),
+                                        padding:
+                                            const EdgeInsets.only(left: 10),
                                         child: Text(
                                           tdate.toString(),
                                         ),
@@ -283,7 +284,8 @@ class _OderScreenState extends State<OderScreen> {
                               crossAxisAlignment: CrossAxisAlignment.center,
                               children: [
                                 Container(
-                                  width: MediaQuery.of(context).size.width * 0.3,
+                                  width:
+                                      MediaQuery.of(context).size.width * 0.3,
                                   height: 30,
                                   child: DropdownButton<String>(
                                     underline: Container(),
@@ -311,14 +313,18 @@ class _OderScreenState extends State<OderScreen> {
                                     },
                                     isDense: true,
                                     isExpanded: true,
-                                    selectedItemBuilder: (BuildContext context) {
+                                    selectedItemBuilder:
+                                        (BuildContext context) {
                                       return [
                                         'All orders',
                                         'Not confirmed',
                                         'Confirmed',
                                       ].map<Widget>((item) {
                                         return Container(
-                                          width: MediaQuery.of(context).size.width * 0.3,
+                                          width: MediaQuery.of(context)
+                                                  .size
+                                                  .width *
+                                              0.3,
                                           child: Text(
                                             item,
                                             overflow: TextOverflow.ellipsis,
@@ -329,63 +335,79 @@ class _OderScreenState extends State<OderScreen> {
                                   ),
                                 ),
                                 Container(
-                                  width: MediaQuery.of(context).size.width * 0.3,
+                                  width:
+                                      MediaQuery.of(context).size.width * 0.3,
                                   height: 30,
                                   child: executiveLists == null
                                       ? Center(
-                                    child: CircularProgressIndicator(),
-                                  )
+                                          child: CircularProgressIndicator(),
+                                        )
                                       : executiveLists!.status == true
-                                      ? DropdownButton<String>(
-                                    underline: Container(),
-                                    value: executive == '' ? null : executive,
-                                    hint: Text('Executive'),
-                                    items: executiveLists!.data.map<DropdownMenuItem<String>>(
-                                          (e) {
-                                        return DropdownMenuItem<String>(
-                                          value: e.id.toString(),
-                                          child: Text(e.name),
-                                        );
-                                      },
-                                    ).toList(),
-                                    onChanged: (String? newValue) {
-                                      setState(() {
-                                        executive = newValue ?? '';
-                                        fullOders();
-                                      });
-                                    },
-                                    isDense: true,
-                                    isExpanded: true,
-                                    selectedItemBuilder: (BuildContext context) {
-                                      return executiveLists!.data.map<Widget>((e) {
-                                        return Container(
-                                          width: MediaQuery.of(context).size.width * 0.3,
-                                          child: Text(
-                                            e.name,
-                                            overflow: TextOverflow.ellipsis,
-                                          ),
-                                        );
-                                      }).toList();
-                                    },
-                                  )
-                                      : SizedBox(),
+                                          ? DropdownButton<String>(
+                                              underline: Container(),
+                                              value: executive == ''
+                                                  ? null
+                                                  : executive,
+                                              hint: Text('Executive'),
+                                              items: executiveLists!.data.map<
+                                                  DropdownMenuItem<String>>(
+                                                (e) {
+                                                  return DropdownMenuItem<
+                                                      String>(
+                                                    value: e.id.toString(),
+                                                    child: Text(e.name),
+                                                  );
+                                                },
+                                              ).toList(),
+                                              onChanged: (String? newValue) {
+                                                setState(() {
+                                                  executive = newValue ?? '';
+                                                  fullOders();
+                                                });
+                                              },
+                                              isDense: true,
+                                              isExpanded: true,
+                                              selectedItemBuilder:
+                                                  (BuildContext context) {
+                                                return executiveLists!.data
+                                                    .map<Widget>((e) {
+                                                  return Container(
+                                                    width:
+                                                        MediaQuery.of(context)
+                                                                .size
+                                                                .width *
+                                                            0.3,
+                                                    child: Text(
+                                                      e.name,
+                                                      overflow:
+                                                          TextOverflow.ellipsis,
+                                                    ),
+                                                  );
+                                                }).toList();
+                                              },
+                                            )
+                                          : SizedBox(),
                                 ),
                                 Container(
-                                  width: MediaQuery.of(context).size.width * 0.3,
+                                  width:
+                                      MediaQuery.of(context).size.width * 0.3,
                                   height: 30,
                                   child: DropdownButton(
                                     underline: Container(),
                                     value: routes == '' ? null : routes,
                                     hint: Text('Select Route'),
-                                    isDense: true, // Make the dropdown compact
-                                    isExpanded: true, // Expand the selected value to fit the width
+                                    isDense: true,
+                                    // Make the dropdown compact
+                                    isExpanded: true,
+                                    // Expand the selected value to fit the width
                                     items: routelist != null
-                                        ? routelist!.data.map<DropdownMenuItem<String>>((e) {
-                                      return DropdownMenuItem<String>(
-                                        value: e.id.toString(),
-                                        child: Text(e.route),
-                                      );
-                                    }).toList()
+                                        ? routelist!.data
+                                            .map<DropdownMenuItem<String>>((e) {
+                                            return DropdownMenuItem<String>(
+                                              value: e.id.toString(),
+                                              child: Text(e.route),
+                                            );
+                                          }).toList()
                                         : null,
                                     onChanged: (value) {
                                       setState(() {
@@ -418,7 +440,8 @@ class _OderScreenState extends State<OderScreen> {
                                             builder: (context) =>
                                                 InvoiceDetailsScreen(
                                                     oderid: oderlists!
-                                                        .data[index].id.toString(),
+                                                        .data[index].id
+                                                        .toString(),
                                                     token: widget.id),
                                           ),
                                         )
@@ -428,7 +451,8 @@ class _OderScreenState extends State<OderScreen> {
                                             builder: (context) =>
                                                 OderDetailsScreen(
                                                     oderid: oderlists!
-                                                        .data[index].id.toString(),
+                                                        .data[index].id
+                                                        .toString(),
                                                     token: widget.id),
                                           ),
                                         );
@@ -491,16 +515,22 @@ class _OderScreenState extends State<OderScreen> {
                                                           Axis.horizontal,
                                                       child: Row(
                                                         children: [
-                                                          Icon(Icons.assignment,color: Colors.grey[700]),
+                                                          Icon(Icons.assignment,
+                                                              color: Colors
+                                                                  .grey[700]),
                                                           // Text('Order ID: '),
-                                                          SizedBox(width: 5,),
+                                                          SizedBox(
+                                                            width: 5,
+                                                          ),
                                                           Text(
-                                                              oderlists!
-                                                                  .data[index]
-                                                                  .orderId,
-                                                              maxLines: 1,
-                                                               overflow: TextOverflow.ellipsis,
-                                                            ),
+                                                            oderlists!
+                                                                .data[index]
+                                                                .orderId,
+                                                            maxLines: 1,
+                                                            overflow:
+                                                                TextOverflow
+                                                                    .ellipsis,
+                                                          ),
                                                         ],
                                                       ),
                                                     ),
@@ -514,9 +544,13 @@ class _OderScreenState extends State<OderScreen> {
                                                 children: [
                                                   Row(
                                                     children: [
-                                                      Icon(Icons.calendar_month,color: Colors.grey[700]),
+                                                      Icon(Icons.calendar_month,
+                                                          color:
+                                                              Colors.grey[700]),
                                                       // Text('Date : '),
-                                                      SizedBox(width: 5,),
+                                                      SizedBox(
+                                                        width: 5,
+                                                      ),
 
                                                       Text(
                                                         oderlists!.data[index]
@@ -563,8 +597,11 @@ class _OderScreenState extends State<OderScreen> {
                                               Row(
                                                 children: [
                                                   // Text('Shop Name: '),
-                                                  Icon(Icons.store,color: Colors.grey[700]),
-                                                  SizedBox(width: 5,),
+                                                  Icon(Icons.store,
+                                                      color: Colors.grey[700]),
+                                                  SizedBox(
+                                                    width: 5,
+                                                  ),
                                                   SingleChildScrollView(
                                                     scrollDirection:
                                                         Axis.horizontal,
@@ -583,10 +620,15 @@ class _OderScreenState extends State<OderScreen> {
                                                 children: [
                                                   Row(
                                                     children: [
-                                                    Icon(Icons.person,color: Colors.grey[700],),
+                                                      Icon(
+                                                        Icons.person,
+                                                        color: Colors.grey[700],
+                                                      ),
 
                                                       // Text('Created by: '),
-                                                      SizedBox(width: 5,),
+                                                      SizedBox(
+                                                        width: 5,
+                                                      ),
                                                       Text(
                                                         oderlists!.data[index]
                                                             .createdBy!,
@@ -674,5 +716,56 @@ class _OderScreenState extends State<OderScreen> {
       getRoutes();
       executives();
     });
+  }
+
+  checkConnectiVity() async {
+    final connectivityResult = await (Connectivity().checkConnectivity());
+    if (connectivityResult == ConnectivityResult.mobile ||
+        connectivityResult == ConnectivityResult.wifi) {
+      dataConnection = true;
+      if (dataConnection == true) {
+        setState(() {
+          executives();
+          getRoutes();
+          fullOders();
+        });
+      }
+    } else {
+      showModalBottomSheet(
+        context: context,
+        builder: (context) {
+          return Container(
+            decoration: BoxDecoration(
+              color: Colors.red,
+            ),
+            height: 70,
+            child: Center(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  const Text(
+                    'No Network connection',
+                    style: TextStyle(color: Colors.white),
+                  ),
+                  ElevatedButton(
+                    style: ButtonStyle(
+                      backgroundColor: MaterialStateProperty.all(Colors.white),
+                    ),
+                    child: const Text(
+                      'Retry',
+                      style: TextStyle(color: Colors.black),
+                    ),
+                    onPressed: () {
+                      Navigator.pop(context);
+                      checkConnectiVity();
+                    },
+                  ),
+                ],
+              ),
+            ),
+          );
+        },
+      );
+    }
   }
 }

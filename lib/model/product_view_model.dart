@@ -39,6 +39,7 @@ class Data {
   String productName;
   String productCode;
   String sellingPrice;
+  String description;
   List<Image> image;
 
   Data({
@@ -48,6 +49,7 @@ class Data {
     required this.productName,
     required this.productCode,
     required this.sellingPrice,
+    required this.description,
     required this.image,
   });
 
@@ -58,6 +60,7 @@ class Data {
     productName: json["product_name"],
     productCode: json["product_code"],
     sellingPrice: json["selling_price"],
+    description: json["description"],
     image: List<Image>.from(json["image"].map((x) => Image.fromJson(x))),
   );
 
@@ -68,6 +71,7 @@ class Data {
     "product_name": productName,
     "product_code": productCode,
     "selling_price": sellingPrice,
+    "description": description,
     "image": List<dynamic>.from(image.map((x) => x.toJson())),
   };
 }
